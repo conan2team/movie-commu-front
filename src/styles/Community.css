@@ -1,0 +1,71 @@
+/* 게시글 목록 스타일 */
+.board-list-item {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.board-list-item:hover {
+  background-color: var(--hover-bg);
+}
+
+/* 게시글 내용 */
+.post-content {
+  padding: 1.5rem;
+  min-height: 200px;
+  line-height: 1.6;
+}
+
+/* 댓글 섹션 */
+.comments-section {
+  margin-top: 2rem;
+  border-top: 2px solid var(--border-color);
+  padding-top: 1.5rem;
+}
+
+/* 댓글 아이템 */
+.comment-item {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-item:hover {
+  background-color: var(--hover-bg);
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+.comment-content {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+  width: 100%;
+}
+
+/* 작성자와 날짜 정보 */
+.comment-info {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* 카드 바디 패딩 제거 */
+.card-body {
+  padding: 0 !important;
+} 

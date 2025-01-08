@@ -1,0 +1,131 @@
+/* 테마 변수 */
+[data-bs-theme="light"] {
+  --bg-color: #ffffff;
+  --text-color: #212529;
+  --border-color: #dee2e6;
+  --hover-bg: #f8f9fa;
+  --card-shadow: rgba(0,0,0,0.1);
+}
+
+[data-bs-theme="dark"] {
+  --bg-color: #212529;
+  --text-color: #f8f9fa;
+  --border-color: #495057;
+  --hover-bg: #343a40;
+  --card-shadow: rgba(0,0,0,0.3);
+}
+
+/* 전역 스타일 */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* 공통 카드 스타일 */
+.card {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+/* 공통 hover 효과 */
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px var(--card-shadow);
+}
+
+/* 테이블 스타일 */
+.table {
+  color: var(--text-color);
+}
+
+.table-hover tbody tr {
+  transition: all 0.2s ease;
+}
+
+.table-hover tbody tr:hover {
+  background-color: var(--hover-bg) !important;
+  transform: scale(1.01);
+}
+
+/* 링크 스타일 */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--bs-primary);
+}
+
+/* 버튼 스타일 */
+.btn {
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+/* 공통 레이아웃 */
+.page-container {
+  padding: 3rem 0;
+}
+
+/* 공통 카드 스타일 */
+.card-header-custom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 공통 리스트 스타일 */
+.list-item {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item:hover {
+  background-color: var(--hover-bg);
+}
+
+/* 공통 버튼 그룹 */
+.button-group {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* 공통 폼 스타일 */
+.search-form {
+  margin-bottom: 1.5rem;
+}
+
+/* 공통 댓글/리뷰 스타일 */
+.comment-item {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+/* 카드 내부 여백 */
+.card-body {
+  padding: 1.25rem;
+}
+
+/* 카드 헤더 스타일 */
+.card-header {
+  padding: 1rem 1.25rem;
+  background-color: var(--bg-color);
+  border-bottom: 2px solid var(--border-color);
+}

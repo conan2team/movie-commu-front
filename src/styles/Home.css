@@ -1,0 +1,88 @@
+/* 홈페이지 레이아웃 */
+.container {
+  max-width: 1200px;
+}
+
+/* 카드 레이아웃 */
+.card-body {
+  min-height: 300px;
+  padding: 0 !important;
+}
+
+.card-header {
+  background-color: var(--bg-color);
+  border-bottom: 2px solid var(--border-color);
+  padding: 1rem;
+}
+
+/* 타이포그래피 */
+.card-title {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.text-muted {
+  font-size: 0.8rem;
+}
+
+.text-warning {
+  font-size: 0.9rem;
+}
+
+/* 검색 폼 */
+.input-group {
+  box-shadow: 0 2px 4px var(--card-shadow);
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: var(--bs-primary);
+}
+
+/* 목록 아이템 공통 스타일 */
+.movie-list-item, .board-list-item, .top-movie-item {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* 마지막 아이템은 밑줄 제거 */
+.movie-list-item:last-child, 
+.board-list-item:last-child, 
+.top-movie-item:last-child {
+  border-bottom: none;
+}
+
+/* 목록 아이템 hover 효과 */
+.movie-list-item:hover, .board-list-item:hover, .top-movie-item:hover {
+  background-color: var(--hover-bg);
+  border-color: var(--bs-primary);
+}
+
+/* 게시판 아이템 추가 스타일 */
+.board-item h6 {
+  margin-bottom: 0.25rem;
+}
+
+/* 목록 컨테이너 */
+.list-container {
+  padding: 0.5rem;
+}
+
+/* 목록 아이템 내부 요소 스타일 */
+.movie-list-item h6, 
+.board-list-item h6, 
+.top-movie-item h6 {
+  margin-bottom: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+/* hover 시 제목 색상 변경 */
+.movie-list-item:hover h6, 
+.board-list-item:hover h6, 
+.top-movie-item:hover h6 {
+  color: var(--bs-primary);
+} 

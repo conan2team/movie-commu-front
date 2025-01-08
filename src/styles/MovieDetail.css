@@ -1,0 +1,95 @@
+.review-section {
+  max-width: 900px;
+  margin: 2rem auto;
+}
+
+.review-card {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.review-header {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.review-form {
+  padding: 1.5rem;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.star-rating {
+  display: flex;
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.star-rating svg {
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.star-rating svg.active {
+  color: #ffc107;
+}
+
+.review-textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.review-item {
+  padding: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.review-author {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.review-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.review-date {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.review-content {
+  margin: 0.8rem 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.review-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-button {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #666;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+}
+
+.action-button:hover {
+  background-color: #f8f9fa;
+} 

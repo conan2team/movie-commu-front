@@ -1,0 +1,46 @@
+.movie-card {
+  transition: transform 0.2s;
+  height: 100%;
+}
+
+.movie-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.movie-poster {
+  height: 400px;
+  object-fit: cover;
+}
+
+.movie-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.movie-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.rating {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.genre {
+  color: #6c757d;
+}
+
+.movie-description {
+  font-size: 0.9rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  margin-bottom: 0.5rem;
+} 

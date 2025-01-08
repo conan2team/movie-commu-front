@@ -1,0 +1,70 @@
+/* 모든 페이지에서 공통으로 사용할 스타일 */
+.page-container {
+  padding: 2rem 0;
+}
+
+.page-title {
+  margin-bottom: 1.5rem;
+  color: #212529;
+}
+
+.card {
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.pagination {
+  margin-top: 2rem;
+}
+
+.page-item.active .page-link {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.page-link {
+  color: #0d6efd;
+}
+
+.table-responsive {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 공통 리스트 아이템 스타일 */
+.list-item {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item:hover {
+  background-color: var(--hover-bg);
+}
+
+/* 공통 댓글/리뷰 스타일 */
+.comment-form, .review-form {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background-color: var(--hover-bg);
+  border-radius: 4px;
+} 
