@@ -98,4 +98,47 @@ export const getFavorites = async (userId) => {
       resolve(favorites);
     }, 500);
   });
+};
+
+// 게시글 삭제 API
+export const deleteBoard = async (boardId) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      try {
+        // boards 배열에서 해당 게시글 제거
+        const index = boards.findIndex(board => board.boardId === parseInt(boardId));
+        if (index !== -1) {
+          boards.splice(index, 1);
+          resolve({ success: true });
+        } else {
+          reject(new Error('게시글을 찾을 수 없습니다.'));
+        }
+      } catch (error) {
+        reject(error);
+      }
+    }, 500);
+  });
+};
+
+// 게시글 상세 조회 API
+export const getBoardById = async (boardId) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      try {
+        const board = boards.find(board => board.boardId === parseInt(boardId));
+        if (board) {
+          // 작성자 정보 추가
+          const author = getUserById(board.userId);
+          resolve({
+            ...board,
+            author: author?.id || 'Unknown'
+          });
+        } else {
+          reject(new Error('게시글을 찾을 수 없습니다.'));
+        }
+      } catch (error) {
+        reject(error);
+      }
+    }, 500);
+  });
 }; 

@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/Pagination';
 import '../styles/common.css';
 import '../styles/CommunityDetail.css';
+import { getBoardById, deleteBoard } from '../api';
 
 function CommunityDetail() {
   const { id } = useParams();
@@ -17,6 +18,14 @@ function CommunityDetail() {
   const [newComment, setNewComment] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); // 한 페이지당 10개 댓글
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getBoardById(id);
+      setPost(data);
+    };
+    fetchData();
+  }, [id]);
 
   useEffect(() => {
     const foundPost = boards.find(b => b.boardId === parseInt(id));
@@ -90,6 +99,30 @@ function CommunityDetail() {
   const currentComments = commentList.slice(indexOfFirstComment, indexOfLastComment);
   const totalPages = Math.ceil(commentList.length / itemsPerPage);
 
+  // 게시글 삭제 핸들러 추가
+  const handleDelete = async () => {
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    if (user.userId !== post.userId && user.role !== 'ADMIN') {
+      alert('삭제 권한이 없습니다.');
+      return;
+    }
+
+    if (window.confirm('정말 삭제하시겠습니까?')) {
+      try {
+        await deleteBoard(id);
+        alert('게시글이 삭제되었습니다.');
+        navigate('/community');
+      } catch (error) {
+        alert('게시글 삭제에 실패했습니다.');
+        console.error('Delete error:', error);
+      }
+    }
+  };
+
   if (!post) return <div>로딩 중...</div>;
 
   return (
@@ -120,7 +153,7 @@ function CommunityDetail() {
               </Button>
             )}
             {(user?.userId === post.userId || user?.role === 'ADMIN') && (
-              <Button variant="danger" onClick={() => {/* 삭제 로직 */}}>
+              <Button variant="danger" onClick={handleDelete}>
                 삭제
               </Button>
             )}
@@ -128,7 +161,7 @@ function CommunityDetail() {
         </Card.Footer>
       </Card>
 
-      {/* 댓글 ��드 */}
+      {/* 댓글 카드 */}
       <Card className="comments-card">
         <Card.Header>
           <h5>댓글 {commentList.length}개</h5>
