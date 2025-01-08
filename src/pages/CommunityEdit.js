@@ -3,6 +3,7 @@ import { Container, Form, Button, Card } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { boards } from '../data/dummyData';
+import '../styles/CommunityWriteEdit.css';
 
 function CommunityEdit() {
   const { id } = useParams();
@@ -10,6 +11,8 @@ function CommunityEdit() {
   const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [images, setImages] = useState([]);
+  const [previews, setPreviews] = useState([]);
 
   useEffect(() => {
     const post = boards.find(post => post.boardId === parseInt(id));
@@ -27,6 +30,10 @@ function CommunityEdit() {
 
     setTitle(post.title);
     setContent(post.content);
+    if (post.images) {
+      setPreviews(post.images);
+      setImages(post.images);
+    }
   }, [id, user, navigate]);
 
   const handleSubmit = (e) => {

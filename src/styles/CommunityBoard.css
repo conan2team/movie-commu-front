@@ -5,17 +5,60 @@
   box-shadow: 0 2px 4px var(--card-shadow);
 }
 
-.board-list-item {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--border-color);
-  transition: all 0.2s ease;
-  cursor: pointer;
+/* 테이블 스타일 */
+.board-table {
+  width: 100%;
+  margin-bottom: 1rem;
 }
 
-.board-list-item:hover {
+.board-table th,
+.board-table td {
+  padding: 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.board-table thead th {
+  background-color: var(--bg-color);
+  border-bottom: 2px solid var(--border-color);
+  font-weight: 600;
+}
+
+.board-table tbody tr:hover {
   background-color: var(--hover-bg);
 }
 
-.board-list-item:last-child {
-  border-bottom: none;
+/* 테이블 링크 스타일 */
+.board-table a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.board-table a:hover {
+  color: var(--bs-primary);
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .board-table th:nth-child(4),
+  .board-table td:nth-child(4),
+  .board-table th:nth-child(5),
+  .board-table td:nth-child(5) {
+    display: none;
+  }
+
+  .board-table th:first-child,
+  .board-table td:first-child {
+    width: 15%;
+  }
+
+  .board-table th:nth-child(2),
+  .board-table td:nth-child(2) {
+    width: 55%;
+  }
+
+  .board-table th:nth-child(3),
+  .board-table td:nth-child(3) {
+    width: 30%;
+  }
 } 

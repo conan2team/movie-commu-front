@@ -120,14 +120,14 @@ function CommunityBoard() {
       </div>
 
       {/* 게시글 목록 */}
-      <Table hover responsive>
+      <Table hover className="board-table">
         <thead>
           <tr>
-            <th width="10%">번호</th>
-            <th width="45%">제목</th>
-            <th width="15%">작성자</th>
-            <th width="15%">작성일</th>
-            <th width="15%">조회수</th>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>조회수</th>
           </tr>
         </thead>
         <tbody>
@@ -135,7 +135,7 @@ function CommunityBoard() {
             <tr key={post.boardId}>
               <td>{post.boardId}</td>
               <td>
-                <Link to={`/community/${post.boardId}`} className="text-decoration-none">
+                <Link to={`/community/${post.boardId}`}>
                   {post.title}
                 </Link>
               </td>
