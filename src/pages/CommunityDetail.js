@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Button, Form } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaThumbsUp } from 'react-icons/fa';
 import { boards, comments, getUserById } from '../data/dummyData';
 import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/Pagination';
 import '../styles/common.css';
 import '../styles/CommunityDetail.css';
-import { getBoardById, deleteBoard } from '../api';
+import { getBoardById, deleteBoard, toggleBoardLike, getUserBoardLikes, getUserCommentLikes, toggleCommentLike } from '../api';
 
 function CommunityDetail() {
   const { id } = useParams();
@@ -18,14 +18,34 @@ function CommunityDetail() {
   const [newComment, setNewComment] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); // 한 페이지당 10개 댓글
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [commentLikes, setCommentLikes] = useState({});  // 댓글별 추천 상태
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await getBoardById(id);
       setPost(data);
+      setLikeCount(data.likes || 0);
+
+      // 로그인한 경우 사용자의 추천 상태 확인
+      if (user) {
+        const userLikes = await getUserBoardLikes(user.userId);
+        setIsLiked(userLikes.some(like => like.boardId === parseInt(id)));
+      }
+
+      // 로그인한 경우 사용자의 ��글 추천 상태 확인
+      if (user) {
+        const userCommentLikes = await getUserCommentLikes(user.userId);
+        const likesMap = {};
+        userCommentLikes.forEach(like => {
+          likesMap[like.commentId] = true;
+        });
+        setCommentLikes(likesMap);
+      }
     };
     fetchData();
-  }, [id]);
+  }, [id, user]);
 
   useEffect(() => {
     const foundPost = boards.find(b => b.boardId === parseInt(id));
@@ -123,6 +143,60 @@ function CommunityDetail() {
     }
   };
 
+  const handleLike = async () => {
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      const result = await toggleBoardLike(id, user.userId);
+      
+      if (result.action === 'added') {
+        setLikeCount(prev => prev + 1);
+        setIsLiked(true);
+      } else {
+        setLikeCount(prev => prev - 1);
+        setIsLiked(false);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('작업 처리 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 댓글 추�� 핸들러
+  const handleCommentLike = async (commentId) => {
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      const result = await toggleCommentLike(commentId, user.userId);
+      
+      // 댓글 상태 업데이트
+      setCommentList(commentList.map(comment => {
+        if (comment.commentId === commentId) {
+          return {
+            ...comment,
+            likes: (comment.likes || 0) + (result.action === 'added' ? 1 : -1)
+          };
+        }
+        return comment;
+      }));
+
+      // 추천 상태 업데이트
+      setCommentLikes(prev => ({
+        ...prev,
+        [commentId]: result.action === 'added'
+      }));
+    } catch (error) {
+      console.error('Error:', error);
+      alert('작업 처리 중 오류가 발생했습니다.');
+    }
+  };
+
   if (!post) return <div>로딩 중...</div>;
 
   return (
@@ -140,6 +214,15 @@ function CommunityDetail() {
         <Card.Body>
           <div className="post-content">
             {post.content}
+          </div>
+          <div className="post-actions">
+            <Button 
+              variant={isLiked ? "primary" : "outline-primary"}
+              onClick={handleLike}
+              className="like-button"
+            >
+              <FaThumbsUp /> 추천 {likeCount}
+            </Button>
           </div>
         </Card.Body>
         <Card.Footer>
@@ -194,9 +277,30 @@ function CommunityDetail() {
             <div key={comment.commentId} className="comment-item-wrapper">
               <div className="comment-item-header">
                 <div className="comment-item-author">{comment.author}</div>
-                <div className="comment-item-date">{comment.created}</div>
+                <div className="d-flex align-items-center gap-2">
+                  <div className="comment-item-date">{comment.created}</div>
+                  {user && (user.userId === comment.userId || user.role === 'ADMIN') && (
+                    <Button 
+                      variant="outline-danger" 
+                      size="sm"
+                      onClick={() => handleCommentDelete(comment.commentId)}
+                    >
+                      <FaTrash />
+                    </Button>
+                  )}
+                </div>
               </div>
               <div className="comment-item-content">{comment.content}</div>
+              <div className="comment-actions">
+                <Button
+                  variant={commentLikes[comment.commentId] ? "primary" : "outline-primary"}
+                  size="sm"
+                  onClick={() => handleCommentLike(comment.commentId)}
+                  className="comment-like-button"
+                >
+                  <FaThumbsUp /> {comment.likes || 0}
+                </Button>
+              </div>
             </div>
           ))}
 

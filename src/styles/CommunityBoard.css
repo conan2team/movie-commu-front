@@ -38,13 +38,32 @@
   color: var(--bs-primary);
 }
 
+/* 추천 수와 조회수 스타일 */
+.board-table th:nth-child(5),  /* 추천 컬럼 헤더 */
+.board-table th:last-child,    /* 조회수 컬럼 헤더 */
+.board-table td:nth-child(5),  /* 추천 컬럼 데이터 */
+.board-table td:last-child {   /* 조회수 컬럼 데이터 */
+  text-align: center;
+  color: var(--text-color);
+}
+
+.like-icon {
+  color: var(--bs-primary);
+  font-size: 0.9rem;
+  margin-right: 0.3rem;
+}
+
+.comment-count {
+  color: var(--bs-primary);
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+}
+
 /* 모바일 대응 */
 @media (max-width: 768px) {
   .board-table th:nth-child(4),
-  .board-table td:nth-child(4),
-  .board-table th:nth-child(5),
-  .board-table td:nth-child(5) {
-    display: none;
+  .board-table td:nth-child(4) {
+    display: none;  /* 작성일만 숨김 */
   }
 
   .board-table th:first-child,
@@ -54,11 +73,18 @@
 
   .board-table th:nth-child(2),
   .board-table td:nth-child(2) {
-    width: 55%;
+    width: 40%;
   }
 
   .board-table th:nth-child(3),
   .board-table td:nth-child(3) {
-    width: 30%;
+    width: 20%;
+  }
+
+  .board-table th:nth-child(5),
+  .board-table td:nth-child(5),
+  .board-table th:last-child,
+  .board-table td:last-child {
+    width: 12.5%;
   }
 } 

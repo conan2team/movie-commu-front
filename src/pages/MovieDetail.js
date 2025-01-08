@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaStar, FaHeart, FaRegHeart, FaThumbsUp, FaThumbsDown, FaEdit, FaTrash } from 'react-icons/fa';
-import { getMovieById, getMovieReviews } from '../api';
+import { getMovieById, getMovieReviews, getUserReviewReactions, toggleReviewReaction } from '../api';
 import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/Pagination';
 import '../styles/common.css';  // 공통 스타일
@@ -19,6 +19,7 @@ function MovieDetail() {
   const [editingReview, setEditingReview] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); // 한 페이지당 10개 리뷰
+  const [userReactions, setUserReactions] = useState({});  // 사용자의 리뷰 반응 상태
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,9 +27,19 @@ function MovieDetail() {
       const reviewsData = await getMovieReviews(id);
       setMovie(movieData);
       setReviews(reviewsData);
+
+      // 로그인한 경우 사용자의 리뷰 반응 상태 가져오기
+      if (user) {
+        const reactions = await getUserReviewReactions(user.userId);
+        const reactionsMap = {};
+        reactions.forEach(r => {
+          reactionsMap[r.reviewId] = r.type;
+        });
+        setUserReactions(reactionsMap);
+      }
     };
     fetchData();
-  }, [id]);
+  }, [id, user]);
 
   const handleReviewSubmit = (e) => {
     e.preventDefault();
@@ -113,6 +124,61 @@ function MovieDetail() {
   const indexOfFirstReview = indexOfLastReview - itemsPerPage;
   const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
   const totalPages = Math.ceil(reviews.length / itemsPerPage);
+
+  // 좋아요/싫어요 처리 함수
+  const handleReaction = async (reviewId, type) => {
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      const result = await toggleReviewReaction(reviewId, user.userId, type);
+      
+      // 리뷰 상태 업데이트
+      const updatedReviews = reviews.map(review => {
+        if (review.reviewId === reviewId) {
+          const newReview = { ...review };
+          
+          // 이전 반응이 있었는지 확인
+          const previousReaction = userReactions[reviewId];
+          
+          if (result.action === 'removed') {
+            // 반응 제거
+            newReview[`${type}s`]--;
+            setUserReactions(prev => {
+              const next = { ...prev };
+              delete next[reviewId];
+              return next;
+            });
+          } else if (result.action === 'added') {
+            // 새로운 반응 추가
+            newReview[`${type}s`]++;
+            setUserReactions(prev => ({
+              ...prev,
+              [reviewId]: type
+            }));
+          } else if (result.action === 'changed') {
+            // 반응 변경
+            newReview[`${previousReaction}s`]--;
+            newReview[`${type}s`]++;
+            setUserReactions(prev => ({
+              ...prev,
+              [reviewId]: type
+            }));
+          }
+          
+          return newReview;
+        }
+        return review;
+      });
+      
+      setReviews(updatedReviews);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('작업 처리 중 오류가 발생했습니다.');
+    }
+  };
 
   if (!movie) return <div>로딩 중...</div>;
 
@@ -236,16 +302,16 @@ function MovieDetail() {
               <p className="mb-2">{review.content}</p>
               <div className="d-flex gap-2">
                 <Button 
-                  variant="outline-primary" 
+                  variant={userReactions[review.reviewId] === 'like' ? 'primary' : 'outline-primary'}
                   size="sm"
-                  onClick={() => {/* 추천 기능 */}}
+                  onClick={() => handleReaction(review.reviewId, 'like')}
                 >
                   <FaThumbsUp /> {review.likes || 0}
                 </Button>
                 <Button 
-                  variant="outline-secondary" 
+                  variant={userReactions[review.reviewId] === 'dislike' ? 'secondary' : 'outline-secondary'}
                   size="sm"
-                  onClick={() => {/* 비추천 기능 */}}
+                  onClick={() => handleReaction(review.reviewId, 'dislike')}
                 >
                   <FaThumbsDown /> {review.dislikes || 0}
                 </Button>

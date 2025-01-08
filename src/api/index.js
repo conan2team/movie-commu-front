@@ -1,5 +1,9 @@
 import { movies, reviews, comments, boards, getUserById } from '../data/dummyData';
 
+// 게시글/댓글 추천 상태 저장을 위한 더미 데이터
+let boardLikes = [];   // { userId, boardId }
+let commentLikes = []; // { userId, commentId }
+
 // 영화 관련 API
 export const getMovieById = async (id) => {
   return new Promise((resolve) => {
@@ -139,6 +143,115 @@ export const getBoardById = async (boardId) => {
       } catch (error) {
         reject(error);
       }
+    }, 500);
+  });
+};
+
+// 리뷰 좋아요/싫어요 토 저장을 위한 더미 데이터
+let reviewLikes = [];  // { userId, reviewId, type: 'like' | 'dislike' }
+
+// 리뷰 좋아요/싫어요 토글 API
+export const toggleReviewReaction = async (reviewId, userId, type) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // 이전 반응 찾기
+      const existingReaction = reviewLikes.find(
+        r => r.reviewId === reviewId && r.userId === userId
+      );
+
+      if (existingReaction) {
+        // 같은 타입이면 취소
+        if (existingReaction.type === type) {
+          reviewLikes = reviewLikes.filter(
+            r => !(r.reviewId === reviewId && r.userId === userId)
+          );
+          resolve({ action: 'removed', type });
+        } else {
+          // 다른 타입이면 변경
+          existingReaction.type = type;
+          resolve({ action: 'changed', type });
+        }
+      } else {
+        // 새로운 반응 추가
+        reviewLikes.push({ userId, reviewId, type });
+        resolve({ action: 'added', type });
+      }
+    }, 500);
+  });
+};
+
+// 사용자의 리뷰 반응 상태 조회 API
+export const getUserReviewReactions = async (userId) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const userReactions = reviewLikes.filter(r => r.userId === userId);
+      resolve(userReactions);
+    }, 500);
+  });
+};
+
+// 게시글 추천 토글 API
+export const toggleBoardLike = async (boardId, userId) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const existingLike = boardLikes.find(
+        like => like.boardId === parseInt(boardId) && like.userId === userId
+      );
+
+      if (existingLike) {
+        // 이미 추천한 경우 추천 취소
+        boardLikes = boardLikes.filter(
+          like => !(like.boardId === parseInt(boardId) && like.userId === userId)
+        );
+        resolve({ action: 'removed' });
+      } else {
+        // 새로운 추천 추가
+        boardLikes.push({ userId, boardId: parseInt(boardId) });
+        resolve({ action: 'added' });
+      }
+    }, 500);
+  });
+};
+
+// 사용자의 게시글 추천 상태 조회 API
+export const getUserBoardLikes = async (userId) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const userLikes = boardLikes.filter(like => like.userId === userId);
+      resolve(userLikes);
+    }, 500);
+  });
+};
+
+// 댓글 추천 토글 API
+export const toggleCommentLike = async (commentId, userId) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const existingLike = commentLikes.find(
+        like => like.commentId === commentId && like.userId === userId
+      );
+
+      if (existingLike) {
+        // 이미 추천한 경우 추천 취소
+        commentLikes = commentLikes.filter(
+          like => !(like.commentId === commentId && like.userId === userId)
+        );
+        resolve({ action: 'removed' });
+      } else {
+        // 새로운 추천 추가
+        commentLikes.push({ userId, commentId });
+        resolve({ action: 'added' });
+      }
+    }, 500);
+  });
+};
+
+// 사용자의 댓글 추천 상태 조회 API
+export const getUserCommentLikes = async (userId) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const userLikes = commentLikes.filter(like => like.userId === userId);
+      resolve(userLikes);
     }, 500);
   });
 }; 

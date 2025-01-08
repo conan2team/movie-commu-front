@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Table, Button, Form, InputGroup, Row, Col } from 'react-bootstrap';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaThumbsUp } from 'react-icons/fa';
 import { boards, getUserById } from '../data/dummyData';
 import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/Pagination';
@@ -133,6 +133,7 @@ function CommunityBoard() {
             <th>제목</th>
             <th>작성자</th>
             <th>작성일</th>
+            <th>추천</th>
             <th>조회수</th>
           </tr>
         </thead>
@@ -143,16 +144,24 @@ function CommunityBoard() {
               <td>
                 <Link to={`/community/${post.boardId}`}>
                   {post.title}
+                  {post.commentCount > 0 && (
+                    <span className="comment-count">[{post.commentCount}]</span>
+                  )}
                 </Link>
               </td>
               <td>{post.author}</td>
               <td>{post.created}</td>
-              <td>{post.cnt}</td>
+              <td className="text-center">
+                {post.likes || 0}
+              </td>
+              <td className="text-center">
+                {post.cnt || 0}
+              </td>
             </tr>
           ))}
           {posts.length === 0 && (
             <tr>
-              <td colSpan="5" className="text-center py-4">
+              <td colSpan="6" className="text-center py-4">
                 게시글이 없습니다.
               </td>
             </tr>

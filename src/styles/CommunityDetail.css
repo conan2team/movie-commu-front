@@ -121,4 +121,54 @@
 
 .comment-item-content {
   color: var(--text-color);
+}
+
+/* 게시글 액션 버튼 */
+.post-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.like-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.like-button svg {
+  font-size: 1.2rem;
+}
+
+.like-button:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+/* 댓글 액션 버튼 */
+.comment-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.comment-like-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.comment-like-button svg {
+  font-size: 1rem;
+}
+
+.comment-like-button:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
 } 
