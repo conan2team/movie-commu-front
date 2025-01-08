@@ -45,10 +45,10 @@ export const getHomeData = async () => {
         .sort((a, b) => new Date(b.created) - new Date(a.created))
         .slice(0, 5);
 
-      // 최신 게시글 5개 (작성자 정보 포함)
+      // 최신 게시글 15개로 변경 (작성자 정보 포함)
       const recentPosts = boards
         .sort((a, b) => new Date(b.created) - new Date(a.created))
-        .slice(0, 5)
+        .slice(0, 15)
         .map(post => ({
           ...post,
           author: getUserById(post.userId)?.id

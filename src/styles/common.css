@@ -18,7 +18,7 @@
   margin-bottom: 1rem;
 }
 
-.card.hover-effect:hover {
+.card:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 12px var(--card-shadow);
 }
@@ -67,13 +67,7 @@
   background-color: var(--hover-bg);
 }
 
-/* 공통 댓글/리뷰 스타일 */
-.comment-form, .review-form {
-  margin-bottom: 1.5rem;
-  padding: 1.25rem;
-  background-color: var(--hover-bg);
-  border-radius: 4px;
-}
+
 
 /* 공통 테이블 스타일 */
 .table-hover tbody tr:hover {

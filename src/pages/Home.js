@@ -17,7 +17,11 @@ function Home() {
   useEffect(() => {
     const fetchData = async () => {
       const data = await getHomeData();
-      setHomeData(data);
+      setHomeData({
+        topMovies: data.topMovies.slice(0, 10),
+        recentMovies: data.recentMovies.slice(0, 5),
+        recentPosts: data.recentPosts.slice(0, 15)
+      });
     };
     fetchData();
   }, []);
@@ -49,14 +53,14 @@ function Home() {
         </Form>
       </div>
 
-      <Row>
+      <Row className="row-height-match">
         {/* 왼쪽 컬럼: 평점 TOP 10과 최신 영화 */}
-        <Col md={8}>
+        <Col md={8} className="d-flex flex-column">
           {/* 평점 TOP 10 */}
-          <Card className="mb-4">
+          <Card className="mb-4 flex-grow-0">
             <Card.Header className="d-flex justify-content-between align-items-center">
               <h5 className="mb-0">평점 TOP 10</h5>
-              <Link to="/top-movies" className="text-decoration-none">더보기</Link>
+              <Link to="/top-movies" className="more-link">더보기</Link>
             </Card.Header>
             <Card.Body className="p-0">
               {homeData.topMovies.map((movie, index) => (
@@ -81,10 +85,10 @@ function Home() {
           </Card>
 
           {/* 최신 영화 */}
-          <Card>
+          <Card className="flex-grow-1">
             <Card.Header className="d-flex justify-content-between align-items-center">
               <h5 className="mb-0">영화 목록</h5>
-              <Link to="/movies" className="text-decoration-none">더보기</Link>
+              <Link to="/movies" className="more-link">더보기</Link>
             </Card.Header>
             <Card.Body className="p-0">
               {homeData.recentMovies.map((movie) => (
@@ -107,19 +111,19 @@ function Home() {
         </Col>
 
         {/* 오른쪽 컬럼: 자유게시판 */}
-        <Col md={4}>
-          <Card>
+        <Col md={4} className="d-flex">
+          <Card className="w-100">
             <Card.Header className="d-flex justify-content-between align-items-center">
               <h5 className="mb-0">자유게시판</h5>
-              <Link to="/community" className="text-decoration-none">더보기</Link>
+              <Link to="/community" className="more-link">더보기</Link>
             </Card.Header>
             <Card.Body className="p-0">
               {homeData.recentPosts.map((post) => (
                 <div key={post.boardId} className="board-list-item">
                   <Link to={`/community/${post.boardId}`} className="text-decoration-none">
-                    <h6 className="mb-1">{post.title}</h6>
+                    <h6>{post.title}</h6>
                   </Link>
-                  <div className="d-flex justify-content-between">
+                  <div className="board-meta">
                     <small className="text-muted">{post.author}</small>
                     <small className="text-muted">
                       {new Date(post.created).toLocaleDateString()}

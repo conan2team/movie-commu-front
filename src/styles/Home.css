@@ -34,8 +34,6 @@
   border-bottom: 1px solid var(--border-color);
   transition: all 0.2s ease;
   cursor: pointer;
-  display: flex;
-  align-items: center;
 }
 
 /* 마지막 아이템은 밑줄 제거 */
@@ -74,4 +72,87 @@
 .board-list-item:hover h6, 
 .top-movie-item:hover h6 {
   color: var(--bs-primary);
+}
+
+/* 카드 헤더 스타일 */
+.card-header {
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 1.25rem;
+}
+
+/* 더보기 버튼 스타일 */
+.more-link {
+  color: var(--bs-primary);
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.more-link:hover {
+  background-color: var(--bs-primary);
+  color: white;
+  text-decoration: none;
+}
+
+/* 게시판 아이템 스타일 */
+.board-list-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.board-list-item h6 {
+  margin-bottom: 0.25rem;
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.board-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* 행 높이 맞추기 */
+.row-height-match {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.row-height-match > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 카드 높이 조정 */
+.card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-body {
+  flex: 1 1 auto;
+  padding: 0 !important;
+  overflow-y: auto;
+}
+
+/* 자유게시판 카드 스타일 */
+.board-list-item {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.board-list-item:last-child {
+  border-bottom: none;
+}
+
+/* 자유게시판 카드 내용 영역 */
+.card-body {
+  padding: 0 !important;
+  max-height: none !important; /* 높이 제한 제거 */
+  overflow: visible !important; /* 오버플로우 제거 */
 } 

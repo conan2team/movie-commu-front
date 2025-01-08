@@ -93,21 +93,21 @@ function CommunityDetail() {
   if (!post) return <div>로딩 중...</div>;
 
   return (
-    <Container className="community-detail py-5">
-      {/* 게시글 내용 */}
-      <Card className="post-card mb-4">
+    <Container className="py-5">
+      {/* 게시글 카드 */}
+      <Card className="post-card">
         <Card.Header>
           <h4>{post.title}</h4>
           <div className="post-header-info">
-            <span>작성자: {post.author}</span>
-            <span>|</span>
-            <span>작성일: {post.created}</span>
-            <span>|</span>
+            <span>{post.author}</span>
+            <span>{post.created}</span>
             <span>조회수: {post.cnt}</span>
           </div>
         </Card.Header>
         <Card.Body>
-          <div className="post-content">{post.content}</div>
+          <div className="post-content">
+            {post.content}
+          </div>
         </Card.Body>
         <Card.Footer>
           <div className="d-flex justify-content-end gap-3">
@@ -128,8 +128,8 @@ function CommunityDetail() {
         </Card.Footer>
       </Card>
 
-      {/* 댓글 섹션 */}
-      <Card className="comments-card" id="comments-section">
+      {/* 댓글 ��드 */}
+      <Card className="comments-card">
         <Card.Header>
           <h5>댓글 {commentList.length}개</h5>
         </Card.Header>

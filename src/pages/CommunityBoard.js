@@ -21,6 +21,12 @@ function CommunityBoard() {
   const [itemsPerPage] = useState(15); // 한 페이지당 15개 게시글
 
   useEffect(() => {
+    // 게시글을 최신순으로 정렬 (boardId가 큰 순서)
+    const sortedBoards = [...boards].sort((a, b) => b.boardId - a.boardId);
+    setPosts(sortedBoards);
+  }, []);
+
+  useEffect(() => {
     let filteredPosts = [...boards].sort((a, b) => 
       new Date(b.created) - new Date(a.created)
     );

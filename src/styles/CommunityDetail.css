@@ -18,7 +18,7 @@
 .post-card .card-header {
   background-color: var(--bg-color) !important;
   border-bottom: 1px solid var(--border-color);
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 2rem !important;
 }
 
 .post-card .card-header h4 {
@@ -38,7 +38,7 @@
 /* 게시글 본문 */
 .post-card .card-body {
   background-color: var(--bg-color) !important;
-  padding: 2rem;
+  padding: 2rem !important;
   min-height: 200px;
 }
 
@@ -47,13 +47,14 @@
   font-size: 1rem;
   line-height: 1.7;
   white-space: pre-wrap;
+  padding: 0 1rem;
 }
 
 /* 게시글 푸터 */
 .post-card .card-footer {
   background-color: var(--bg-color) !important;
   border-top: 1px solid var(--border-color);
-  padding: 1rem 2rem;
+  padding: 1rem 2rem !important;
 }
 
 /* 댓글 섹션 */

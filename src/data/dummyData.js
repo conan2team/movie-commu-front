@@ -846,40 +846,33 @@ export const getUserById = (userId) => {
 };
 
 // API 함수들
-export const getHomeData = () => {
-  // 평점순으로 정렬된 상위 5개 영화
-  const topMovies = Object.values(movies)
-    .sort((a, b) => b.star - a.star)
-    .slice(0, 5);
+export const getHomeData = async () => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // 평점순으로 정렬된 상위 10개 영화
+      const topMovies = Object.values(movies)
+        .sort((a, b) => b.star - a.star)
+        .slice(0, 10);
 
-  // 최신순으로 정렬된 상위 5개 영화
-  const recentMovies = Object.values(movies)
-    .sort((a, b) => new Date(b.created) - new Date(a.created))
-    .slice(0, 5);
+      // 최신순으로 정렬된 상위 5개 영화
+      const recentMovies = Object.values(movies)
+        .sort((a, b) => new Date(b.created) - new Date(a.created))
+        .slice(0, 5);
 
-  // 최신 게시글 5개 (작성자 정보 포함)
-  const recentPosts = boards
-    .sort((a, b) => new Date(b.created) - new Date(a.created))
-    .slice(0, 5)
-    .map(post => ({
-      ...post,
-      author: getUserById(post.userId)?.id
-    }));
+      // 최신 게시글 15개 (작성자 정보 포함)
+      const recentPosts = Object.values(boards)  // boards가 배열이 아닌 경우를 위해 Object.values 사용
+        .sort((a, b) => new Date(b.created) - new Date(a.created))
+        .slice(0, 15)
+        .map(post => ({
+          ...post,
+          author: getUserById(post.userId)?.id
+        }));
 
-  // 최신 리뷰 5개 (작성자 정보와 영화 제목 포함)
-  const recentReviews = reviews
-    .sort((a, b) => b.reviewId - a.reviewId)
-    .slice(0, 5)
-    .map(review => ({
-      ...review,
-      author: getUserById(review.userId)?.id,
-      movieTitle: movies[review.movieId]?.title
-    }));
-
-  return {
-    topMovies,
-    recentMovies,
-    recentPosts,
-    recentReviews
-  };
+      resolve({
+        topMovies,
+        recentMovies,
+        recentPosts
+      });
+    }, 500);
+  });
 }; 
