@@ -95,18 +95,22 @@ function CommunityDetail() {
   return (
     <Container className="community-detail py-5">
       {/* 게시글 내용 */}
-      <Card className="mb-4">
+      <Card className="post-card mb-4">
         <Card.Header>
           <h4>{post.title}</h4>
-          <div className="text-muted">
-            작성자: {post.author} | 작성일: {post.created} | 조회수: {post.cnt}
+          <div className="post-header-info">
+            <span>작성자: {post.author}</span>
+            <span>|</span>
+            <span>작성일: {post.created}</span>
+            <span>|</span>
+            <span>조회수: {post.cnt}</span>
           </div>
         </Card.Header>
         <Card.Body>
-          <Card.Text>{post.content}</Card.Text>
+          <div className="post-content">{post.content}</div>
         </Card.Body>
         <Card.Footer>
-          <div className="d-flex justify-content-end gap-2">
+          <div className="d-flex justify-content-end gap-3">
             <Button variant="secondary" onClick={() => navigate('/community')}>
               목록
             </Button>
@@ -125,7 +129,7 @@ function CommunityDetail() {
       </Card>
 
       {/* 댓글 섹션 */}
-      <Card id="comments-section">
+      <Card className="comments-card" id="comments-section">
         <Card.Header>
           <h5>댓글 {commentList.length}개</h5>
         </Card.Header>

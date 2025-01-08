@@ -6,7 +6,7 @@ import { boards, getUserById } from '../data/dummyData';
 import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/Pagination';
 import '../styles/common.css';
-import '../styles/Community.css';
+import '../styles/CommunityBoard.css';
 
 function CommunityBoard() {
   const navigate = useNavigate();

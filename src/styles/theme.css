@@ -5,6 +5,9 @@
   --border-color: #dee2e6;
   --hover-bg: #f8f9fa;
   --card-shadow: rgba(0,0,0,0.1);
+  --text-muted: #6c757d;
+  --card-bg: #ffffff;
+  --card-header-bg: #f8f9fa;
 }
 
 [data-bs-theme="dark"] {
@@ -13,6 +16,9 @@
   --border-color: #495057;
   --hover-bg: #343a40;
   --card-shadow: rgba(0,0,0,0.3);
+  --text-muted: #adb5bd;
+  --card-bg: #2b3035;
+  --card-header-bg: #343a40;
 }
 
 /* 전역 스타일 */

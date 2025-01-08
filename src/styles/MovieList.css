@@ -1,32 +1,17 @@
-.movie-list-card {
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.movie-list-card:hover {
-  transform: translateY(-5px);
-}
-
 .movie-list-poster {
   height: 400px;
   object-fit: cover;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 }
 
 .movie-list-title {
   font-size: 1.2rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
-.movie-list-info {
-  font-size: 0.9rem;
-}
-
-.movie-list-description {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  color: #666;
+.movie-rating {
+  font-size: 1.1rem;
+  color: var(--text-muted);
 } 

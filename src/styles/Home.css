@@ -3,17 +3,6 @@
   max-width: 1200px;
 }
 
-/* 카드 레이아웃 */
-.card-body {
-  min-height: 300px;
-  padding: 0 !important;
-}
-
-.card-header {
-  background-color: var(--bg-color);
-  border-bottom: 2px solid var(--border-color);
-  padding: 1rem;
-}
 
 /* 타이포그래피 */
 .card-title {

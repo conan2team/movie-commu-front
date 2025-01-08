@@ -9,12 +9,18 @@
 }
 
 .card {
+  background-color: var(--card-bg);
+  color: var(--text-color);
   border: 1px solid var(--border-color);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--card-shadow);
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
 }
 
-.card:hover {
-  transform: translateY(-2px);
+.card.hover-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px var(--card-shadow);
 }
 
 .btn-primary {
@@ -67,4 +73,50 @@
   padding: 1.25rem;
   background-color: var(--hover-bg);
   border-radius: 4px;
+}
+
+/* 공통 테이블 스타일 */
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+/* 카드 헤더 스타일 */
+.card-header {
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 1.25rem;
+}
+
+/* 카드 바디 스타일 */
+.card-body {
+  background-color: var(--card-bg);
+  padding: 1.25rem;
+}
+
+/* 카드 푸터 스타일 */
+.card-footer {
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  padding: 1rem 1.25rem;
+}
+
+/* 카드 제목 스타일 */
+.card-title {
+  color: var(--text-color);
+  margin-bottom: 0.75rem;
+}
+
+/* 카드 텍스트 스타일 */
+.card-text {
+  color: var(--text-color);
+}
+
+.card .text-muted {
+  color: var(--text-muted) !important;
 } 

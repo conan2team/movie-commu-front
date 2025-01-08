@@ -1,28 +1,21 @@
+/* 게시판 목록 페이지 스타일 */
 .board-container {
-  background: white;
+  background-color: var(--bg-color);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px var(--card-shadow);
 }
 
-.table-hover tbody tr:hover {
-  background-color: #f8f9fa;
+.board-list-item {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.2s ease;
   cursor: pointer;
 }
 
-.table th {
-  background-color: #f8f9fa;
-  border-bottom: 2px solid #dee2e6;
+.board-list-item:hover {
+  background-color: var(--hover-bg);
 }
 
-.pagination {
-  margin-top: 2rem;
-}
-
-.page-item.active .page-link {
-  background-color: #0d6efd;
-  border-color: #0d6efd;
-}
-
-.page-link {
-  color: #0d6efd;
+.board-list-item:last-child {
+  border-bottom: none;
 } 

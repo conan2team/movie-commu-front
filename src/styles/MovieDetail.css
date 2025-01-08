@@ -8,17 +8,7 @@
   border-radius: 8px;
 }
 
-.review-header {
-  padding: 1rem;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #eee;
-}
 
-.review-form {
-  padding: 1.5rem;
-  background-color: #fff;
-  border-bottom: 1px solid #eee;
-}
 
 .star-rating {
   display: flex;
