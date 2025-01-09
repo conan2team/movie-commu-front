@@ -3,10 +3,11 @@ import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext';
-import LoginTest from './LoginTest';
+import { useAuth } from '../hooks/useAuth';
 
 function Navigation() {
   const { theme, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
 
   return (
     <Navbar bg={theme === 'dark' ? 'dark' : 'light'} variant={theme} expand="lg" className="mb-3">
@@ -31,7 +32,21 @@ function Navigation() {
               {theme === 'dark' ? <FaSun className="me-1" /> : <FaMoon className="me-1" />}
               {theme === 'dark' ? '라이트 모드' : '다크 모드'}
             </Button>
-            <LoginTest />
+            <Nav>
+              {user ? (
+                <>
+                  <span className="nav-link">
+                    {user.id}님 환영합니다
+                  </span>
+                  <Nav.Link onClick={logout}>로그아웃</Nav.Link>
+                </>
+              ) : (
+                <>
+                  <Nav.Link as={Link} to="/login">로그인</Nav.Link>
+                  <Nav.Link as={Link} to="/signup">회원가입</Nav.Link>
+                </>
+              )}
+            </Nav>
           </div>
         </Navbar.Collapse>
       </Container>

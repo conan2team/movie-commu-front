@@ -13,6 +13,8 @@ import Booking from './pages/Booking';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import './styles/common.css';  // 전역 스타일
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
             <Route path="/community/edit/:id" element={<CommunityEdit />} />
             <Route path="/community/:id" element={<CommunityDetail />} />
             <Route path="/movie/:id" element={<MovieDetail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
           </Routes>
         </Router>
       </AuthProvider>
