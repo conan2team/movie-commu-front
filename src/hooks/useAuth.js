@@ -1,39 +1,58 @@
 import { useState, useEffect } from 'react';
+import { authAPI } from '../api/auth';
 
 export function useAuth() {
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    // 컴포넌트 마운트시 로그인 상태 확인
-    useEffect(() => {
-        const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-            setUser(JSON.parse(savedUser));
+    const checkAuthStatus = async () => {
+        try {
+            const response = await authAPI.checkAuth();
+            console.log('Auth check response:', response.data);
+            if (response.data) {
+                setUser(response.data);
+            }
+        } catch (error) {
+            console.error('Auth check error:', error);
+            setUser(null);
+        } finally {
+            setLoading(false);
         }
+    };
+
+    const login = async (credentials) => {
+        try {
+            const response = await authAPI.login(credentials.id, credentials.password);
+            console.log('Login response:', response.data);
+            
+            if (response.data) {
+                setUser(response.data);
+                return response.data;
+            }
+            return null;
+        } catch (error) {
+            console.error('Login error:', error);
+            throw error;
+        }
+    };
+
+    const logout = async () => {
+        try {
+            await authAPI.logout();
+            // 로그아웃 후 사용자 정보 초기화를 기다림
+            await new Promise(resolve => {
+                setUser(null);
+                resolve();
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+            throw error;
+        }
+    };
+
+    useEffect(() => {
+        checkAuthStatus();
     }, []);
 
-    // 로그인 함수
-    const login = (credentials) => {
-        if (credentials.id && credentials.password) {
-            // 임시 관리자 계정 (실제로는 이렇게 하면 안됨)
-            const isAdmin = credentials.id === 'admin' && credentials.password === 'admin123';
-            
-            const userData = {
-                id: credentials.id,
-                role: isAdmin ? 'ADMIN' : 'USER'
-            };
-            
-            localStorage.setItem('user', JSON.stringify(userData));
-            setUser(userData);
-            return true;
-        }
-        throw new Error('아이디와 비밀번호를 입력해주세요.');
-    };
-
-    // 로그아웃 함수
-    const logout = () => {
-        localStorage.removeItem('user');
-        setUser(null);
-    };
-
-    return { user, login, logout };
+    return { user, loading, login, logout };
 } 

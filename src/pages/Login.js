@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import '../styles/Auth.css';
 
 function Login() {
     const navigate = useNavigate();
@@ -15,10 +16,17 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await login(formData);
-            navigate('/');
+            const userData = await login(formData);
+            if (userData) {
+                // 로그인 성공 및 사용자 데이터 확인 후 이동
+                console.log('Login successful, user data:', userData);
+                navigate('/', { replace: true });
+            } else {
+                setError('로그인에 실패했습니다.');
+            }
         } catch (err) {
-            setError(err.message);
+            console.error('Login error:', err);
+            setError('로그인 처리 중 오류가 발생했습니다.');
         }
     };
 

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../hooks/useAuth';
@@ -8,6 +8,20 @@ import { useAuth } from '../hooks/useAuth';
 function Navigation() {
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log('Current user:', user);
+  }, [user]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   return (
     <Navbar bg={theme === 'dark' ? 'dark' : 'light'} variant={theme} expand="lg" className="mb-3">
@@ -36,9 +50,9 @@ function Navigation() {
               {user ? (
                 <>
                   <span className="nav-link">
-                    {user.id}님 환영합니다
+                    {user?.nickname || user?.id}님 환영합니다
                   </span>
-                  <Nav.Link onClick={logout}>로그아웃</Nav.Link>
+                  <Nav.Link onClick={handleLogout}>로그아웃</Nav.Link>
                 </>
               ) : (
                 <>
