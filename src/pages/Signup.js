@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Form, Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Auth.css';
+import { authAPI } from '../api/auth';
 
 function Signup() {
   const navigate = useNavigate();
@@ -23,33 +24,16 @@ function Signup() {
     }
 
     try {
-      // 백엔드 API 호출
-      const response = await fetch('http://localhost:8080/join', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',  // 쿠키를 주고받기 위해 필요
-        body: JSON.stringify({
-          id: formData.id,
-          password: formData.password,
-          email: formData.email,
-          nickname: formData.nickname,
-          phone: formData.phone,
-          birth: formData.birth
-        })
+      const response = await authAPI.signup({
+        id: formData.id,
+        password: formData.password,
+        email: formData.email,
+        nickname: formData.nickname,
+        phone: formData.phone,
+        birth: formData.birth
       });
 
-      if (response.ok) {
-        // 백엔드에서 회원가입 성공 후
-        // 프론트엔드에서 필요한 정보만 로컬에 저장
-        const userData = {
-          id: formData.id,
-          nickname: formData.nickname,
-          role: 'USER'
-        };
-        localStorage.setItem('user', JSON.stringify(userData));
-        
+      if (response.data === "joined") {
         alert('회원가입이 완료되었습니다.');
         navigate('/login');
       } else {
