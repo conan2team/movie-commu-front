@@ -441,16 +441,17 @@ export const movies = {
   1: {
     movieId: 1,
     title: "시네마 천국",
-    des: "어린 시절 영화가 세상의 전부였던 소년 토토는...",
-    star: 9.66,
+    des: "영화에 대한 사랑과 추억을 담은 명작.",
+    star: 8.9,
     director: "주세페 토르나토레",
-    created: "1988-09-29",
-    isAge: 0,
+    created: "1988-11-17",
+    isAge: 12,
     runningTime: 155,
     country: "이탈리아",
-    genre: "드라마,멜로,로맨스",
-    casting: "마르코 레오나르디,필립 느와레,살바토레 카스치오",
-    poster: "https://example.com/cinema-paradiso.jpg"
+    genre: "드라마",
+    casting: "필리프 누아레,살바토레 카시오",
+    poster: "https://example.com/cinema-paradiso.jpg",
+    onAir: 0
   },
   2: {
     movieId: 2,
@@ -520,7 +521,8 @@ export const movies = {
     country: "미국",
     genre: "드라마,로맨스",
     casting: "레오나르도 디카프리오,케이트 윈슬렛",
-    poster: "https://example.com/titanic.jpg"
+    poster: "https://example.com/titanic.jpg",
+    onAir: 1
   },
   7: {
     movieId: 7,
@@ -534,7 +536,8 @@ export const movies = {
     country: "미국",
     genre: "액션,모험,SF",
     casting: "로버트 다우니 주니어,크리스 에반스",
-    poster: "https://example.com/endgame.jpg"
+    poster: "https://example.com/endgame.jpg",
+    onAir: 1
   },
   8: {
     movieId: 8,
@@ -548,7 +551,8 @@ export const movies = {
     country: "미국",
     genre: "범죄,드라마,스릴러",
     casting: "호아킨 피닉스,로버트 드니로",
-    poster: "https://example.com/joker.jpg"
+    poster: "https://example.com/joker.jpg",
+    onAir: 1
   },
   9: {
     movieId: 9,
@@ -562,7 +566,8 @@ export const movies = {
     country: "미국",
     genre: "액션,모험,판타지",
     casting: "톰 홀랜드,제이콥 배덜론",
-    poster: "https://example.com/spiderman.jpg"
+    poster: "https://example.com/spiderman.jpg",
+    onAir: 1
   },
   10: {
     movieId: 10,
@@ -576,7 +581,8 @@ export const movies = {
     country: "한국",
     genre: "드라마,스릴러",
     casting: "송강호,이선균",
-    poster: "https://example.com/parasite.jpg"
+    poster: "https://example.com/parasite.jpg",
+    onAir: 0
   },
   11: {
     movieId: 11,
@@ -875,4 +881,188 @@ export const getHomeData = async () => {
       });
     }, 500);
   });
+};
+
+// 상영관 정보
+export const halls = {
+  1: { hallId: 1, name: '1관', price: 12000 },
+  2: { hallId: 2, name: '2관', price: 12000 },
+  3: { hallId: 3, name: '3관', price: 12000 }
+};
+
+// 상영 스케줄
+export const schedules = [
+  // 오늘 스케줄
+  {
+    scheduleId: 1,
+    movieId: 6,  // 타이타닉
+    hallId: 1,
+    date: new Date().toISOString().split('T')[0], // 오늘 날짜
+    startTime: '10:30',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  {
+    scheduleId: 2,
+    movieId: 6,
+    hallId: 1,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '13:30',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  {
+    scheduleId: 3,
+    movieId: 7,  // 어벤져스
+    hallId: 2,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '11:00',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  // 3월 21일 스케줄
+  {
+    scheduleId: 4,
+    movieId: 6,
+    hallId: 1,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '11:00',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  {
+    scheduleId: 5,
+    movieId: 6,
+    hallId: 2,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '14:20',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  {
+    scheduleId: 6,
+    movieId: 7,
+    hallId: 3,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '16:45',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  // 3월 22일 스케줄
+  {
+    scheduleId: 7,
+    movieId: 6,
+    hallId: 1,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '09:30',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  {
+    scheduleId: 8,
+    movieId: 7,
+    hallId: 2,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '12:15',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  {
+    scheduleId: 9,
+    movieId: 8,  // 조커
+    hallId: 3,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '15:00',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  // 3월 23일 스케줄
+  {
+    scheduleId: 10,
+    movieId: 8,
+    hallId: 1,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '10:00',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  {
+    scheduleId: 11,
+    movieId: 7,
+    hallId: 2,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '13:30',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  {
+    scheduleId: 12,
+    movieId: 6,
+    hallId: 3,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '16:00',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  // 3월 24일 스케줄
+  {
+    scheduleId: 13,
+    movieId: 7,
+    hallId: 1,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '11:30',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  {
+    scheduleId: 14,
+    movieId: 8,
+    hallId: 2,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '14:45',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  {
+    scheduleId: 15,
+    movieId: 6,
+    hallId: 3,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '17:20',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  // 3월 25일 스케줄
+  {
+    scheduleId: 16,
+    movieId: 8,
+    hallId: 1,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '10:15',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  {
+    scheduleId: 17,
+    movieId: 6,
+    hallId: 2,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '13:00',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  },
+  {
+    scheduleId: 18,
+    movieId: 7,
+    hallId: 3,
+    date: new Date().toISOString().split('T')[0],
+    startTime: '15:45',
+    day: ['일', '월', '화', '수', '목', '금', '토'][new Date().getDay()]
+  }
+];
+
+// 좌석 예약 정보
+export const reservations = [
+  {
+    reserveId: 1,
+    scheduleId: 1,
+    seatId: 'A1',
+    userId: 1
+  },
+  // ... 예약된 좌석들
+];
+
+// 좌석 배치 정보 (A1-D10)
+export const generateSeats = () => {
+  const rows = ['A', 'B', 'C', 'D'];
+  const seats = [];
+  rows.forEach(row => {
+    for (let i = 1; i <= 10; i++) {
+      seats.push(`${row}${i}`);
+    }
+  });
+  return seats;
 }; 

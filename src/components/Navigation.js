@@ -15,9 +15,11 @@ function Navigation() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
+            <Nav.Link as={Link} to="/">홈</Nav.Link>
             <Nav.Link as={Link} to="/movies">영화</Nav.Link>
-            <Nav.Link as={Link} to="/top-movies">평점순</Nav.Link>
-            <Nav.Link as={Link} to="/community">자유게시판</Nav.Link>
+            <Nav.Link as={Link} to="/now-playing">현재상영작</Nav.Link>
+            <Nav.Link as={Link} to="/top-movies">인기영화</Nav.Link>
+            <Nav.Link as={Link} to="/community">커뮤니티</Nav.Link>
           </Nav>
           <div className="d-flex align-items-center gap-3">
             <Button 

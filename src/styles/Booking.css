@@ -1,0 +1,124 @@
+.booking-container {
+  background: var(--bg-color, #f8f9fa);
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.screen {
+  background: var(--border-color, #e9ecef);
+  color: var(--text-color, #495057);
+  text-align: center;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  border-radius: 4px;
+}
+
+.seats-container {
+  margin-bottom: 2rem;
+}
+
+.seat-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.row-label {
+  width: 30px;
+  text-align: center;
+  font-weight: bold;
+  color: var(--text-color, #212529);
+}
+
+.seat {
+  width: 40px;
+  height: 40px;
+  margin: 0 5px;
+  border: 1px solid var(--border-color, #dee2e6);
+  background: var(--bg-color, white);
+  color: var(--text-color, #212529);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.seat:hover:not(:disabled) {
+  background: var(--hover-bg, #e9ecef);
+}
+
+.seat.selected {
+  background: #007bff;
+  color: white;
+  border-color: #0056b3;
+}
+
+.seat.reserved {
+  background: var(--border-color, #dee2e6);
+  cursor: not-allowed;
+  color: var(--text-muted, #6c757d);
+}
+
+.booking-info {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color, #dee2e6);
+  color: var(--text-color, #212529);
+}
+
+.seat-info {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.seat-type {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-color, #212529);
+}
+
+.seat-sample {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border-color, #dee2e6);
+  background: var(--bg-color, white);
+  border-radius: 2px;
+}
+
+.seat-sample.selected {
+  background: #007bff;
+  border-color: #0056b3;
+}
+
+.seat-sample.reserved {
+  background: var(--border-color, #dee2e6);
+}
+
+.price-info {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: var(--text-color, #212529);
+}
+
+/* 다크 모드 특정 스타일 */
+[data-theme='dark'] .seat {
+  border-color: var(--border-color, #495057);
+  background: var(--bg-color, #343a40);
+  color: var(--text-color, #f8f9fa);
+}
+
+[data-theme='dark'] .seat:hover:not(:disabled) {
+  background: var(--hover-bg, #495057);
+}
+
+[data-theme='dark'] .seat.reserved {
+  background: var(--border-color, #495057);
+  color: var(--text-muted, #adb5bd);
+}
+
+[data-theme='dark'] .seat-sample {
+  border-color: var(--border-color, #495057);
+  background: var(--bg-color, #343a40);
+} 
