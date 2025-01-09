@@ -7,18 +7,15 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 초기 로그인 상태 확인
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
   const checkAuthStatus = async () => {
     try {
       const response = await authAPI.checkAuth();
+      console.log('Auth check response:', response.data);
       if (response.data) {
         setUser(response.data);
       }
     } catch (error) {
+      console.error('Auth check error:', error);
       setUser(null);
     } finally {
       setLoading(false);
@@ -28,11 +25,15 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await authAPI.login(credentials.id, credentials.password);
+      console.log('Login response:', response.data);
+      
       if (response.data) {
         setUser(response.data);
+        return response.data;
       }
-      return response;
+      return null;
     } catch (error) {
+      console.error('Login error:', error);
       throw error;
     }
   };
@@ -42,10 +43,14 @@ export const AuthProvider = ({ children }) => {
       await authAPI.logout();
       setUser(null);
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error('Logout error:', error);
       throw error;
     }
   };
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>

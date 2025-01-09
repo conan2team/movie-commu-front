@@ -18,9 +18,9 @@ import Signup from './pages/Signup';
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <Router>
+    <Router>
+      <ThemeProvider>
+        <AuthProvider>
           <Navigation />
           <Routes>
             <Route path="/" element={<Home />} />
@@ -36,9 +36,9 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
           </Routes>
-        </Router>
-      </AuthProvider>
-    </ThemeProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </Router>
   );
 }
 
