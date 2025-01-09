@@ -16,26 +16,41 @@ function MovieDetail() {
     const [isEditing, setIsEditing] = useState(false);
     const [allReviews, setAllReviews] = useState([]);
     const [reviews, setReviews] = useState([]);
+    const [editingReview, setEditingReview] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
 
     useEffect(() => {
         const fetchMovieDetail = async () => {
             try {
                 const response = await movieAPI.getMovieDetail(id);
-                console.log('Movie detail response:', response);
+                console.log('Movie detail response:', response.data);
                 
                 setMovie(response.data.movie);
                 
-                // 리뷰 데이터 처리
+                // 리뷰 데이터와 사용자 데이터 처리
                 const reviews = response.data.review?.body?.review || [];
+                const users = response.data.review?.body?.user || [];
                 console.log('Fetched reviews:', reviews);
-                setAllReviews(reviews);
+                console.log('Fetched users:', users);
+                
+                // 리뷰와 사용자 정보를 매칭하여 저장
+                const reviewsWithUser = reviews.map((review, index) => ({
+                    ...review,
+                    nickname: users[index]?.nickname
+                }));
+                
+                console.log('Reviews with user info:', reviewsWithUser);
+                setAllReviews(reviewsWithUser);
                 
                 // 로그인한 경우 내 리뷰 찾기
                 if (user) {
-                    const myReview = reviews.find(r => r.userId === user.userId);
+                    const myReview = reviewsWithUser.find(r => r.userId === user.userId);
                     if (myReview) {
                         setUserReview(myReview);
                         setReview({ content: myReview.content, rating: myReview.rating });
+                    } else {
+                        setUserReview(null);
+                        setReview({ content: '', rating: 5 });
                     }
                 }
                 
@@ -89,24 +104,45 @@ function MovieDetail() {
             
             setMovie(response.data.movie);
             
-            // 리뷰 데이터 처리
-            const reviews = response.data.review?.body?.review || [];
-            console.log('Fetched reviews:', reviews);
-            setAllReviews(reviews);
+            // 리뷰 데이터 구조 확인
+            const reviewData = response.data.review;
+            console.log('Review data:', reviewData);
             
-            // 로그인한 경우 내 리뷰 찾기
-            if (user) {
-                const myReview = reviews.find(r => r.userId === user.userId);
-                if (myReview) {
-                    setUserReview(myReview);
-                    setReview({ content: myReview.content, rating: myReview.rating });
-                } else {
-                    setUserReview(null);
-                    setReview({ content: '', rating: 5 });
+            if (reviewData && reviewData.body) {
+                const reviews = reviewData.body.review || [];
+                const users = reviewData.body.user || [];
+                
+                // 리뷰와 사용자 정보 매칭
+                const reviewsWithUser = reviews.map((review, index) => {
+                    const user = users[index];
+                    return {
+                        ...review,
+                        nickname: user?.nickname,
+                        // userId 비교를 위해 숫자로 변환
+                        userId: Number(review.userId)
+                    };
+                });
+                
+                console.log('Current user:', user);
+                console.log('Reviews with user info:', reviewsWithUser);
+                
+                setAllReviews(reviewsWithUser);
+                
+                // 현재 사용자의 리뷰 찾기
+                if (user) {
+                    const myReview = reviewsWithUser.find(r => r.userId === Number(user.userId));
+                    console.log('My review:', myReview);
+                    if (myReview) {
+                        setUserReview(myReview);
+                        setReview({
+                            content: myReview.content,
+                            rating: myReview.rating
+                        });
+                    }
                 }
             }
         } catch (error) {
-            console.error('Error fetching movie details:', error);
+            console.error('Error fetching reviews:', error);
         }
     };
 
@@ -117,6 +153,12 @@ function MovieDetail() {
             return;
         }
 
+        // 이미 리뷰를 작성했고, 수정 모드가 아닌 경우
+        if (userReview && !isEditing) {
+            alert('이미 리뷰를 작성하셨습니다. 수정하시려면 수정 버튼을 눌러주세요.');
+            return;
+        }
+
         try {
             const reviewData = {
                 userId: Number(user.userId),
@@ -124,25 +166,22 @@ function MovieDetail() {
                 rating: review.rating
             };
 
-            console.log('Submitting review data:', reviewData);
-
             if (isEditing) {
                 await movieAPI.updateReview(id, reviewData);
                 alert('리뷰가 수정되었습니다.');
+                setIsEditing(false);
             } else {
                 await movieAPI.createReview(id, reviewData);
                 alert('리뷰가 등록되었습니다.');
             }
 
-            // 리뷰 목록 새로고침
             await fetchMovieAndReviews();
             
         } catch (error) {
             console.error('Error submitting review:', error);
-            // 500 에러인 경우에도 데이터가 저장되었다면 성공으로 처리
             if (error.response?.status === 500) {
-                alert('리뷰가 등록되었습니다.');
-                await fetchMovieAndReviews();  // 리뷰 목록 새로고침
+                alert(isEditing ? '리뷰가 수정되었습니다.' : '리뷰가 등록되었습니다.');
+                await fetchMovieAndReviews();
             } else {
                 alert('리뷰 처리 중 오류가 발생했습니다.');
             }
@@ -182,6 +221,25 @@ function MovieDetail() {
         } catch (err) {
             console.error('Error toggling ggim:', err);
             alert('찜하기 처리 중 오류가 발생했습니다.');
+        }
+    };
+
+    const handleEditReview = (review) => {
+        setEditingReview(review);
+        setShowEditModal(true);
+    };
+
+    const handleDeleteReview = async (reviewId) => {
+        if (!window.confirm('리뷰를 삭제하시겠습니까?')) {
+            return;
+        }
+
+        try {
+            setReviews(reviews.filter(review => review.reviewId !== reviewId));
+            alert('리뷰가 삭제되었습니다.');
+        } catch (error) {
+            console.error('리뷰 삭제 실패:', error);
+            alert('리뷰 삭제에 실패했습니다.');
         }
     };
 
@@ -247,8 +305,8 @@ function MovieDetail() {
                 <Col>
                     <h3 className="mb-4">리뷰</h3>
                     
-                    {/* 리뷰 작성/수정 폼 - 내 리뷰가 없을 때만 표시 */}
-                    {user && !userReview && (
+                    {/* 리뷰 작성 폼 - 로그인했고 아직 리뷰를 작성하지 않은 경우에만 표시 */}
+                    {user && !userReview && !isEditing && (
                         <Form onSubmit={handleReviewSubmit} className="mb-4">
                             <Form.Group className="mb-3">
                                 <Form.Label>평점</Form.Label>
@@ -281,63 +339,73 @@ function MovieDetail() {
                                 />
                             </Form.Group>
                             <Button type="submit" variant="primary">
-                                리뷰 등록
+                                {isEditing ? '리뷰 수정' : '리뷰 등록'}
                             </Button>
+                            {isEditing && (
+                                <Button 
+                                    variant="secondary" 
+                                    className="ms-2"
+                                    onClick={() => {
+                                        setIsEditing(false);
+                                        setReview({ content: userReview.content, rating: userReview.rating });
+                                    }}
+                                >
+                                    취소
+                                </Button>
+                            )}
                         </Form>
                     )}
 
-                    {/* 내 리뷰 표시 */}
-                    {userReview && (
-                        <Card className="mb-4">
-                            <Card.Body>
-                                <div className="d-flex justify-content-between align-items-center mb-2">
-                                    <h5 className="text-warning mb-0">
-                                        {'★'.repeat(userReview.rating)}
-                                        {'☆'.repeat(5 - userReview.rating)}
-                                    </h5>
-                                    <div>
-                                        <Button 
-                                            variant="outline-primary" 
-                                            size="sm" 
-                                            className="me-2"
-                                            onClick={() => setIsEditing(true)}
-                                        >
-                                            수정
-                                        </Button>
-                                        <Button 
-                                            variant="outline-danger" 
-                                            size="sm"
-                                            onClick={handleReviewDelete}
-                                        >
-                                            삭제
-                                        </Button>
-                                    </div>
-                                </div>
-                                <p className="mb-0">{userReview.content}</p>
-                            </Card.Body>
-                        </Card>
-                    )}
-
-                    {/* 다른 사용자들의 리뷰 목록 */}
-                    {allReviews.length > 0 && (
-                        <div className="mt-4">
-                            <h4>다른 관람객의 리뷰</h4>
-                            {allReviews
-                                .filter(r => !user || r.userId !== user.userId)
-                                .map((review, index) => (
-                                    <Card key={index} className="mb-3">
-                                        <Card.Body>
+                    {/* 리뷰 목록 */}
+                    <div className="mt-4">
+                        {allReviews.map((review, index) => (
+                            <Card key={index} className="mb-3">
+                                <Card.Body>
+                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <h6 className="mb-0">
+                                                {review.nickname}
+                                                {user && Number(user.userId) === Number(review.userId) && 
+                                                    <span className="text-primary ms-2">(내 리뷰)</span>
+                                                }
+                                            </h6>
                                             <h5 className="text-warning mb-2">
                                                 {'★'.repeat(review.rating)}
                                                 {'☆'.repeat(5 - review.rating)}
                                             </h5>
-                                            <p className="mb-0">{review.content}</p>
-                                        </Card.Body>
-                                    </Card>
-                                ))
-                            }
-                        </div>
-                    )}
+                                        </div>
+                                        {/* 수정/삭제 버튼 - 자신의 리뷰인 경우에만 표시 */}
+                                        {user && Number(user.userId) === Number(review.userId) && (
+                                            <div>
+                                                <Button 
+                                                    variant="outline-primary" 
+                                                    size="sm" 
+                                                    className="me-2"
+                                                    onClick={() => {
+                                                        setIsEditing(true);
+                                                        setReview({
+                                                            content: review.content,
+                                                            rating: review.rating
+                                                        });
+                                                    }}
+                                                >
+                                                    수정
+                                                </Button>
+                                                <Button 
+                                                    variant="outline-danger" 
+                                                    size="sm"
+                                                    onClick={() => handleReviewDelete(review.movieId)}
+                                                >
+                                                    삭제
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <p className="mb-0">{review.content}</p>
+                                </Card.Body>
+                            </Card>
+                        ))}
+                    </div>
                 </Col>
             </Row>
         </Container>
