@@ -9,14 +9,28 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
+      console.log('Starting checkAuth with current user:', user);
       const response = await authAPI.checkAuth();
-      console.log('Auth check response:', response.data);
+      
       if (response.data) {
-        setUser(response.data);
+        setUser(prevUser => {
+          const updatedUser = {
+            ...response.data,
+            userId: prevUser?.userId || response.data.userId || response.data.user
+          };
+          console.log('Updating user state:', updatedUser);
+          return updatedUser;
+        });
+      } else {
+        console.log('No user data in response');
       }
     } catch (error) {
       console.error('Auth check error:', error);
-      setUser(null);
+      if (user) {
+        console.log('Keeping existing user state on error');
+      } else {
+        setUser(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -28,7 +42,12 @@ export const AuthProvider = ({ children }) => {
       console.log('Login response:', response.data);
       
       if (response.data) {
-        setUser(response.data);
+        const userData = {
+          ...response.data,
+          userId: response.data.userId
+        };
+        console.log('Login processed user data:', userData);
+        setUser(userData);
         return response.data;
       }
       return null;
@@ -51,6 +70,31 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     checkAuthStatus();
   }, []);
+
+  useEffect(() => {
+    console.log('User state changed:', user);
+    if (user?.userId) {
+      console.log('Current userId:', user.userId);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user?.userId) {
+      localStorage.setItem('userId', user.userId);
+      console.log('Saved userId to localStorage:', user.userId);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const savedUserId = localStorage.getItem('userId');
+    if (savedUserId && user && !user.userId) {
+      setUser(prevUser => ({
+        ...prevUser,
+        userId: savedUserId
+      }));
+      console.log('Restored userId from localStorage:', savedUserId);
+    }
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>
