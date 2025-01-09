@@ -81,6 +81,35 @@ function MovieDetail() {
         console.log('User state in MovieDetail changed:', user);
     }, [user]);
 
+    // 리뷰 목록 새로고침 함수
+    const fetchMovieAndReviews = async () => {
+        try {
+            const response = await movieAPI.getMovieDetail(id);
+            console.log('Movie detail response:', response.data);
+            
+            setMovie(response.data.movie);
+            
+            // 리뷰 데이터 처리
+            const reviews = response.data.review?.body?.review || [];
+            console.log('Fetched reviews:', reviews);
+            setAllReviews(reviews);
+            
+            // 로그인한 경우 내 리뷰 찾기
+            if (user) {
+                const myReview = reviews.find(r => r.userId === user.userId);
+                if (myReview) {
+                    setUserReview(myReview);
+                    setReview({ content: myReview.content, rating: myReview.rating });
+                } else {
+                    setUserReview(null);
+                    setReview({ content: '', rating: 5 });
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching movie details:', error);
+        }
+    };
+
     const handleReviewSubmit = async (e) => {
         e.preventDefault();
         if (!user) {
@@ -102,21 +131,18 @@ function MovieDetail() {
                 alert('리뷰가 수정되었습니다.');
             } else {
                 await movieAPI.createReview(id, reviewData);
-                // 500 에러가 발생해도 데이터가 저장되었다면 성공 메시지 표시
                 alert('리뷰가 등록되었습니다.');
             }
 
-            setReview({ content: '', rating: 5 });
-            setIsEditing(false);
-            fetchReviews();  // 리뷰 목록 새로고침
+            // 리뷰 목록 새로고침
+            await fetchMovieAndReviews();
+            
         } catch (error) {
             console.error('Error submitting review:', error);
             // 500 에러인 경우에도 데이터가 저장되었다면 성공으로 처리
             if (error.response?.status === 500) {
                 alert('리뷰가 등록되었습니다.');
-                setReview({ content: '', rating: 5 });
-                setIsEditing(false);
-                fetchReviews();  // 리뷰 목록 새로고침
+                await fetchMovieAndReviews();  // 리뷰 목록 새로고침
             } else {
                 alert('리뷰 처리 중 오류가 발생했습니다.');
             }
@@ -221,7 +247,7 @@ function MovieDetail() {
                 <Col>
                     <h3 className="mb-4">리뷰</h3>
                     
-                    {/* 리뷰 작성/수정 폼 */}
+                    {/* 리뷰 작성/수정 폼 - 내 리뷰가 없을 때만 표시 */}
                     {user && !userReview && (
                         <Form onSubmit={handleReviewSubmit} className="mb-4">
                             <Form.Group className="mb-3">
