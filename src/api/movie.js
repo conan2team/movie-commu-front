@@ -1,8 +1,8 @@
 import api from './axios';
 
 export const movieAPI = {
-    // 영화 랭록 조회 (랭킹)
-    getMovies: () => api.get('/movie'),
+    // 영화 목록 조회(전체)
+    getMovies: () => api.get('/movie/all'),
     
     // 영화 상세 정보 조회
     getMovieDetail: async (movieId) => {

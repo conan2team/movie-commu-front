@@ -52,5 +52,9 @@ export const postsAPI = {
         api.put(`/api/comments/${commentId}?content=${encodeURIComponent(content)}`),
     
     deleteComment: (commentId) => 
-        api.delete(`/api/comments/${commentId}`)
+        api.delete(`/api/comments/${commentId}`),
+    
+    // 전체 게시글 목록 조회 (페이지네이션 없이)
+    getAllPosts: () => 
+        api.get('/posts/list/all'),
 }; 
