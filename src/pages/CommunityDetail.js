@@ -36,7 +36,8 @@ function CommunityDetail() {
         setPost({
           ...postData,
           userId: Number(postData.userId),
-          nickname: userData?.nickname || '알 수 없음'
+          nickname: userData?.nickname || '알 수 없음',
+          files: postData.files || []
         });
         
         // 댓글 데이터 설정
@@ -189,6 +190,27 @@ function CommunityDetail() {
         </Card.Header>
         <Card.Body>
           <div className="post-content">
+            {post.fileAttached === 1 && post.files && post.files.length > 0 && (
+              <div className="post-images mt-3">
+                {post.files.map((filePath, index) => {
+                  const fileName = filePath.split('\\').pop().split('/').pop();
+                  return (
+                    <div key={index} className="mb-3">
+                      <img
+                        src={`http://localhost:8080/uploads/${fileName}`}
+                        alt={`첨부 이미지 ${index + 1}`}
+                        className="img-fluid"
+                        style={{ 
+                          maxWidth: '100%', 
+                          maxHeight: '500px', 
+                          objectFit: 'contain' 
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             {post.content}
           </div>
         </Card.Body>

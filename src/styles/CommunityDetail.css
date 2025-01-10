@@ -171,4 +171,16 @@
 .comment-like-button:hover {
   transform: scale(1.05);
   transition: transform 0.2s ease;
+}
+
+.post-images {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.post-images img {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 } 
