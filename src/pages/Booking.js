@@ -36,17 +36,19 @@ function Booking() {
     try {
       // 예약된 좌석 정보 가져오기
       const reservedResponse = await reserveAPI.getReservedSeats(scheduleId);
-      setReservedSeats(reservedResponse.data.map(seat => seat.seatId));
+      console.log('Reserved seats response:', reservedResponse.data);
+      setReservedSeats(reservedResponse.data || []);
       
       // 스케줄 정보 가져오기
       const scheduleResponse = await reserveAPI.getSchedules(movieId);
+      console.log('Schedule response:', scheduleResponse.data);
       const currentSchedule = scheduleResponse.data.find(
         s => s.scheduleId === parseInt(scheduleId)
       );
       setSchedule(currentSchedule);
 
       // 영화 정보 가져오기
-      const movieResponse = await movieAPI.getMovieDetail(movieId);
+      const movieResponse = await movieAPI.getMovieDetail(currentSchedule.movieId);
       setMovie(movieResponse.data.movie);
       
       setLoading(false);
@@ -60,6 +62,7 @@ function Booking() {
   const generateSeatLayout = () => {
     const rows = ['A', 'B', 'C', 'D'];
     const cols = Array.from({ length: 10 }, (_, i) => i + 1);
+    
     return rows.map(row => (
       <div key={row} className="seat-row">
         <span className="row-label">{row}</span>
@@ -85,7 +88,7 @@ function Booking() {
 
   const handleSeatClick = (seatId) => {
     if (reservedSeats.includes(seatId)) {
-      return; // 이미 예약된 좌석은 선택 불가
+      return;
     }
 
     setSelectedSeats(prev => {
@@ -119,8 +122,9 @@ function Booking() {
         const reserveData = {
           scheduleId: parseInt(scheduleId),
           seatId: seatId,
-          amount: schedule.price,  // 1인당 가격
-          method: 'CARD'  // 결제 방법
+          amount: schedule.price,
+          method: 'CARD',
+          pDate: new Date().toISOString().split('T')[0]
         };
 
         const response = await reserveAPI.reserve(reserveData);
@@ -130,7 +134,7 @@ function Booking() {
       }
 
       alert('예매가 완료되었습니다.');
-      // navigate('/home'); // 예매 완료 후 마이페이지로 이동
+      navigate('/mypage');
     } catch (error) {
       console.error('Error making reservation:', error);
       alert('예매에 실패했습니다. 이미 예약된 좌석이 있는지 확인해주세요.');
