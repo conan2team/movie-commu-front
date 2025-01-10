@@ -26,7 +26,7 @@ export const postsAPI = {
     
     // 게시글 수정
     updatePost: (postId, title, content) => 
-        api.put(`/posts/update/${postId}`, { title, content }),
+        api.put(`/posts/update/${postId}?title=${encodeURIComponent(title)}&content=${encodeURIComponent(content)}`),
     
     // 게시글 삭제
     deletePost: (postId) => 

@@ -33,7 +33,8 @@ function CommunityDetail() {
         
         setPost({
           ...postData,
-          nickname: userData?.nickname || postData.postUser?.nickname || '알 수 없음'
+          userId: Number(postData.userId),
+          nickname: userData?.nickname || '알 수 없음'
         });
         
         // 댓글 데이터 설정
@@ -42,11 +43,15 @@ function CommunityDetail() {
         
         const commentsWithUserInfo = commentsData.map((comment, index) => ({
           ...comment,
+          userId: Number(comment.userId),
           nickname: commentUsers[index]?.nickname || '알 수 없음'
         }));
 
         setCommentList(commentsWithUserInfo);
         setLikeCount(postData.heart || 0);
+        
+        console.log('Current user:', user);
+        console.log('Post user:', Number(postData.userId));
       }
     } catch (error) {
       console.error('Error fetching post:', error);
@@ -62,11 +67,6 @@ function CommunityDetail() {
   const handleDelete = async () => {
     if (!user) {
       alert('로그인이 필요합니다.');
-      return;
-    }
-
-    if (user.userId !== post.userId) {
-      alert('삭제 권한이 없습니다.');
       return;
     }
 
@@ -134,7 +134,26 @@ function CommunityDetail() {
       {/* 게시글 카드 */}
       <Card className="post-card">
         <Card.Header>
-          <h4>{post.title}</h4>
+          <div className="d-flex justify-content-between align-items-center">
+            <h4>{post.title}</h4>
+            {/* userId를 Number로 변환하여 비교 */}
+            {user && Number(user.userId) === Number(post.userId) && (
+              <div className="d-flex gap-2">
+                <Button 
+                  variant="outline-primary" 
+                  onClick={() => navigate(`/community/edit/${id}`)}
+                >
+                  수정
+                </Button>
+                <Button 
+                  variant="outline-danger" 
+                  onClick={handleDelete}
+                >
+                  삭제
+                </Button>
+              </div>
+            )}
+          </div>
           <div className="post-header-info">
             <span>{post.nickname}</span>
             <span>{post.created}</span>
@@ -151,16 +170,6 @@ function CommunityDetail() {
             <Button variant="secondary" onClick={() => navigate('/community')}>
               목록
             </Button>
-            {user?.userId === post.userId && (
-              <Button variant="primary" onClick={() => navigate(`/community/edit/${id}`)}>
-                수정
-              </Button>
-            )}
-            {user?.userId === post.userId && (
-              <Button variant="danger" onClick={handleDelete}>
-                삭제
-              </Button>
-            )}
           </div>
         </Card.Footer>
       </Card>
