@@ -21,6 +21,19 @@ function CommunityDetail() {
   const [likeCount, setLikeCount] = useState(0);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editCommentContent, setEditCommentContent] = useState('');
+  const [currentCommentPage, setCurrentCommentPage] = useState(1);
+  const [commentsPerPage] = useState(5); // 페이지당 5개의 댓글
+
+  // 현재 페이지의 댓글만 표시하기 위한 계산
+  const indexOfLastComment = currentCommentPage * commentsPerPage;
+  const indexOfFirstComment = indexOfLastComment - commentsPerPage;
+  const currentComments = commentList.slice(indexOfFirstComment, indexOfLastComment);
+  const totalCommentPages = Math.ceil(commentList.length / commentsPerPage);
+
+  // 댓글 페이지 변경 핸들러
+  const handleCommentPageChange = (pageNumber) => {
+    setCurrentCommentPage(pageNumber);
+  };
 
   // 게시글과 댓글 데이터 로드
   const fetchPostData = async () => {
@@ -224,38 +237,38 @@ function CommunityDetail() {
       </Card>
 
       {/* 댓글 섹션 */}
-      <Card className="mt-4">
+      <Card className="comments-section">
         <Card.Header>
-          <h5>댓글 {commentList.length}개</h5>
+          <h5 className="mb-0">댓글 {commentList.length}개</h5>
         </Card.Header>
-        <Card.Body>
+        <Card.Body className="p-0">
           {user && (
-            <Form onSubmit={handleCommentSubmit} className="mb-4">
-              <Form.Group>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="댓글을 입력하세요"
-                />
-              </Form.Group>
-              <div className="d-flex justify-content-end mt-2">
-                <Button type="submit" variant="primary">댓글 작성</Button>
-              </div>
-            </Form>
+            <div className="comment-form">
+              <Form onSubmit={handleCommentSubmit}>
+                <Form.Group>
+                  <Form.Control
+                    as="textarea"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="댓글을 입력하세요"
+                  />
+                </Form.Group>
+                <div className="d-flex justify-content-end mt-2">
+                  <Button type="submit" variant="primary">댓글 작성</Button>
+                </div>
+              </Form>
+            </div>
           )}
 
-          {commentList.map((comment) => (
-            <div key={comment.commentId} className="border-bottom py-3">
-              <div className="d-flex justify-content-between">
-                <div>
+          {currentComments.map((comment) => (
+            <div key={comment.commentId} className="comment-item">
+              <div className="comment-header">
+                <div className="comment-author">
                   <strong>{comment.nickname}</strong>
-                  <small className="text-muted ms-2">{comment.created}</small>
+                  <span className="comment-date">{comment.created}</span>
                 </div>
-                {/* userId를 Number로 변환하여 비교 */}
                 {user && Number(user.userId) === Number(comment.userId) && (
-                  <div className="d-flex gap-2">
+                  <div className="comment-buttons">
                     {editingCommentId === comment.commentId ? (
                       <>
                         <Button
@@ -287,30 +300,42 @@ function CommunityDetail() {
                           size="sm"
                           onClick={() => handleCommentDelete(comment.commentId)}
                         >
-                          <FaTrash />
+                          삭제
                         </Button>
                       </>
                     )}
                   </div>
                 )}
               </div>
-              <div className="mt-2">
-                {editingCommentId === comment.commentId ? (
+              {editingCommentId === comment.commentId ? (
+                <div className="comment-edit-form">
                   <Form.Control
                     as="textarea"
-                    rows={2}
                     value={editCommentContent}
                     onChange={(e) => setEditCommentContent(e.target.value)}
                   />
-                ) : (
-                  comment.content
-                )}
-              </div>
+                </div>
+              ) : (
+                <div className="comment-content">
+                  {comment.content}
+                </div>
+              )}
             </div>
           ))}
 
           {commentList.length === 0 && (
-            <p className="text-center text-muted">첫 번째 댓글을 작성해보세요!</p>
+            <p className="text-center text-muted py-4">첫 번째 댓글을 작성해보세요!</p>
+          )}
+
+          {/* 댓글 페이지네이션 */}
+          {totalCommentPages > 1 && (
+            <div className="d-flex justify-content-center py-3">
+              <Pagination
+                currentPage={currentCommentPage}
+                totalPages={totalCommentPages}
+                onPageChange={handleCommentPageChange}
+              />
+            </div>
           )}
         </Card.Body>
       </Card>

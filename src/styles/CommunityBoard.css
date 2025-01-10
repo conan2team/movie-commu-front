@@ -59,13 +59,41 @@
   font-size: 0.9rem;
 }
 
-/* 모바일 대응 */
-@media (max-width: 768px) {
-  .board-table th:nth-child(4),
-  .board-table td:nth-child(4) {
-    display: none;  /* 작성일만 숨김 */
-  }
+/* 테이블 컬럼 너비 고정 */
+.board-table th:nth-child(1) {  /* 번호 */
+  width: 8%;
+}
 
+.board-table th:nth-child(2) {  /* 제목 */
+  width: 50%;
+}
+
+.board-table th:nth-child(3) {  /* 작성자 */
+  width: 12%;
+}
+
+.board-table th:nth-child(4) {  /* 작성일 */
+  width: 15%;
+}
+
+.board-table th:nth-child(5) {  /* 추천 */
+  width: 7%;
+}
+
+.board-table th:nth-child(6) {  /* 조회수 */
+  width: 8%;
+}
+
+/* 제목 텍스트 말줄임 처리 */
+.board-table td:nth-child(2) {
+  max-width: 0;  /* 말줄임을 위해 필요 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 모바일 대응 수정 */
+@media (max-width: 768px) {
   .board-table th:first-child,
   .board-table td:first-child {
     width: 15%;
@@ -73,7 +101,7 @@
 
   .board-table th:nth-child(2),
   .board-table td:nth-child(2) {
-    width: 40%;
+    width: 45%;
   }
 
   .board-table th:nth-child(3),
@@ -85,6 +113,6 @@
   .board-table td:nth-child(5),
   .board-table th:last-child,
   .board-table td:last-child {
-    width: 12.5%;
+    width: 10%;
   }
 } 
