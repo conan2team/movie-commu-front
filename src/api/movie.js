@@ -111,5 +111,8 @@ export const movieAPI = {
             console.error('Ggim error:', error);
             throw error;
         }
-    }
+    },
+    
+    getTopMovies: () => 
+        api.get('/movie/rank'),
 }; 
