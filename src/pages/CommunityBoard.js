@@ -27,7 +27,7 @@ function CommunityBoard() {
       let response;
       if (searchTerm) {
         if (searchType === 'author') {
-          response = await postsAPI.searchByUsername(searchTerm, page, itemsPerPage);
+          response = await postsAPI.searchByUsername(searchTerm.trim(), page, itemsPerPage);
         } else {
           response = await postsAPI.searchPosts(searchTerm, page, itemsPerPage);
         }
@@ -41,14 +41,10 @@ function CommunityBoard() {
         const postsData = response.data.post;
         const userData = response.data.user;
         
-        // posts와 users 데이터 매핑
-        const postsWithUserInfo = postsData.content.map((post, index) => {
-          const user = userData.find(u => u.userId === post.userId);
-          return {
-            ...post,
-            nickname: user?.nickname || '알 수 없음'
-          };
-        });
+        const postsWithUserInfo = postsData.content.map((post, index) => ({
+          ...post,
+          nickname: userData[index]?.nickname || '알 수 없음'
+        }));
 
         setPosts(postsWithUserInfo);
         setTotalPages(postsData.totalPages || 0);
