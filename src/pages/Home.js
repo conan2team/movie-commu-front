@@ -1,38 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Form, InputGroup, Button } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Container, Row, Col, Card, Form, InputGroup, Button, Spinner } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
-import { getHomeData } from '../api';
+import { useHomeData } from '../hooks/useHome';
 import '../styles/Home.css';
 
 function Home() {
-  const [homeData, setHomeData] = useState({
-    topMovies: [],
-    recentMovies: [],
-    recentPosts: []
-  });
+  const { homeData, loading, error } = useHomeData();
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getHomeData();
-      setHomeData({
-        topMovies: data.topMovies.slice(0, 10),
-        recentMovies: data.recentMovies.slice(0, 5),
-        recentPosts: data.recentPosts.slice(0, 15)
-      });
-    };
-    fetchData();
-  }, []);
+  const formatDate = (timestamp) => {
+    if (!timestamp) return '날짜 없음';
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (!searchTerm.trim()) return;
-
-    // 검색어가 있으면 MovieList 페이지로 이동하면서 검색어 전달
     navigate(`/movies?search=${searchTerm.trim()}`);
   };
+
+  if (loading) {
+    return (
+      <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="py-5 text-center">
+        <h3>데이터를 불러오는데 실패했습니다.</h3>
+        <p className="text-muted">잠시 후 다시 시도해주세요.</p>
+      </Container>
+    );
+  }
 
   return (
     <Container className="py-5">
@@ -77,7 +88,7 @@ function Home() {
                     </small>
                   </div>
                   <div className="text-warning">
-                    ★ {movie.star.toFixed(1)}
+                    ★ {movie.rating.toFixed(1)}
                   </div>
                 </div>
               ))}
@@ -98,7 +109,7 @@ function Home() {
                       <h6 className="mb-0">{movie.title}</h6>
                     </Link>
                     <small className="text-muted">
-                      {movie.director} • {new Date(movie.created).toLocaleDateString()}
+                      {movie.director} • {formatDate(movie.releaseDate)}
                     </small>
                   </div>
                   <div className="text-muted">
@@ -119,12 +130,12 @@ function Home() {
             </Card.Header>
             <Card.Body className="p-0">
               {homeData.recentPosts.map((post) => (
-                <div key={post.boardId} className="board-list-item">
-                  <Link to={`/community/${post.boardId}`} className="text-decoration-none">
+                <div key={post.postId} className="board-list-item">
+                  <Link to={`/community/${post.postId}`} className="text-decoration-none">
                     <h6>{post.title}</h6>
                   </Link>
                   <div className="board-meta">
-                    <small className="text-muted">{post.author}</small>
+                    <small className="text-muted">{post.nickname}</small>
                     <small className="text-muted">
                       {new Date(post.created).toLocaleDateString()}
                     </small>
