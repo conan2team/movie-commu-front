@@ -26,7 +26,7 @@ function Navigation() {
   return (
     <Navbar bg={theme === 'dark' ? 'dark' : 'light'} variant={theme} expand="lg" className="mb-3">
       <Container>
-        <Navbar.Brand as={Link} to="/">MovieApp</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/">영화탐정코난</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">

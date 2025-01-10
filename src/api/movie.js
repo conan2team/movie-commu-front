@@ -20,6 +20,31 @@ export const movieAPI = {
     // 찜한 영화 목록 조회
     getGgimMovies: () => api.get('/ggim/movie'),
     
+    // 특정 영화 찜 상태 확인
+    checkGgimStatus: async (movieId) => {
+        try {
+            const response = await api.get('/ggim/movie');
+            console.log('Ggim response data:', response.data);
+            
+            // movie 배열에서 현재 영화 찾기
+            const ggimMovies = response.data.movie || [];
+            console.log('Ggim movies:', ggimMovies);
+            console.log('Checking for movieId:', movieId);
+            
+            // movieId로 찜 상태 확인 (숫자 타입으로 변환하여 비교)
+            const isGgimed = ggimMovies.some(movie => {
+                console.log('Comparing:', Number(movie.id), 'with:', Number(movieId));
+                return Number(movie.id) === Number(movieId);
+            });
+            
+            console.log('Is movie ggimed:', isGgimed);
+            return isGgimed;
+        } catch (error) {
+            console.error('Check ggim status error:', error);
+            return false;
+        }
+    },
+    
     // 리뷰 작성
     createReview: async (movieId, reviewData) => {
         console.log('Creating review for movie:', movieId);
@@ -53,10 +78,8 @@ export const movieAPI = {
     
     // 리뷰 삭제
     deleteReview: async (movieId, userId) => {
-        console.log('Deleting review for movie:', movieId, 'by user:', userId);
-        const response = await api.post(`/movie/${movieId}/delete`, null, {
-            params: { userId: Number(userId) }  // Long 타입으로 변환
-        });
+        console.log('Deleting review - movieId:', movieId, 'userId:', userId);
+        const response = await api.post(`/movie/${Number(movieId)}/delete?userId=${Number(userId)}`);
         return response;
     },
     
@@ -66,9 +89,27 @@ export const movieAPI = {
         return response;
     },
     
-    // 찜하기
+    // 찜하기/취소
     ggimMovie: async (movieId) => {
-        const response = await api.post('/ggim', { movieId: Number(movieId) });
-        return response;
+        try {
+            const params = new URLSearchParams();
+            params.append('movieId', Number(movieId));
+            
+            // 찜하기 요청
+            await api.post('/ggim', params, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+            
+            // 요청 후 현재 찜 상태 확인
+            const currentStatus = await movieAPI.checkGgimStatus(movieId);
+            console.log('Current ggim status after toggle:', currentStatus);
+            
+            return currentStatus;
+        } catch (error) {
+            console.error('Ggim error:', error);
+            throw error;
+        }
     }
 }; 

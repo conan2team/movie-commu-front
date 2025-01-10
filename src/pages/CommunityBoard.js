@@ -26,21 +26,10 @@ function CommunityBoard() {
     try {
       let response;
       if (searchTerm) {
-        switch (searchType) {
-          case 'title':
-            response = await postsAPI.searchByTitle(searchTerm, page, itemsPerPage);
-            break;
-          case 'content':
-            response = await postsAPI.searchByContent(searchTerm, page, itemsPerPage);
-            break;
-          case 'author':
-            response = await postsAPI.searchByUsername(searchTerm, page, itemsPerPage);
-            break;
-          case 'titleContent':
-            response = await postsAPI.searchByTitle(searchTerm, page, itemsPerPage);
-            break;
-          default:
-            response = await postsAPI.getPostsList(page, itemsPerPage);
+        if (searchType === 'author') {
+          response = await postsAPI.searchByUsername(searchTerm, page, itemsPerPage);
+        } else {
+          response = await postsAPI.searchPosts(searchTerm, page, itemsPerPage);
         }
       } else {
         response = await postsAPI.getPostsList(page, itemsPerPage);
@@ -48,14 +37,21 @@ function CommunityBoard() {
 
       console.log('Posts response:', response);
       
-      // 응답 구조 확인 및 데이터 처리
       if (response?.data) {
-        setPosts(response.data.content || []);
-        setTotalPages(response.data.totalPages || 0);
-      } else {
-        console.error('Invalid response structure:', response);
-        setPosts([]);
-        setTotalPages(0);
+        const postsData = response.data.post;
+        const userData = response.data.user;
+        
+        // posts와 users 데이터 매핑
+        const postsWithUserInfo = postsData.content.map((post, index) => {
+          const user = userData.find(u => u.userId === post.userId);
+          return {
+            ...post,
+            nickname: user?.nickname || '알 수 없음'
+          };
+        });
+
+        setPosts(postsWithUserInfo);
+        setTotalPages(postsData.totalPages || 0);
       }
     } catch (error) {
       console.error('Error loading posts:', error);
@@ -162,10 +158,9 @@ function CommunityBoard() {
                     {post.commentCount > 0 && (
                       <span className="comment-count">[{post.commentCount}]</span>
                     )}
-                    {post.fileAttached > 0 && ' 📎'}
                   </Link>
                 </td>
-                <td>{post.nickname || '알 수 없음'}</td>
+                <td>{post.nickname}</td>
                 <td>{formatDate(post.created)}</td>
                 <td className="text-center">{post.heart || 0}</td>
                 <td className="text-center">{post.cnt || 0}</td>
