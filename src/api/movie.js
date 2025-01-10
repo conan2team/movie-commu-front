@@ -115,4 +115,9 @@ export const movieAPI = {
     
     getTopMovies: () => 
         api.get('/movie/rank'),
+    
+    // 영화 스케줄 조회
+    getSchedules: (movieId) => {
+        return api.get(`/schedule?movieId=${movieId}`);
+    },
 }; 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { movies, schedules } from '../data/dummyData';
+import { movieAPI } from '../api/movie';
 import '../styles/NowPlaying.css';
 
 function NowPlaying() {
@@ -10,14 +10,51 @@ function NowPlaying() {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [availableDates, setAvailableDates] = useState([]);
+  const [scheduleData, setScheduleData] = useState({});
 
   useEffect(() => {
-    const today = new Date();
-    
-    const onAirMovies = Object.values(movies).filter(movie => movie.onAir === 1);
-    setNowPlayingMovies(onAirMovies);
+    fetchNowPlayingMovies();
+    initializeDates();
+  }, []);
 
-    // 오늘부터 7일간의 날짜 생성
+  // 상영 중인 영화 목록 가져오기
+  const fetchNowPlayingMovies = async () => {
+    try {
+      const response = await movieAPI.getMovies();
+      const onAirMovies = response.data.filter(movie => movie.onAir === 1);
+      setNowPlayingMovies(onAirMovies);
+      if (onAirMovies.length > 0) {
+        setSelectedMovie(onAirMovies[0]);
+        fetchMovieSchedules(onAirMovies[0].movieId);
+      }
+    } catch (error) {
+      console.error('Error fetching movies:', error);
+    }
+  };
+
+  // 선택된 영화의 스케줄 가져오기
+  const fetchMovieSchedules = async (movieId) => {
+    try {
+      const response = await movieAPI.getSchedules(movieId);
+      const schedules = response.data;
+      
+      // 날짜별로 스케줄 정리
+      const schedulesByDate = schedules.reduce((acc, schedule) => {
+        if (!acc[schedule.date]) {
+          acc[schedule.date] = [];
+        }
+        acc[schedule.date].push(schedule);
+        return acc;
+      }, {});
+      
+      setScheduleData(schedulesByDate);
+    } catch (error) {
+      console.error('Error fetching schedules:', error);
+    }
+  };
+
+  const initializeDates = () => {
+    const today = new Date();
     const dates = [];
     for (let i = 0; i < 7; i++) {
       const date = new Date(today);
@@ -26,7 +63,7 @@ function NowPlaying() {
     }
     setAvailableDates(dates);
     setSelectedDate(formatDate(today));
-  }, []);
+  };
 
   const formatDate = (date) => {
     return date.toISOString().split('T')[0];
@@ -42,14 +79,15 @@ function NowPlaying() {
     return `${d.getMonth() + 1}.${d.getDate()}`;
   };
 
-  const getMovieSchedules = (movieId, date) => {
-    return schedules.filter(
-      schedule => schedule.movieId === movieId && schedule.date === date
-    );
+  const handleMovieSelect = async (movie) => {
+    setSelectedMovie(movie);
+    await fetchMovieSchedules(movie.movieId);
   };
 
-  const handleScheduleSelect = (scheduleId) => {
-    navigate(`/booking/${scheduleId}`);
+  const handleScheduleSelect = (scheduleId, movieId) => {
+    navigate(`/booking/${scheduleId}`, { 
+      state: { movieId: movieId }
+    });
   };
 
   return (
@@ -69,7 +107,7 @@ function NowPlaying() {
         <div className="date-selector mb-4">
           {availableDates.map(date => {
             const dateStr = formatDate(date);
-            const isToday = dateStr === formatDate(new Date('2024-03-20'));
+            const isToday = dateStr === formatDate(new Date());
             return (
               <Button
                 key={dateStr}
@@ -93,7 +131,7 @@ function NowPlaying() {
             <Col key={movie.movieId} md={4} className="mb-4">
               <Card 
                 className="movie-schedule-card"
-                onClick={() => setSelectedMovie(movie)}
+                onClick={() => handleMovieSelect(movie)}
               >
                 <Card.Img variant="top" src={movie.poster} />
                 <Card.Body>
@@ -104,14 +142,20 @@ function NowPlaying() {
                   </Card.Text>
                   {selectedMovie?.movieId === movie.movieId && (
                     <div className="schedule-list">
-                      {getMovieSchedules(movie.movieId, selectedDate).length > 0 ? (
-                        getMovieSchedules(movie.movieId, selectedDate).map(schedule => (
+                      {scheduleData[selectedDate]?.length > 0 ? (
+                        scheduleData[selectedDate].map(schedule => (
                           <div
                             key={schedule.scheduleId}
                             className="schedule-item"
-                            onClick={() => handleScheduleSelect(schedule.scheduleId)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleScheduleSelect(schedule.scheduleId, movie.movieId);
+                            }}
                           >
-                            {schedule.startTime}
+                            <span>{schedule.startTime}</span>
+                            <span className="hall-info">
+                              {schedule.name} | {schedule.price}원
+                            </span>
                           </div>
                         ))
                       ) : (

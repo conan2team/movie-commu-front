@@ -1,193 +1,142 @@
-/* 영화 상세 이지 카드 스타일 */
-.movie-card {
-  background-color: var(--card-bg);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
+/* 리뷰 섹션 전체 스타일 */
+.reviews-section.card {
+  margin-top: 2rem;
+  background-color: var(--bg-color);
   border-radius: 8px;
-  box-shadow: 0 2px 4px var(--card-shadow);
-  transition: all 0.3s ease;
-  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px var(--card-shadow);
 }
 
-/* 리뷰 섹션 */
-.review-section {
-  max-width: 900px;
-  margin: 2rem auto;
-}
-
-.review-card {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px var(--card-shadow);
-}
-
-/* 리뷰 폼 ��테이너 */
+/* 리뷰 작성 폼 */
 .review-form {
-  margin: 1.5rem;
   padding: 1.5rem;
-  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+  background-color: rgba(0, 0, 0, 0.02); 
+}
+
+.review-form textarea {
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-/* 리뷰 입력 폼 */
-.review-form .form-control {
+  padding: 1rem;
+  font-size: 0.95rem;
+  resize: vertical;
+  min-height: 100px;
   background-color: var(--bg-color);
-  border: 2px solid var(--border-color);
-  border-radius: 6px;
-  color: var(--text-color);
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-  transition: all 0.2s ease;
 }
 
-.review-form .form-control:focus {
-  border-color: var(--bs-primary);
-  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
-  outline: none;
-}
-
-.review-form .form-control::placeholder {
-  color: var(--text-muted);
-}
-
-/* 별점 컨테이너 */
-.star-rating {
-  display: flex;
-  gap: 0.4rem;
-  align-items: center;
-  padding: 0.5rem 0;
-}
-
-.star-rating svg {
-  cursor: pointer;
-  font-size: 1.75rem;
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.star-rating svg:hover {
-  transform: scale(1.1);
-}
-
-.star-rating svg.text-warning {
-  color: #ffc107 !important;
-}
-
-.star-rating svg.text-secondary {
-  color: #dee2e6 !important;
-}
-
-/* 리뷰 작성 버튼 */
-.review-form .btn {
-  padding: 0.5rem 1.25rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.review-form .btn-primary {
-  background-color: var(--bs-primary);
-  border: none;
-}
-
-.review-form .btn-primary:hover {
-  background-color: #0b5ed7;
-  transform: translateY(-1px);
-}
-
-.review-form .btn-secondary {
-  background-color: var(--bg-color);
+.review-form select {
+  width: 200px;
+  padding: 0.5rem;
   border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--bg-color);
   color: var(--text-color);
 }
 
-.review-form .btn-secondary:hover {
-  background-color: var(--hover-bg);
-}
-
-/* 리뷰 입력 그룹 */
-.review-input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-@media (min-width: 768px) {
-  .review-input-group {
-    flex-direction: row;
-    align-items: center;
-  }
-  
-  .review-input-group .form-control {
-    flex: 1;
-  }
-  
-  .review-input-group .btn-group {
-    white-space: nowrap;
-  }
-}
-
-/* 리뷰 버튼 그룹 */
-.review-button-group {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-/* 리뷰 아이템 */
+/* 개별 리뷰 스타일 */
 .review-item {
   padding: 1.5rem;
   border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s ease;
 }
 
 .review-item:last-child {
   border-bottom: none;
 }
 
+.review-item:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* 리뷰 헤더 (작성자 정보 및 버튼) */
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
 .review-author {
-  font-weight: 600;
-  margin-right: 0.5rem;
-}
-
-.review-meta {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 1rem;
 }
 
-.review-date {
-  color: var(--text-muted);
-  font-size: 0.9rem;
+.review-author strong {
+  color: var(--bs-primary);
+  font-size: 1rem;
+  font-weight: bold;
 }
 
+.review-rating {
+  color: #ffc107;
+  font-size: 1.2rem;
+}
+
+/* 리뷰 내용 */
 .review-content {
-  margin: 0.8rem 0;
-  line-height: 1.5;
-  white-space: pre-wrap;
   color: var(--text-color);
+  font-size: 1rem;
+  line-height: 1.6; 
+  padding: 1.5rem; 
+  background-color: rgba(255, 255, 255, 0.9); 
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* 리뷰 액션 버튼 */
-.review-actions {
+/* 리뷰 버튼 그룹 */
+.review-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem; 
 }
 
-.action-button {
-  padding: 0.4rem 0.8rem;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: var(--card-bg);
+.review-buttons button {
+  padding: 0.5rem 1rem; 
+  font-size: 0.9rem; 
+  border-radius: 4px; 
+  transition: background-color 0.3s; 
+}
+
+.review-buttons button:hover {
+  background-color: rgba(0, 0, 0, 0.1); 
+}
+
+/* 페이지네이션 스타일 */
+.reviews-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem;
+  background-color: rgba(0, 0, 0, 0.02);
+  border-top: 1px solid var(--border-color);
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.reviews-pagination .pagination {
+  margin: 0;
+}
+
+/* 영화 정보 스타일 */
+.movie-info {
+  background-color: var(--bg-color);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px var(--card-shadow);
+}
+
+.movie-poster img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.movie-meta {
+  margin: 1rem 0;
+  color: var(--text-muted);
+}
+
+.movie-description {
+  line-height: 1.6;
   color: var(--text-color);
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  cursor: pointer;
-}
-
-.action-button:hover {
-  background-color: var(--hover-bg);
 } 

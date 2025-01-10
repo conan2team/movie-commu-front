@@ -390,39 +390,84 @@ function MovieDetail() {
             {/* 리뷰 섹션 */}
             <Row className="mt-5">
                 <Col>
-                    <h3 className="mb-4">리뷰</h3>
-                    
-                    {/* 리뷰 작성/수정 폼 */}
-                    {user && (
-                        <>
-                            {renderReviewForm()}
-                        </>
-                    )}
+                    <Card className="reviews-section">
+                        <Card.Header>
+                            <h5 className="mb-0">리뷰 {allReviews.length}개</h5>
+                        </Card.Header>
+                        <Card.Body className="p-0">
+                            {/* 리뷰 작성/수정 폼 */}
+                            {user && (
+                                <div className="review-form">
+                                    <Form onSubmit={handleReviewSubmit}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>평점</Form.Label>
+                                            <Form.Select 
+                                                value={review.rating} 
+                                                onChange={(e) => setReview({
+                                                    ...review, 
+                                                    rating: parseInt(e.target.value)
+                                                })}
+                                            >
+                                                {[5,4,3,2,1].map(num => (
+                                                    <option key={num} value={num}>
+                                                        {'★'.repeat(num)}{'☆'.repeat(5-num)}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Control
+                                                as="textarea"
+                                                rows={3}
+                                                value={review.content}
+                                                onChange={(e) => setReview({
+                                                    ...review, 
+                                                    content: e.target.value
+                                                })}
+                                                placeholder="영화에 대한 리뷰를 작성해주세요."
+                                                required
+                                            />
+                                        </Form.Group>
+                                        <div className="d-flex justify-content-end">
+                                            <Button type="submit" variant="primary">
+                                                {isEditing ? '리뷰 수정' : '리뷰 등록'}
+                                            </Button>
+                                            {isEditing && (
+                                                <Button 
+                                                    variant="secondary" 
+                                                    className="ms-2"
+                                                    onClick={() => {
+                                                        setIsEditing(false);
+                                                        setReview({ content: '', rating: 5 });
+                                                    }}
+                                                >
+                                                    취소
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </Form>
+                                </div>
+                            )}
 
-                    {/* 리뷰 목록 */}
-                    <div className="mt-4">
-                        {allReviews.map((review, index) => (
-                            <Card key={index} className="mb-3">
-                                <Card.Body>
-                                    <div className="d-flex justify-content-between align-items-center mb-2">
-                                        <div>
-                                            <h6 className="mb-0">
-                                                {review.nickname}
-                                                {user && Number(user.userId) === Number(review.userId) && 
-                                                    <span className="text-primary ms-2">(내 리뷰)</span>
-                                                }
-                                            </h6>
-                                            <h5 className="text-warning mb-2">
+                            {/* 리뷰 목록 */}
+                            {allReviews.map((review, index) => (
+                                <div key={index} className="review-item">
+                                    <div className="review-header">
+                                        <div className="review-author">
+                                            <strong>{review.nickname}</strong>
+                                            {user && Number(user.userId) === Number(review.userId) && 
+                                                <span className="text-primary ms-2">(내 리뷰)</span>
+                                            }
+                                            <div className="review-rating">
                                                 {'★'.repeat(review.rating)}
                                                 {'☆'.repeat(5 - review.rating)}
-                                            </h5>
+                                            </div>
                                         </div>
                                         {user && Number(user.userId) === Number(review.userId) && (
-                                            <div>
+                                            <div className="review-buttons">
                                                 <Button 
                                                     variant="outline-primary" 
                                                     size="sm" 
-                                                    className="me-2"
                                                     onClick={() => handleEditClick(review)}
                                                 >
                                                     수정
@@ -437,11 +482,17 @@ function MovieDetail() {
                                             </div>
                                         )}
                                     </div>
-                                    <p className="mb-0">{review.content}</p>
-                                </Card.Body>
-                            </Card>
-                        ))}
-                    </div>
+                                    <div className="review-content">
+                                        {review.content}
+                                    </div>
+                                </div>
+                            ))}
+
+                            {allReviews.length === 0 && (
+                                <p className="text-center text-muted py-4">첫 번째 리뷰를 작성해보세요!</p>
+                            )}
+                        </Card.Body>
+                    </Card>
                 </Col>
             </Row>
         </Container>

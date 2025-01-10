@@ -1,149 +1,206 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
-import { movies, schedules, halls, reservations, generateSeats } from '../data/dummyData';
+import { reserveAPI } from '../api/reserve';
+import { movieAPI } from '../api/movie';
 import { useAuth } from '../context/AuthContext';
 import '../styles/Booking.css';
 
 function Booking() {
   const { scheduleId } = useParams();
+  const location = useLocation();
+  const movieId = location.state?.movieId;
   const navigate = useNavigate();
   const { user } = useAuth();
   const [schedule, setSchedule] = useState(null);
   const [movie, setMovie] = useState(null);
-  const [selectedSeats, setSelectedSeats] = useState([]);
   const [reservedSeats, setReservedSeats] = useState([]);
-  const allSeats = generateSeats();
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // scheduleId를 숫자로 변환하여 비교
-    const scheduleData = schedules.find(s => s.scheduleId === Number(scheduleId));
-    if (!scheduleData) {
+    if (!user) {
+      alert('로그인이 필요한 서비스입니다.');
+      navigate('/login');
+      return;
+    }
+    if (!movieId) {
       alert('잘못된 접근입니다.');
-      navigate('/now-playing');
+      navigate(-1);
       return;
     }
+    fetchBookingData();
+  }, [scheduleId, movieId]);
 
-    // 영화 정보 가져오기
-    const movieData = movies[scheduleData.movieId];
-    if (!movieData || movieData.onAir !== 1) {
-      alert('상영하지 않는 영화입니다.');
-      navigate('/now-playing');
-      return;
+  const fetchBookingData = async () => {
+    try {
+      // 예약된 좌석 정보 가져오기
+      const reservedResponse = await reserveAPI.getReservedSeats(scheduleId);
+      setReservedSeats(reservedResponse.data.map(seat => seat.seatId));
+      
+      // 스케줄 정보 가져오기
+      const scheduleResponse = await reserveAPI.getSchedules(movieId);
+      const currentSchedule = scheduleResponse.data.find(
+        s => s.scheduleId === parseInt(scheduleId)
+      );
+      setSchedule(currentSchedule);
+
+      // 영화 정보 가져오기
+      const movieResponse = await movieAPI.getMovieDetail(movieId);
+      setMovie(movieResponse.data.movie);
+      
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching booking data:', error);
+      alert('정보를 불러오는데 실패했습니다.');
+      navigate(-1);
     }
-
-    // 예약된 좌석 가져오기
-    const reserved = reservations
-      .filter(r => r.scheduleId === parseInt(scheduleId))
-      .map(r => r.seatId);
-
-    setSchedule(scheduleData);
-    setMovie(movieData);
-    setReservedSeats(reserved);
-  }, [scheduleId, navigate]);
-
-  const handleSeatClick = (seatId) => {
-    if (reservedSeats.includes(seatId)) return;
-    
-    setSelectedSeats(prev => 
-      prev.includes(seatId)
-        ? prev.filter(id => id !== seatId)
-        : [...prev, seatId]
-    );
   };
 
-  const handleBooking = () => {
+  const generateSeatLayout = () => {
+    const rows = ['A', 'B', 'C', 'D'];
+    const cols = Array.from({ length: 10 }, (_, i) => i + 1);
+    return rows.map(row => (
+      <div key={row} className="seat-row">
+        <span className="row-label">{row}</span>
+        {cols.map(col => {
+          const seatId = `${row}${col}`;
+          const isReserved = reservedSeats.includes(seatId);
+          const isSelected = selectedSeats.includes(seatId);
+          
+          return (
+            <button
+              key={seatId}
+              className={`seat ${isReserved ? 'reserved' : ''} ${isSelected ? 'selected' : ''}`}
+              onClick={() => handleSeatClick(seatId)}
+              disabled={isReserved}
+            >
+              {col}
+            </button>
+          );
+        })}
+      </div>
+    ));
+  };
+
+  const handleSeatClick = (seatId) => {
+    if (reservedSeats.includes(seatId)) {
+      return; // 이미 예약된 좌석은 선택 불가
+    }
+
+    setSelectedSeats(prev => {
+      if (prev.includes(seatId)) {
+        return prev.filter(id => id !== seatId);
+      } else {
+        if (prev.length >= 4) {
+          alert('최대 4좌석까지만 선택 가능합니다.');
+          return prev;
+        }
+        return [...prev, seatId];
+      }
+    });
+  };
+
+  const handleReserve = async () => {
     if (!user) {
-      alert('로그인이 필요합니다.');
+      alert('로그인이 필요한 서비스입니다.');
+      navigate('/login');
       return;
     }
+
     if (selectedSeats.length === 0) {
       alert('좌석을 선택해주세요.');
       return;
     }
-    // 여기에 예매 로직 추가
-    alert('예매가 완료되었습니다.');
-    navigate('/now-playing');
+
+    try {
+      // 각 좌석별로 예매 처리
+      for (const seatId of selectedSeats) {
+        const reserveData = {
+          scheduleId: parseInt(scheduleId),
+          seatId: seatId,
+          amount: schedule.price,  // 1인당 가격
+          method: 'CARD'  // 결제 방법
+        };
+
+        const response = await reserveAPI.reserve(reserveData);
+        if (response.data !== "Reserved Successfully") {
+          throw new Error('예매에 실패했습니다.');
+        }
+      }
+
+      alert('예매가 완료되었습니다.');
+      // navigate('/home'); // 예매 완료 후 마이페이지로 이동
+    } catch (error) {
+      console.error('Error making reservation:', error);
+      alert('예매에 실패했습니다. 이미 예약된 좌석이 있는지 확인해주세요.');
+    }
   };
 
-  if (!movie || !schedule) return null;
-
-  const hall = halls[schedule.hallId];
-  const totalPrice = selectedSeats.length * hall.price;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <Container className="py-5">
-      <Row>
-        <Col md={4}>
-          <Card className="mb-4">
-            <Card.Img variant="top" src={movie.poster} />
-            <Card.Body>
-              <Card.Title>{movie.title}</Card.Title>
-              <Card.Text>
-                <div>상영관: {hall.name}</div>
-                <div>일시: {schedule.date} {schedule.startTime}</div>
-                <div>상영시간: {movie.runningTime}분</div>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={8}>
-          <div className="booking-container">
-            <div className="screen">SCREEN</div>
-            <div className="seats-container">
-              {['A', 'B', 'C', 'D'].map(row => (
-                <div key={row} className="seat-row">
-                  <div className="row-label">{row}</div>
-                  {[...Array(10)].map((_, i) => {
-                    const seatId = `${row}${i + 1}`;
-                    const isReserved = reservedSeats.includes(seatId);
-                    const isSelected = selectedSeats.includes(seatId);
-                    return (
-                      <button
-                        key={seatId}
-                        className={`seat ${isReserved ? 'reserved' : ''} ${isSelected ? 'selected' : ''}`}
-                        onClick={() => handleSeatClick(seatId)}
-                        disabled={isReserved}
-                      >
-                        {i + 1}
-                      </button>
-                    );
-                  })}
+    <Container className="booking-container">
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <Row>
+          <Col md={8}>
+            <Card className="booking-card">
+              <Card.Header>
+                <h4>좌석 선택</h4>
+              </Card.Header>
+              <Card.Body>
+                <div className="screen">SCREEN</div>
+                <div className="seat-layout">
+                  {generateSeatLayout()}
                 </div>
-              ))}
-            </div>
-            <div className="booking-info">
-              <div className="seat-info">
-                <div className="seat-type">
-                  <div className="seat-sample"></div>
-                  <span>선택 가능</span>
+                <div className="seat-legend">
+                  <div className="legend-item">
+                    <span className="seat-sample"></span>
+                    <span>선택 가능</span>
+                  </div>
+                  <div className="legend-item">
+                    <span className="seat-sample selected"></span>
+                    <span>선택한 좌석</span>
+                  </div>
+                  <div className="legend-item">
+                    <span className="seat-sample reserved"></span>
+                    <span>예매된 좌석</span>
+                  </div>
                 </div>
-                <div className="seat-type">
-                  <div className="seat-sample selected"></div>
-                  <span>선택됨</span>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={4}>
+            <Card className="booking-info-card">
+              <Card.Header>
+                <h4>예매 정보</h4>
+              </Card.Header>
+              <Card.Body>
+                <div className="movie-info">
+                  <h5>{movie?.title}</h5>
+                  <p>상영일: {schedule?.date}</p>
+                  <p>상영시간: {schedule?.startTime}</p>
+                  <p>상영관: {schedule?.name}</p>
+                  <p>선택한 좌석: {selectedSeats.join(', ') || '없음'}</p>
+                  <p>결제 금액: {selectedSeats.length * (schedule?.price || 0)}원</p>
                 </div>
-                <div className="seat-type">
-                  <div className="seat-sample reserved"></div>
-                  <span>예매됨</span>
-                </div>
-              </div>
-              <div className="price-info">
-                <div>선택한 좌석: {selectedSeats.join(', ')}</div>
-                <div>총 금액: {totalPrice.toLocaleString()}원</div>
-              </div>
-              <Button 
-                variant="primary" 
-                size="lg" 
-                className="w-100"
-                onClick={handleBooking}
-                disabled={selectedSeats.length === 0}
-              >
-                예매하기
-              </Button>
-            </div>
-          </div>
-        </Col>
-      </Row>
+                <Button 
+                  variant="primary" 
+                  className="w-100 mt-3"
+                  onClick={handleReserve}
+                  disabled={selectedSeats.length === 0}
+                >
+                  예매하기
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      )}
     </Container>
   );
 }
