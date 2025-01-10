@@ -3,20 +3,24 @@
 }
 
 .booking-card {
+  height: 100%;
   margin-bottom: 2rem;
 }
 
 .screen {
+  width: 80%;
+  margin: 0 auto 3rem;
   background: #e0e0e0;
   padding: 1rem;
   text-align: center;
-  margin-bottom: 2rem;
   border-radius: 4px;
   font-weight: bold;
   color: #666;
 }
 
 .seat-layout {
+  width: 80%;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -26,6 +30,7 @@
 .seat-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
 }
 
@@ -40,6 +45,9 @@
   height: 40px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: all 0.2s;
   font-size: 0.9rem;
@@ -74,19 +82,19 @@
 }
 
 .seat-legend {
-  display: flex;
-  justify-content: center;
-  gap: 3rem;
-  margin-top: 2rem;
+  width: 80%;
+  margin: 2rem auto 0;
   padding-top: 1rem;
   border-top: 1px solid #eee;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  font-size: 0.9rem;
+  gap: 0.5rem;
 }
 
 .seat-sample {
@@ -94,8 +102,9 @@
   height: 40px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  transition: all 0.2s;
-  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .seat-sample.selected {
@@ -114,10 +123,9 @@
 }
 
 .booking-info-card {
+  height: 100%;
   position: sticky;
-  top: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  top: 20px;
 }
 
 .movie-info {
@@ -136,10 +144,19 @@
   font-size: 0.95rem;
 }
 
-다크모드 스타일
-[data-theme='dark'] .booking-card {
-  background-color: #2d2d2d;
-  color: #fff;
+.card-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+}
+
+.card-header h4 {
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
 }
 
 [data-theme='dark'] .screen {
@@ -188,5 +205,21 @@
 
 [data-theme='dark'] .seat-legend {
   border-top-color: #3d3d3d;
+}
+
+@media (max-width: 768px) {
+  .screen {
+    width: 95%;
+  }
+  
+  .seat-layout {
+    width: 95%;
+  }
+  
+  .seat {
+    width: 35px;
+    height: 35px;
+    font-size: 0.8rem;
+  }
 }
 
