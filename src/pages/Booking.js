@@ -134,7 +134,7 @@ function Booking() {
       }
 
       alert('예매가 완료되었습니다.');
-      navigate('/mypage');
+      navigate('/');
     } catch (error) {
       console.error('Error making reservation:', error);
       alert('예매에 실패했습니다. 이미 예약된 좌석이 있는지 확인해주세요.');
