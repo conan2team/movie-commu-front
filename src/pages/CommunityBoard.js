@@ -38,16 +38,21 @@ function CommunityBoard() {
       console.log('Posts response:', response);
       
       if (response?.data) {
-        const postsData = response.data.post;
+        const postsData = response.data.post.content;  // content 배열에서 게시글 가져오기
         const userData = response.data.user;
         
-        const postsWithUserInfo = postsData.content.map((post, index) => ({
-          ...post,
-          nickname: userData[index]?.nickname || '알 수 없음'
-        }));
+        const postsWithUserInfo = postsData.map((post, index) => {
+          // 같은 인덱스의 user 정보 사용
+          const user = userData[index];
+          return {
+            ...post,
+            nickname: user?.nickname || '알 수 없음'
+          };
+        });
 
+        console.log('Posts with user info:', postsWithUserInfo);
         setPosts(postsWithUserInfo);
-        setTotalPages(postsData.totalPages || 0);
+        setTotalPages(response.data.post.totalPages || 0);
       }
     } catch (error) {
       console.error('Error loading posts:', error);
@@ -85,6 +90,16 @@ function CommunityBoard() {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('ko-KR');
+  };
+
+  // 게시글 작성 버튼 클릭 시
+  const handleWriteClick = () => {
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+    navigate('/community/write');
   };
 
   return (
@@ -125,7 +140,7 @@ function CommunityBoard() {
       {/* 글쓰기 버튼 */}
       <div className="d-flex justify-content-end mb-3">
         {user && (
-          <Button variant="primary" onClick={() => navigate('/community/write')}>
+          <Button variant="primary" onClick={handleWriteClick}>
             글쓰기
           </Button>
         )}
@@ -160,6 +175,15 @@ function CommunityBoard() {
                 <td>{formatDate(post.created)}</td>
                 <td className="text-center">{post.heart || 0}</td>
                 <td className="text-center">{post.cnt || 0}</td>
+                {user?.userId === post.userId && (
+                  <Button 
+                    variant="outline-primary" 
+                    size="sm" 
+                    onClick={() => navigate(`/community/edit/${post.postId}`)}
+                  >
+                    수정
+                  </Button>
+                )}
               </tr>
             ))
           ) : (

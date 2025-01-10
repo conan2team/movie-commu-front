@@ -30,7 +30,7 @@ function App() {
             <Route path="/booking/:scheduleId" element={<Booking />} />
             <Route path="/community" element={<CommunityBoard />} />
             <Route path="/community/write" element={<CommunityWrite />} />
-            <Route path="/community/edit/:id" element={<CommunityEdit />} />
+            <Route path="/community/edit/:id" element={<CommunityWrite />} />
             <Route path="/community/:id" element={<CommunityDetail />} />
             <Route path="/movie/:id" element={<MovieDetail />} />
             <Route path="/login" element={<Login />} />

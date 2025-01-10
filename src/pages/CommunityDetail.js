@@ -29,11 +29,11 @@ function CommunityDetail() {
       if (response?.data) {
         // 게시글 데이터 설정
         const postData = response.data.post;
-        const userData = response.data.postUser; // postUser로 변경
+        const userData = response.data.postUser;
         
         setPost({
           ...postData,
-          nickname: userData?.nickname || '알 수 없음'
+          nickname: userData?.nickname || postData.postUser?.nickname || '알 수 없음'
         });
         
         // 댓글 데이터 설정
