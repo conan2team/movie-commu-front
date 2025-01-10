@@ -42,5 +42,15 @@ export const postsAPI = {
     
     // 게시글 좋아요
     likePost: (postId, username) => 
-        api.post('/posts/like', { postId, username })
+        api.post('/posts/like', { postId, username }),
+    
+    // 댓글 관련 API 추가
+    createComment: (content, postId, username) => 
+        api.post(`/api/comments/newcomment?content=${encodeURIComponent(content)}&postId=${postId}&username=${username}`),
+    
+    updateComment: (commentId, content) => 
+        api.put(`/api/comments/${commentId}?content=${encodeURIComponent(content)}`),
+    
+    deleteComment: (commentId) => 
+        api.delete(`/api/comments/${commentId}`)
 }; 

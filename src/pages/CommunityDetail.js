@@ -19,6 +19,8 @@ function CommunityDetail() {
   const [itemsPerPage] = useState(10);
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editCommentContent, setEditCommentContent] = useState('');
 
   // 게시글과 댓글 데이터 로드
   const fetchPostData = async () => {
@@ -95,17 +97,42 @@ function CommunityDetail() {
     }
 
     try {
-      const commentData = {
-        postId: parseInt(id),
-        content: newComment.trim()
-      };
-
-      await postsAPI.createComment(commentData);
+      await postsAPI.createComment(newComment.trim(), id, user.id);
       setNewComment('');
       fetchPostData(); // 댓글 목록 새로고침
     } catch (error) {
       console.error('Comment submit error:', error);
       alert('댓글 작성에 실패했습니다.');
+    }
+  };
+
+  // 댓글 수정 모드 시작
+  const handleEditStart = (comment) => {
+    setEditingCommentId(comment.commentId);
+    setEditCommentContent(comment.content);
+  };
+
+  // 댓글 수정 취소
+  const handleEditCancel = () => {
+    setEditingCommentId(null);
+    setEditCommentContent('');
+  };
+
+  // 댓글 수정 제출
+  const handleEditSubmit = async (commentId) => {
+    if (!editCommentContent.trim()) {
+      alert('댓글 내용을 입력해주세요.');
+      return;
+    }
+
+    try {
+      await postsAPI.updateComment(commentId, editCommentContent.trim());
+      setEditingCommentId(null);
+      setEditCommentContent('');
+      fetchPostData(); // 댓글 목록 새로고침
+    } catch (error) {
+      console.error('Comment update error:', error);
+      alert('댓글 수정에 실패했습니다.');
     }
   };
 
@@ -204,17 +231,59 @@ function CommunityDetail() {
                   <strong>{comment.nickname}</strong>
                   <small className="text-muted ms-2">{comment.created}</small>
                 </div>
-                {user?.userId === comment.userId && (
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={() => handleCommentDelete(comment.commentId)}
-                  >
-                    <FaTrash />
-                  </Button>
+                {/* userId를 Number로 변환하여 비교 */}
+                {user && Number(user.userId) === Number(comment.userId) && (
+                  <div className="d-flex gap-2">
+                    {editingCommentId === comment.commentId ? (
+                      <>
+                        <Button
+                          variant="outline-success"
+                          size="sm"
+                          onClick={() => handleEditSubmit(comment.commentId)}
+                        >
+                          저장
+                        </Button>
+                        <Button
+                          variant="outline-secondary"
+                          size="sm"
+                          onClick={handleEditCancel}
+                        >
+                          취소
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => handleEditStart(comment)}
+                        >
+                          수정
+                        </Button>
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => handleCommentDelete(comment.commentId)}
+                        >
+                          <FaTrash />
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 )}
               </div>
-              <div className="mt-2">{comment.content}</div>
+              <div className="mt-2">
+                {editingCommentId === comment.commentId ? (
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={editCommentContent}
+                    onChange={(e) => setEditCommentContent(e.target.value)}
+                  />
+                ) : (
+                  comment.content
+                )}
+              </div>
             </div>
           ))}
 
