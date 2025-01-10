@@ -161,20 +161,6 @@ function Booking() {
                 <div className="seat-layout">
                   {generateSeatLayout()}
                 </div>
-                <div className="seat-legend">
-                  <div className="legend-item">
-                    <span className="seat-sample"></span>
-                    <span>선택 가능</span>
-                  </div>
-                  <div className="legend-item">
-                    <span className="seat-sample selected"></span>
-                    <span>선택한 좌석</span>
-                  </div>
-                  <div className="legend-item">
-                    <span className="seat-sample reserved"></span>
-                    <span>예매된 좌석</span>
-                  </div>
-                </div>
               </Card.Body>
             </Card>
           </Col>

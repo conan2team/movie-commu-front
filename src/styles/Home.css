@@ -135,7 +135,6 @@
 
 .card-body {
   flex: 1 1 auto;
-  padding: 0 !important;
   overflow-y: auto;
 }
 
@@ -152,7 +151,6 @@
 
 /* 자유게시판 카드 내용 영역 */
 .card-body {
-  padding: 0 !important;
   max-height: none !important; /* 높이 제한 제거 */
   overflow: visible !important; /* 오버플로우 제거 */
 } 

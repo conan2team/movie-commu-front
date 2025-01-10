@@ -39,7 +39,6 @@
   width: 40px;
   height: 40px;
   border: 1px solid #ddd;
-  background: white;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
@@ -64,7 +63,7 @@
 .seat.reserved {
   background: #f5f5f5;
   cursor: not-allowed;
-  color: #bdbdbd;
+  color: #bdb;
   border-color: #e0e0e0;
   pointer-events: none;
 }
@@ -77,7 +76,7 @@
 .seat-legend {
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: 3rem;
   margin-top: 2rem;
   padding-top: 1rem;
   border-top: 1px solid #eee;
@@ -86,26 +85,31 @@
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
   font-size: 0.9rem;
-  color: #666;
 }
 
 .seat-sample {
-  width: 20px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  transition: all 0.2s;
+  background: white;
 }
 
 .seat-sample.selected {
   background: #2196f3;
+  color: white;
   border-color: #1976d2;
+  transform: scale(1.05);
   box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
 }
 
 .seat-sample.reserved {
   background: #f5f5f5;
+  cursor: not-allowed;
+  color: #bdbdbd;
   border-color: #e0e0e0;
 }
 
@@ -124,12 +128,65 @@
 
 .movie-info h5 {
   margin-bottom: 1rem;
-  color: #333;
   font-weight: 600;
 }
 
 .movie-info p {
   margin-bottom: 0.5rem;
-  color: #666;
   font-size: 0.95rem;
-} 
+}
+
+다크모드 스타일
+[data-theme='dark'] .booking-card {
+  background-color: #2d2d2d;
+  color: #fff;
+}
+
+[data-theme='dark'] .screen {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+[data-theme='dark'] .seat {
+  background: #3d3d3d;
+  border-color: #4d4d4d;
+  color: #fff;
+}
+
+[data-theme='dark'] .seat:hover:not(:disabled) {
+  background: #4a4a4a;
+  border-color: #2196f3;
+}
+
+[data-theme='dark'] .seat.selected {
+  background: #2196f3;
+  color: white;
+}
+
+[data-theme='dark'] .seat.reserved {
+  background: #1a1a1a;
+  color: #666;
+  border-color: #333;
+}
+
+[data-theme='dark'] .booking-info-card {
+  background-color: #2d2d2d;
+  color: #fff;
+}
+
+[data-theme='dark'] .movie-info {
+  border-bottom-color: #3d3d3d;
+}
+
+[data-theme='dark'] .movie-info h5 {
+  color: #fff;
+}
+
+[data-theme='dark'] .movie-info p {
+  color: #ccc;
+}
+
+[data-theme='dark'] .seat-legend {
+  border-top-color: #3d3d3d;
+}
+
