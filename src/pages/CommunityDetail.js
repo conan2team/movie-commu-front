@@ -23,6 +23,7 @@ function CommunityDetail() {
   const [editCommentContent, setEditCommentContent] = useState('');
   const [currentCommentPage, setCurrentCommentPage] = useState(1);
   const [commentsPerPage] = useState(5); // 페이지당 5개의 댓글
+  const [isFollowing, setIsFollowing] = useState(false);
 
   // 현재 페이지의 댓글만 표시하기 위한 계산
   const indexOfLastComment = currentCommentPage * commentsPerPage;
@@ -168,6 +169,38 @@ function CommunityDetail() {
     }
   };
 
+  const handleLike = async () => {
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+    
+    try {
+      await postsAPI.likePost(post.postId, user.id);
+      setIsLiked(!isLiked);
+      setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+    } catch (error) {
+      console.error('Error liking post:', error);
+      alert('좋아요 처리 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleFollow = async () => {
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+    
+    try {
+      await postsAPI.followUser(post.userId);
+      setIsFollowing(!isFollowing);
+      alert(isFollowing ? '팔로우가 취소되었습니다.' : '팔로우 되었습니다.');
+    } catch (error) {
+      console.error('Error following user:', error);
+      alert('팔로우 처리 중 오류가 발생했습니다.');
+    }
+  };
+
   if (!post) return <div>로딩 중...</div>;
 
   return (
@@ -175,11 +208,41 @@ function CommunityDetail() {
       {/* 게시글 카드 */}
       <Card className="post-card">
         <Card.Header>
-          <div className="d-flex justify-content-between align-items-center">
-            <h4>{post.title}</h4>
-            {/* userId를 Number로 변환하여 비교 */}
+          <div className="post-header">
+            <div className="post-title">
+              <h4>{post.title}</h4>
+            </div>
+            <div className="post-info">
+              <div className="author-info">
+                <span className="author-name">{post.nickname}</span>
+                {user && user.id !== post.userId && (
+                  <Button 
+                    variant={isFollowing ? "outline-secondary" : "outline-primary"}
+                    size="sm"
+                    onClick={handleFollow}
+                    className="follow-btn"
+                  >
+                    {isFollowing ? '팔로우 취소' : '팔로우'}
+                  </Button>
+                )}
+              </div>
+              <div className="post-meta">
+                <span className="post-date">{post.created}</span>
+                <span className="post-views">조회수: {post.cnt}</span>
+                <div className="like-section">
+                  <Button 
+                    variant={isLiked ? "primary" : "outline-primary"}
+                    size="sm"
+                    onClick={handleLike}
+                    className="like-btn"
+                  >
+                    <FaThumbsUp /> {likeCount}
+                  </Button>
+                </div>
+              </div>
+            </div>
             {user && Number(user.userId) === Number(post.userId) && (
-              <div className="d-flex gap-2">
+              <div className="post-actions">
                 <Button 
                   variant="outline-primary" 
                   onClick={() => navigate(`/community/edit/${id}`)}
@@ -194,11 +257,6 @@ function CommunityDetail() {
                 </Button>
               </div>
             )}
-          </div>
-          <div className="post-header-info">
-            <span>{post.nickname}</span>
-            <span>{post.created}</span>
-            <span>조회수: {post.cnt}</span>
           </div>
         </Card.Header>
         <Card.Body>

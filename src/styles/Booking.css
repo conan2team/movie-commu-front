@@ -145,7 +145,7 @@
 }
 
 .card-header {
-  display: flex;
+  /* display: flex; */
   align-items: center;
   padding: 1rem;
 }

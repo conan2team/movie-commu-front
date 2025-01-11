@@ -37,8 +37,8 @@ export const postsAPI = {
         api.get(`/posts/search?keyword=${keyword}&page=${page}&size=${size}`),
     
     // 게시글 검색 (작성자)
-    searchByUsername: (username, page = 0, size = 10) => 
-        api.get(`/posts/search/username?username=${username}&page=${page}&size=${size}`),
+    searchByUsername: (nickname, page = 0, size = 10) => 
+        api.get(`/posts/search/nickname?nickname=${nickname}&page=${page}&size=${size}`),
     
     // 게시글 좋아요
     likePost: (postId, username) => 
