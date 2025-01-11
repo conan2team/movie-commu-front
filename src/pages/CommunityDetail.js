@@ -43,13 +43,13 @@ function CommunityDetail() {
       console.log('Post detail response:', response);
 
       if (response?.data) {
-        // 게시글 데이터 설정
         const postData = response.data.post;
         const userData = response.data.postUser;
         
         setPost({
           ...postData,
           userId: Number(postData.userId),
+          username: userData?.id,
           nickname: userData?.nickname || '알 수 없음',
           files: postData.files || []
         });
@@ -67,8 +67,22 @@ function CommunityDetail() {
         setCommentList(commentsWithUserInfo);
         setLikeCount(postData.heart || 0);
         
-        console.log('Current user:', user);
-        console.log('Post user:', Number(postData.userId));
+        // 로그인한 경우에만 좋아요와 팔로우 상태 확인
+        if (user) {
+          try {
+            // 좋아요 상태 확인
+            const likeStatus = await postsAPI.checkLikeStatus(postData.postId, user.id);
+            setIsLiked(likeStatus);
+            
+            // 팔로우 상태 확인 (게시글 작성자의 username으로 확인)
+            if (userData) {
+              const followStatus = await postsAPI.checkFollowStatus(userData.id);
+              setIsFollowing(followStatus);
+            }
+          } catch (error) {
+            console.error('Error checking status:', error);
+          }
+        }
       }
     } catch (error) {
       console.error('Error fetching post:', error);
@@ -177,8 +191,9 @@ function CommunityDetail() {
     
     try {
       await postsAPI.likePost(post.postId, user.id);
-      setIsLiked(!isLiked);
-      setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+      const newIsLiked = !isLiked;
+      setIsLiked(newIsLiked);
+      setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
     } catch (error) {
       console.error('Error liking post:', error);
       alert('좋아요 처리 중 오류가 발생했습니다.');
@@ -192,9 +207,13 @@ function CommunityDetail() {
     }
     
     try {
-      await postsAPI.followUser(post.userId);
-      setIsFollowing(!isFollowing);
-      alert(isFollowing ? '팔로우가 취소되었습니다.' : '팔로우 되었습니다.');
+      // post.username (작성자의 id)를 사용
+      const response = await postsAPI.followUser(post.username);
+      if (response.status === 200) {
+        const newIsFollowing = !isFollowing;
+        setIsFollowing(newIsFollowing);
+        alert(newIsFollowing ? '팔로우 되었습니다.' : '팔로우가 취소되었습니다.');
+      }
     } catch (error) {
       console.error('Error following user:', error);
       alert('팔로우 처리 중 오류가 발생했습니다.');

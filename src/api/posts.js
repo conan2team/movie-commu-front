@@ -40,9 +40,49 @@ export const postsAPI = {
     searchByUsername: (nickname, page = 0, size = 10) => 
         api.get(`/posts/search/nickname?nickname=${nickname}&page=${page}&size=${size}`),
     
+    // 게시글 좋아요 상태 확인
+    checkLikeStatus: async (postId, username) => {
+        try {
+            const response = await api.get('/posts/like/check', {
+                params: {
+                    postId,
+                    username
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Check like status error:', error);
+            return false;
+        }
+    },
+    
     // 게시글 좋아요
     likePost: (postId, username) => 
-        api.post('/posts/like', { postId, username }),
+        api.post('/posts/like', null, {
+            params: {
+                postId,
+                username
+            }
+        }),
+    
+    // 유저 팔로우/언팔로우
+    followUser: (username) => 
+        api.post('/follow', null, {
+            params: { username }
+        }),
+    
+    // 팔로우 상태 확인
+    checkFollowStatus: async (username) => {
+        try {
+            const response = await api.get('/follow/check', {
+                params: { username }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Check follow status error:', error);
+            return false;
+        }
+    },
     
     // 댓글 관련 API 추가
     createComment: (content, postId, username) => 
