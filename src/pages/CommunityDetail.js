@@ -54,6 +54,35 @@ function CommunityDetail() {
           files: postData.files || []
         });
         
+        setLikeCount(postData.heart || 0);
+        
+        // 로그인한 경우에만 좋아요와 팔로우 상태 확인
+        if (user) {
+          try {
+            // 좋아요 상태 확인
+            const likeStatus = await postsAPI.checkLikeStatus(Number(postData.postId), user.id);
+            console.log('Like status:', likeStatus);
+            setIsLiked(likeStatus);
+            
+            // 로컬 스토리지에 좋아요 상태 저장
+            localStorage.setItem(`like_${user.id}_${postData.postId}`, likeStatus);
+            
+            // 팔로우 상태 확인
+            if (userData) {
+              const followStatus = await postsAPI.checkFollowStatus(user.id, userData.id);
+              console.log('Follow status:', followStatus);
+              setIsFollowing(followStatus);
+            }
+          } catch (error) {
+            console.error('Error checking status:', error);
+            // 로컬 스토리지에서 이전 상태 확인
+            const savedLikeStatus = localStorage.getItem(`like_${user.id}_${postData.postId}`);
+            if (savedLikeStatus !== null) {
+              setIsLiked(savedLikeStatus === 'true');
+            }
+          }
+        }
+        
         // 댓글 데이터 설정
         const commentsData = response.data.comment || [];
         const commentUsers = response.data.commentUser || [];
@@ -65,24 +94,6 @@ function CommunityDetail() {
         }));
 
         setCommentList(commentsWithUserInfo);
-        setLikeCount(postData.heart || 0);
-        
-        // 로그인한 경우에만 좋아요와 팔로우 상태 확인
-        if (user) {
-          try {
-            // 좋아요 상태 확인
-            const likeStatus = await postsAPI.checkLikeStatus(postData.postId, user.id);
-            setIsLiked(likeStatus);
-            
-            // 팔로우 상태 확인 (게시글 작성자의 username으로 확인)
-            if (userData) {
-              const followStatus = await postsAPI.checkFollowStatus(userData.id);
-              setIsFollowing(followStatus);
-            }
-          } catch (error) {
-            console.error('Error checking status:', error);
-          }
-        }
       }
     } catch (error) {
       console.error('Error fetching post:', error);
