@@ -72,9 +72,16 @@ export const movieAPI = {
     
     // 리뷰 삭제
     deleteReview: async (movieId, userId) => {
-        console.log('Deleting review - movieId:', movieId, 'userId:', userId);
-        const response = await api.post(`/movie/${Number(movieId)}/delete?userId=${Number(userId)}`);
-        return response;
+        try {
+            console.log('API call - Delete review:', { movieId, userId });
+            const response = await api.post(`/movie/${movieId}/delete`, null, {
+                params: { userId }
+            });
+            return response;
+        } catch (error) {
+            console.error('Delete review API error:', error);
+            throw error;
+        }
     },
     
     getReviews: async (movieId) => {

@@ -1,16 +1,26 @@
 /* 리뷰 섹션 전체 스타일 */
-.reviews-section.card {
-  margin-top: 2rem;
+.reviews-section {
+  margin: 2rem 0;
   background-color: var(--bg-color);
+  border: 1px solid var(--border-color) !important;
   border-radius: 8px;
   box-shadow: 0 2px 8px var(--card-shadow);
+}
+
+.reviews-section .card-header {
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.reviews-section .card-body {
+  padding: 0 !important;
 }
 
 /* 리뷰 작성 폼 */
 .review-form {
   padding: 1.5rem;
   border-bottom: 1px solid var(--border-color);
-  background-color: rgba(0, 0, 0, 0.02); 
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 .review-form textarea {
@@ -23,83 +33,61 @@
   background-color: var(--bg-color);
 }
 
-.review-form select {
-  width: 200px;
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-}
-
-/* 개별 리뷰 스타일 */
+/* 개별 리뷰 아이템 */
 .review-item {
   padding: 1.5rem;
   border-bottom: 1px solid var(--border-color);
-  transition: background-color 0.2s ease;
+  background-color: var(--bg-color);
 }
 
 .review-item:last-child {
   border-bottom: none;
 }
 
-.review-item:hover {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-/* 리뷰 헤더 (작성자 정보 및 버튼) */
 .review-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.5rem;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
 }
 
 .review-author {
   display: flex;
   align-items: center;
-  gap: 1rem;
-}
-
-.review-author strong {
-  color: var(--bs-primary);
-  font-size: 1rem;
-  font-weight: bold;
+  gap: 0.5rem;
 }
 
 .review-rating {
   color: #ffc107;
-  font-size: 1.2rem;
+  margin-left: 0.5rem;
+}
+
+/* 리뷰 버튼 */
+.review-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.review-buttons button {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
 }
 
 /* 리뷰 내용 */
 .review-content {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.02);
+  border-radius: 4px;
   color: var(--text-color);
-  font-size: 1rem;
-  line-height: 1.6; 
-  padding: 1.5rem; 
-  background-color: rgba(255, 255, 255, 0.9); 
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
-/* 리뷰 버튼 그룹 */
-.review-buttons {
-  display: flex;
-  gap: 1rem; 
-}
-
-.review-buttons button {
-  padding: 0.5rem 1rem; 
-  font-size: 0.9rem; 
-  border-radius: 4px; 
-  transition: background-color 0.3s; 
-}
-
-.review-buttons button:hover {
-  background-color: rgba(0, 0, 0, 0.1); 
+/* 리뷰 구분선 효과 */
+.review-item:hover {
+  background-color: rgba(0, 0, 0, 0.01);
 }
 
 /* 페이지네이션 스타일 */

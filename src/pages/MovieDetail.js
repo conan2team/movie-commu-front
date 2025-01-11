@@ -205,20 +205,25 @@ function MovieDetail() {
         }
     };
 
-    const handleReviewDelete = async () => {
+    const handleReviewDelete = async (review) => {
         if (!window.confirm('리뷰를 삭제하시겠습니까?')) {
             return;
         }
         
         try {
-            await movieAPI.deleteReview(Number(id), Number(user.userId));
+            const movieId = review.movieId;  // 리뷰 객체의 movieId 사용
+            const userId = user.userId;
+            
+            console.log('Deleting review:', { movieId, userId });
+            
+            await movieAPI.deleteReview(movieId, userId);
             alert('리뷰가 삭제되었습니다.');
             setUserReview(null);
             setReview({ content: '', rating: 5 });
             setIsEditing(false);
-            await fetchMovieAndReviews();  // 리뷰 목록 새로고침
-        } catch (err) {
-            console.error('Error deleting review:', err);
+            await fetchMovieAndReviews();
+        } catch (error) {
+            console.error('Error deleting review:', error);
             alert('리뷰 삭제 중 오류가 발생했습니다.');
         }
     };
@@ -335,62 +340,43 @@ function MovieDetail() {
         // 로그인하지 않은 경우
         if (!user) return null;
 
-        // 이미 리뷰를 작성했고 수정 모드가 아닌 경우
-        if (userReview && !isEditing) {
-            console.log('User has review and not editing');
-            return null;
-        }
-
-        console.log('Rendering review form:', { userReview, isEditing });
+        // 이미 리뷰를 작성한 경우
+        if (userReview) return null;
 
         return (
-            <Form onSubmit={handleReviewSubmit} className="mb-4">
-                <Form.Group className="mb-3">
-                    <Form.Label>평점</Form.Label>
-                    <Form.Select 
-                        value={review.rating} 
-                        onChange={(e) => setReview({
-                            ...review, 
-                            rating: parseInt(e.target.value)
-                        })}
-                    >
-                        {[5,4,3,2,1].map(num => (
-                            <option key={num} value={num}>
-                                {'★'.repeat(num)}{'☆'.repeat(5-num)}
-                            </option>
-                        ))}
-                    </Form.Select>
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>리뷰 내용</Form.Label>
-                    <Form.Control
-                        as="textarea"
-                        rows={3}
-                        value={review.content}
-                        onChange={(e) => setReview({
-                            ...review, 
-                            content: e.target.value
-                        })}
-                        placeholder="영화에 대한 리뷰를 작성해주세요."
-                        required
-                    />
-                </Form.Group>
-                <Button type="submit" variant="primary">
-                    {isEditing ? '리뷰 수정' : '리뷰 등록'}
-                </Button>
-                {isEditing && (
-                    <Button 
-                        variant="secondary" 
-                        className="ms-2"
-                        onClick={() => {
-                            setIsEditing(false);
-                            setReview({ content: '', rating: 5 });
-                        }}
-                    >
-                        취소
-                    </Button>
-                )}
-            </Form>
+            <div className="review-form">
+                <Form onSubmit={handleReviewSubmit}>
+                    <Form.Group className="mb-3">
+                        <Form.Label>평점</Form.Label>
+                        <Form.Select 
+                            value={review.rating} 
+                            onChange={(e) => setReview({
+                                ...review, 
+                                rating: parseInt(e.target.value)
+                            })}
+                        >
+                            {[5,4,3,2,1].map(num => (
+                                <option key={num} value={num}>
+                                    {'★'.repeat(num)}{'☆'.repeat(5-num)}
+                                </option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={review.content}
+                            onChange={(e) => setReview({...review, content: e.target.value})}
+                            placeholder="영화에 대한 리뷰를 작성해주세요."
+                            required
+                        />
+                    </Form.Group>
+                    <div className="d-flex justify-content-end">
+                        <Button type="submit" variant="primary">리뷰 등록</Button>
+                    </div>
+                </Form>
+            </div>
         );
     };
 
@@ -465,12 +451,15 @@ function MovieDetail() {
                     <Row className="mt-5">
                         <Col>
                             <Card className="reviews-section">
-                                <Card.Header>
+                                <Card.Header className="p-3">
                                     <h5 className="mb-0">리뷰 {allReviews.length}개</h5>
                                 </Card.Header>
-                                <Card.Body className="p-0">
-                                    {/* 리뷰 작성/수정 폼 */}
-                                    {user && (
+                                <Card.Body>
+                                    {/* 리뷰 작성 폼 - userReview가 없을 때만 표시 */}
+                                    {user && !userReview && !isEditing && renderReviewForm()}
+
+                                    {/* 리뷰 수정 폼 - 수정 모드일 때만 표시 */}
+                                    {user && isEditing && (
                                         <div className="review-form">
                                             <Form onSubmit={handleReviewSubmit}>
                                                 <Form.Group className="mb-3">
@@ -530,7 +519,7 @@ function MovieDetail() {
                                                 <div className="review-author">
                                                     <strong>{review.nickname}</strong>
                                                     {user && Number(user.userId) === Number(review.userId) && 
-                                                        <span className="text-primary ms-2">(내 리뷰)</span>
+                                                        <span className="text-primary">(내 리뷰)</span>
                                                     }
                                                     <div className="review-rating">
                                                         {'★'.repeat(review.rating)}
