@@ -36,7 +36,38 @@ function CommunityDetail() {
     setCurrentCommentPage(pageNumber);
   };
 
-  // 게시글과 댓글 데이터 로드
+  // 좋아요와 팔로우 상태를 체크하는 함수
+  const checkUserInteractions = async () => {
+    if (!user || !post) return;
+
+    try {
+      // 좋아요 상태 확인
+      const likeStatus = await postsAPI.checkLikeStatus(Number(post.postId), user.id);
+      console.log('Like status checked:', likeStatus);
+      setIsLiked(likeStatus);
+      
+      // 팔로우 상태 확인
+      if (post.username) {
+        const followStatus = await postsAPI.checkFollowStatus(user.id, post.username);
+        console.log('Follow status checked:', followStatus);
+        setIsFollowing(followStatus);
+      }
+    } catch (error) {
+      console.error('Error checking user interactions:', error);
+      // 로컬 스토리지에서 이전 상태 확인
+      const savedLikeStatus = localStorage.getItem(`like_${user.id}_${post.postId}`);
+      const savedFollowStatus = localStorage.getItem(`follow_${user.id}_${post.username}`);
+      
+      if (savedLikeStatus !== null) {
+        setIsLiked(savedLikeStatus === 'true');
+      }
+      if (savedFollowStatus !== null) {
+        setIsFollowing(savedFollowStatus === 'true');
+      }
+    }
+  };
+
+  // 게시글 데이터 가져오기
   const fetchPostData = async () => {
     try {
       const response = await postsAPI.getPostDetail(id);
@@ -56,33 +87,6 @@ function CommunityDetail() {
         
         setLikeCount(postData.heart || 0);
         
-        // 로그인한 경우에만 좋아요와 팔로우 상태 확인
-        if (user) {
-          try {
-            // 좋아요 상태 확인
-            const likeStatus = await postsAPI.checkLikeStatus(Number(postData.postId), user.id);
-            console.log('Like status:', likeStatus);
-            setIsLiked(likeStatus);
-            
-            // 로컬 스토리지에 좋아요 상태 저장
-            localStorage.setItem(`like_${user.id}_${postData.postId}`, likeStatus);
-            
-            // 팔로우 상태 확인
-            if (userData) {
-              const followStatus = await postsAPI.checkFollowStatus(user.id, userData.id);
-              console.log('Follow status:', followStatus);
-              setIsFollowing(followStatus);
-            }
-          } catch (error) {
-            console.error('Error checking status:', error);
-            // 로컬 스토리지에서 이전 상태 확인
-            const savedLikeStatus = localStorage.getItem(`like_${user.id}_${postData.postId}`);
-            if (savedLikeStatus !== null) {
-              setIsLiked(savedLikeStatus === 'true');
-            }
-          }
-        }
-        
         // 댓글 데이터 설정
         const commentsData = response.data.comment || [];
         const commentUsers = response.data.commentUser || [];
@@ -101,9 +105,15 @@ function CommunityDetail() {
     }
   };
 
+  // 게시글 데이터 가져오기
   useEffect(() => {
     fetchPostData();
   }, [id]);
+
+  // 좋아요와 팔로우 상태 체크
+  useEffect(() => {
+    checkUserInteractions();
+  }, [user, post]); // user나 post가 변경될 때마다 상태 체크
 
   // 게시글 삭제
   const handleDelete = async () => {
@@ -194,6 +204,7 @@ function CommunityDetail() {
     }
   };
 
+  // 좋아요 처리
   const handleLike = async () => {
     if (!user) {
       alert('로그인이 필요합니다.');
@@ -205,6 +216,9 @@ function CommunityDetail() {
       const newIsLiked = !isLiked;
       setIsLiked(newIsLiked);
       setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
+      
+      // 로컬 스토리지에 상태 저장
+      localStorage.setItem(`like_${user.id}_${post.postId}`, newIsLiked);
     } catch (error) {
       console.error('Error liking post:', error);
       alert('좋아요 처리 중 오류가 발생했습니다.');
@@ -259,16 +273,6 @@ function CommunityDetail() {
               <div className="post-meta">
                 <span className="post-date">{post.created}</span>
                 <span className="post-views">조회수: {post.cnt}</span>
-                <div className="like-section">
-                  <Button 
-                    variant={isLiked ? "primary" : "outline-primary"}
-                    size="sm"
-                    onClick={handleLike}
-                    className="like-btn"
-                  >
-                    <FaThumbsUp /> {likeCount}
-                  </Button>
-                </div>
               </div>
             </div>
             {user && Number(user.userId) === Number(post.userId) && (
@@ -313,6 +317,16 @@ function CommunityDetail() {
               </div>
             )}
             {post.content}
+          </div>
+          
+          <div className="like-section">
+            <Button 
+              variant={isLiked ? "primary" : "outline-primary"}
+              onClick={handleLike}
+              className="like-btn"
+            >
+              <FaThumbsUp /> {likeCount}
+            </Button>
           </div>
         </Card.Body>
         <Card.Footer>
