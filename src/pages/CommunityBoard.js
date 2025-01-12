@@ -17,19 +17,47 @@ function CommunityBoard() {
   const [posts, setPosts] = useState([]);
   const [searchType, setSearchType] = useState(searchParams.get('type') || 'title');
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page')) || 0); // 백엔드는 0부터 시작
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page')) || 0);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage] = useState(15);
 
+  // 초기 로드 및 URL 변경 시 실행
+  useEffect(() => {
+    const currentParams = new URLSearchParams(location.search);
+    const searchQuery = currentParams.get('search');
+    const searchTypeQuery = currentParams.get('type');
+    const pageQuery = parseInt(currentParams.get('page'));
+
+    // URL이 /community인 경우 (검색 파라미터가 없는 경우)
+    if (location.pathname === '/community' && !location.search) {
+      setSearchTerm('');
+      setSearchType('title');
+      setCurrentPage(0);
+      loadPosts(0);
+      return;
+    }
+
+    // 검색 파라미터가 있는 경우
+    setSearchTerm(searchQuery || '');
+    setSearchType(searchTypeQuery || 'title');
+    setCurrentPage(pageQuery || 0);
+    
+    if (searchQuery) {
+      loadPosts(pageQuery || 0, searchQuery, searchTypeQuery);
+    } else {
+      loadPosts(pageQuery || 0);
+    }
+  }, [location.pathname, location.search]);
+
   // 게시글 목록 로드
-  const loadPosts = async (page) => {
+  const loadPosts = async (page, search = '', type = 'title') => {
     try {
       let response;
-      if (searchTerm) {
-        if (searchType === 'author') {
-          response = await postsAPI.searchByUsername(searchTerm.trim(), page, itemsPerPage);
+      if (search) {
+        if (type === 'author') {
+          response = await postsAPI.searchByUsername(search.trim(), page, itemsPerPage);
         } else {
-          response = await postsAPI.searchPosts(searchTerm, page, itemsPerPage);
+          response = await postsAPI.searchPosts(search, page, itemsPerPage);
         }
       } else {
         response = await postsAPI.getPostsList(page, itemsPerPage);
@@ -38,19 +66,14 @@ function CommunityBoard() {
       console.log('Posts response:', response);
       
       if (response?.data) {
-        const postsData = response.data.post.content;  // content 배열에서 게시글 가져오기
+        const postsData = response.data.post.content;
         const userData = response.data.user;
         
-        const postsWithUserInfo = postsData.map((post, index) => {
-          // 같은 인덱스의 user 정보 사용
-          const user = userData[index];
-          return {
-            ...post,
-            nickname: user?.nickname || '알 수 없음'
-          };
-        });
+        const postsWithUserInfo = postsData.map((post, index) => ({
+          ...post,
+          nickname: userData[index]?.nickname || '알 수 없음'
+        }));
 
-        console.log('Posts with user info:', postsWithUserInfo);
         setPosts(postsWithUserInfo);
         setTotalPages(response.data.post.totalPages || 0);
       }
@@ -61,21 +84,19 @@ function CommunityBoard() {
     }
   };
 
-  useEffect(() => {
-    loadPosts(currentPage);
-  }, [currentPage]);
-
-  const handleSearch = async (e) => {
+  // 검색 핸들러
+  const handleSearch = (e) => {
     e.preventDefault();
     const params = new URLSearchParams();
+    
     if (searchTerm.trim()) {
       params.set('type', searchType);
       params.set('search', searchTerm.trim());
+      params.set('page', '0');
+      navigate(`/community?${params.toString()}`);
+    } else {
+      navigate('/community');
     }
-    params.set('page', '0'); // 검색 시 첫 페이지로
-    navigate(`/community?${params.toString()}`);
-    setCurrentPage(0);
-    await loadPosts(0);
   };
 
   const handlePageChange = async (pageNumber) => {
@@ -175,15 +196,7 @@ function CommunityBoard() {
                 <td>{formatDate(post.created)}</td>
                 <td className="text-center">{post.heart || 0}</td>
                 <td className="text-center">{post.cnt || 0}</td>
-                {user?.userId === post.userId && (
-                  <Button 
-                    variant="outline-primary" 
-                    size="sm" 
-                    onClick={() => navigate(`/community/edit/${post.postId}`)}
-                  >
-                    수정
-                  </Button>
-                )}
+                
               </tr>
             ))
           ) : (

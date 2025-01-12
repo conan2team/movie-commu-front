@@ -1,10 +1,16 @@
 import { Form, InputGroup, Button, Container } from 'react-bootstrap';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function SearchMovie() {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 페이지 진입/뒤로가기 시 검색어 초기화
+  useEffect(() => {
+    setSearchTerm('');
+  }, [location.pathname]);
 
   const handleSearch = (e) => {
     e.preventDefault();
