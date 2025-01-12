@@ -144,4 +144,14 @@ export const userAPI = {
   // 찜한 영화 목록 조회
   getGgimMovies: () => 
     api.get('/ggim/movie'),
+
+  // 현재 예매 내역 조회
+  getReservations: () => {
+    return api.get('/myReserve');
+  },
+
+  // 지난 예매 내역 조회
+  getPreviousReservations: () => {
+    return api.get('/myReserve/previous');
+  }
 }; 

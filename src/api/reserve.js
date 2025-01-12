@@ -28,5 +28,18 @@ export const reserveAPI = {
     return api.post(`/reserve/delete`, null, {
       params: { seatId, scheduleId }
     });
+  },
+
+  // 예매 취소
+  deleteReservation: (seatId, scheduleId) => {
+    const params = new URLSearchParams();
+    params.append('seatId', seatId);
+    params.append('scheduleId', scheduleId);
+    
+    return api.post('/reserve/delete', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
   }
 }; 

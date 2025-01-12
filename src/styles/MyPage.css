@@ -68,4 +68,19 @@
 
 [data-bs-theme="dark"] .list-item .card-text {
     color: #adb5bd;
+}
+
+/* 예매 취소 버튼 스타일 추가 */
+.list-item .btn-danger {
+    margin-top: 1rem;
+}
+
+[data-bs-theme="dark"] .list-item .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+[data-bs-theme="dark"] .list-item .btn-danger:hover {
+    background-color: #bb2d3b;
+    border-color: #b02a37;
 } 
