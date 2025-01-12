@@ -205,6 +205,11 @@ function MovieDetail() {
         }
     };
 
+    const canDeleteReview = (review) => {
+        // 사용자가 관리자이거나, 리뷰 작성자와 동일한 경우에만 삭제 가능
+        return user && (user.role === 'ROLE_ADMIN' || Number(user.userId) === Number(review.userId));
+    };
+
     const handleReviewDelete = async (review) => {
         if (!window.confirm('리뷰를 삭제하시겠습니까?')) {
             return;
@@ -212,7 +217,7 @@ function MovieDetail() {
         
         try {
             const movieId = review.movieId;  // 리뷰 객체의 movieId 사용
-            const userId = user.userId;
+            const userId = review.userId;    // 리뷰 작성자의 userId 사용
             
             console.log('Deleting review:', { movieId, userId });
             
@@ -566,15 +571,17 @@ function MovieDetail() {
                                                         {'☆'.repeat(5 - review.rating)}
                                                     </div>
                                                 </div>
-                                                {user && Number(user.userId) === Number(review.userId) && (
+                                                {canDeleteReview(review) && (
                                                     <div className="review-buttons">
-                                                        <Button 
-                                                            variant="outline-primary" 
-                                                            size="sm" 
-                                                            onClick={() => handleEditClick(review)}
-                                                        >
-                                                            수정
-                                                        </Button>
+                                                        {Number(user.userId) === Number(review.userId) && (
+                                                            <Button 
+                                                                variant="outline-primary" 
+                                                                size="sm" 
+                                                                onClick={() => handleEditClick(review)}
+                                                            >
+                                                                수정
+                                                            </Button>
+                                                        )}
                                                         <Button 
                                                             variant="outline-danger" 
                                                             size="sm"
