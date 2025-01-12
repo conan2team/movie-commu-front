@@ -127,4 +127,38 @@ export const postsAPI = {
     // 전체 게시글 목록 조회 (페이지네이션 없이)
     getAllPosts: () => 
         api.get('/posts/list/all'),
+    
+    // 유저 정보 조회
+    getUserInfo: (username) => 
+        api.get(`/userPage?username=${username}`),
+    
+    // 유저가 작성한 게시글 목록 (username으로 검색)
+    getUserPosts: (username) => 
+        api.get(`/posts/search/username`, {
+            params: {
+                username: username,
+                page: 0,
+                size: 100
+            }
+        }),
+    
+    // 팔로워 목록 조회
+    getFollowers: (username) => 
+        api.get(`/followerList`, {
+            params: {
+                username: username,
+                size: 100,
+                page: 0
+            }
+        }),
+    
+    // 팔로잉 목록 조회
+    getFollowing: (username) => 
+        api.get(`/followingList`, {
+            params: {
+                username: username,
+                size: 100,
+                page: 0
+            }
+        }),
 }; 

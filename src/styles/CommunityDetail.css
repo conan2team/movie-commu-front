@@ -39,7 +39,7 @@
 .post-card .card-body {
   background-color: var(--bg-color) !important;
   padding: 2rem !important;
-  min-height: 200px;
+  /* min-height: 200px; */
 }
 
 .post-content {

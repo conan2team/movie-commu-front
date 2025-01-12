@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Button, Form } from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FaTrash, FaThumbsUp } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import { postsAPI } from '../api/posts';
@@ -258,15 +258,17 @@ function CommunityDetail() {
             </div>
             <div className="post-info">
               <div className="author-info">
-                <span className="author-name">{post.nickname}</span>
-                {user && user.id !== post.userId && (
-                  <Button 
-                    variant={isFollowing ? "outline-secondary" : "outline-primary"}
+                <Link to={`/user/${post.username}`} className="author-name">
+                  {post.nickname}
+                </Link>
+                {user && user.id !== post.username && (
+                  <Button
+                    variant={isFollowing ? "secondary" : "primary"}
                     size="sm"
-                    onClick={handleFollow}
                     className="follow-btn"
+                    onClick={handleFollow}
                   >
-                    {isFollowing ? '팔로우 취소' : '팔로우'}
+                    {isFollowing ? '팔로잉' : '팔로우'}
                   </Button>
                 )}
               </div>
