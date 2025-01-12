@@ -54,11 +54,7 @@ function CommunityBoard() {
     try {
       let response;
       if (search) {
-        if (type === 'author') {
-          response = await postsAPI.searchByUsername(search.trim(), page, itemsPerPage);
-        } else {
-          response = await postsAPI.searchPosts(search, page, itemsPerPage);
-        }
+        response = await postsAPI.searchPosts(search.trim(), page, itemsPerPage, type);
       } else {
         response = await postsAPI.getPostsList(page, itemsPerPage);
       }
@@ -105,7 +101,16 @@ function CommunityBoard() {
     navigate(`${location.pathname}?${params.toString()}`);
     setCurrentPage(pageNumber - 1);
     window.scrollTo(0, 0);
-    await loadPosts(pageNumber - 1);
+
+    // 현재 검색 조건이 있다면 그대로 유지하면서 페이지 로드
+    const searchQuery = params.get('search');
+    const searchTypeQuery = params.get('type');
+    
+    if (searchQuery) {
+        await loadPosts(pageNumber - 1, searchQuery, searchTypeQuery);
+    } else {
+        await loadPosts(pageNumber - 1);
+    }
   };
 
   const formatDate = (dateString) => {

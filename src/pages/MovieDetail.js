@@ -216,8 +216,8 @@ function MovieDetail() {
         }
         
         try {
-            const movieId = review.movieId;  // 리뷰 객체의 movieId 사용
-            const userId = review.userId;    // 리뷰 작성자의 userId 사용
+            const movieId = review.movieId;  
+            const userId = review.userId;    
             
             console.log('Deleting review:', { movieId, userId });
             

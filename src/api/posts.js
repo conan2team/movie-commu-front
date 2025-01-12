@@ -38,14 +38,23 @@ export const postsAPI = {
         return api.post(`/posts/delete/${postId}`, formData);
     },
     
-    // 게시글 검색 (제목/내용)
-    searchPosts: (keyword, page = 0, size = 10) => 
-        api.get(`/posts/search?keyword=${keyword}&page=${page}&size=${size}`),
+    // 게시글 검색 (검색 타입에 따라 다른 엔드포인트 사용)
+    searchPosts: (keyword, page = 0, size = 10, searchType = 'title') => {
+        switch(searchType) {
+            case 'title':
+                return api.get(`/posts/search/title?keyword=${keyword}&page=${page}&size=${size}`);
+            case 'content':
+                return api.get(`/posts/search/content?keyword=${keyword}&page=${page}&size=${size}`);
+            case 'titleContent':
+                return api.get(`/posts/search?keyword=${keyword}&page=${page}&size=${size}`);
+            case 'author':
+                return api.get(`/posts/search/nickname?nickname=${keyword}&page=${page}&size=${size}`);
+            default:
+                return api.get(`/posts/search/title?keyword=${keyword}&page=${page}&size=${size}`);
+        }
+    },
     
-    // 게시글 검색 (작성자)
-    searchByUsername: (nickname, page = 0, size = 10) => 
-        api.get(`/posts/search/nickname?nickname=${nickname}&page=${page}&size=${size}`),
-    
+ 
     // 게시글 좋아요 상태 확인
     checkLikeStatus: async (postId, username) => {
         try {
