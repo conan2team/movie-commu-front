@@ -148,9 +148,6 @@ function NowPlaying() {
   return (
     <div>
       <div className="now-playing-header">
-        <div className="header-overlay">
-          <h1>현재 상영작</h1>
-        </div>
       </div>
 
       <Container>

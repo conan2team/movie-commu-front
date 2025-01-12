@@ -45,7 +45,7 @@ export function useHomeData() {
         });
 
         setHomeData({
-          topMovies: topMovies.slice(0, 10),
+          topMovies: topMovies.slice(0, 5),
           recentMovies: recentMovies.slice(0, 5),
           recentPosts: recentPosts
         });

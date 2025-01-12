@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
 import { useHomeData } from '../hooks/useHome';
 import '../styles/Home.css';
+import nowPlayingBanner from '../assets/now_playing_banner.jpg';
 
 function Home() {
   const { homeData, loading, error } = useHomeData();
@@ -64,83 +65,96 @@ function Home() {
         </Form>
       </div>
 
+      {/* 현재 상영작 배너 카드 */}
+      <Card className="mb-4 now-playing-card">
+        <Card.Header className="d-flex justify-content-between align-items-center">
+          <h5 className="mb-0">현재 상영작</h5>
+          <Link to="/now-playing" className="more-link">더보기</Link>
+        </Card.Header>
+        <Link to="/now-playing" className="text-decoration-none">
+          <Card.Body className="p-0">
+            <div className="now-playing-banner">
+              <img src={nowPlayingBanner} alt="현재 상영작" className="w-100" />
+              <div className="banner-overlay">
+                <h3>현재 상영중인 인기 영화를 만나보세요</h3>
+              </div>
+            </div>
+          </Card.Body>
+        </Link>
+      </Card>
+
+      {/* 최신 영화 목록 카드 */}
+      <Card className="mb-4">
+        <Card.Header className="d-flex justify-content-between align-items-center">
+          <h5 className="mb-0">영화 목록</h5>
+          <Link to="/movies" className="more-link">더보기</Link>
+        </Card.Header>
+        <Card.Body className="p-0">
+          <div className="movie-grid">
+            {homeData.recentMovies.map((movie) => (
+              <Link key={movie.movieId} to={`/movie/${movie.movieId}`} className="movie-grid-item">
+                <div className="movie-poster">
+                  <img src={movie.posterUrl} alt={movie.title} />
+                </div>
+                <div className="movie-info">
+                  <h6>{movie.title}</h6>
+                  <small className="text-muted">{movie.director}</small>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </Card.Body>
+      </Card>
+
+      {/* 평점 TOP 10과 자유게시판 */}
       <Row className="row-height-match">
-        {/* 왼쪽 컬럼: 평점 TOP 10과 최신 영화 */}
-        <Col md={8} className="d-flex flex-column">
-          {/* 평점 TOP 10 */}
-          <Card className="mb-4 flex-grow-0">
+        <Col md={6}>
+          <Card className="h-100">
             <Card.Header className="d-flex justify-content-between align-items-center">
-              <h5 className="mb-0">평점 TOP 10</h5>
+              <h5 className="mb-0">평점 TOP 5</h5>
               <Link to="/top-movies" className="more-link">더보기</Link>
             </Card.Header>
             <Card.Body className="p-0">
-              {homeData.topMovies.map((movie, index) => (
-                <div key={movie.movieId} className="top-movie-item d-flex align-items-center">
-                  <div className="me-3" style={{ width: '30px' }}>
-                    <strong>{index + 1}</strong>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <Link to={`/movie/${movie.movieId}`} className="text-decoration-none">
-                      <h6 className="mb-0">{movie.title}</h6>
-                    </Link>
-                    <small className="text-muted">
+              {homeData.topMovies.slice(0, 5).map((movie, index) => (
+                <Link 
+                  key={movie.movieId} 
+                  to={`/movie/${movie.movieId}`} 
+                  className="top-movie-item d-flex align-items-center text-decoration-none"
+                >
+                  <div className="rank-badge">{index + 1}</div>
+                  <div className="movie-info flex-grow-1">
+                    <h6 className="mb-1">{movie.title}</h6>
+                    <small className="text-muted d-block">
                       {movie.director} • {movie.genre}
                     </small>
                   </div>
-                  <div className="text-warning">
-                    ★ {movie.rating.toFixed(1)}
-                  </div>
-                </div>
-              ))}
-            </Card.Body>
-          </Card>
-
-          {/* 최신 영화 */}
-          <Card className="flex-grow-1">
-            <Card.Header className="d-flex justify-content-between align-items-center">
-              <h5 className="mb-0">영화 목록</h5>
-              <Link to="/movies" className="more-link">더보기</Link>
-            </Card.Header>
-            <Card.Body className="p-0">
-              {homeData.recentMovies.map((movie) => (
-                <div key={movie.movieId} className="movie-list-item d-flex align-items-center">
-                  <div style={{ flex: 1 }}>
-                    <Link to={`/movie/${movie.movieId}`} className="text-decoration-none">
-                      <h6 className="mb-0">{movie.title}</h6>
-                    </Link>
-                    <small className="text-muted">
-                      {movie.director} • {formatDate(movie.releaseDate)}
-                    </small>
-                  </div>
-                  <div className="text-muted">
-                    {movie.genre}
-                  </div>
-                </div>
+                  <div className="rating">★ {movie.rating?.toFixed(1)}</div>
+                </Link>
               ))}
             </Card.Body>
           </Card>
         </Col>
-
-        {/* 오른쪽 컬럼: 자유게시판 */}
-        <Col md={4} className="d-flex">
-          <Card className="w-100">
+        <Col md={6}>
+          <Card className="h-100">
             <Card.Header className="d-flex justify-content-between align-items-center">
               <h5 className="mb-0">자유게시판</h5>
               <Link to="/community" className="more-link">더보기</Link>
             </Card.Header>
             <Card.Body className="p-0">
               {homeData.recentPosts.map((post) => (
-                <div key={post.postId} className="board-list-item">
-                  <Link to={`/community/${post.postId}`} className="text-decoration-none">
-                    <h6>{post.title}</h6>
-                  </Link>
+                <Link 
+                  key={post.postId} 
+                  to={`/community/${post.postId}`}
+                  className="board-list-item text-decoration-none"
+                >
+                  <h6 className="text-truncate">{post.title}</h6>
                   <div className="board-meta">
                     <small className="text-muted">{post.nickname}</small>
                     <small className="text-muted">
                       {new Date(post.created).toLocaleDateString()}
                     </small>
                   </div>
-                </div>
+                </Link>
               ))}
             </Card.Body>
           </Card>
