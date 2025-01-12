@@ -44,13 +44,14 @@ export const AuthProvider = ({ children }) => {
       if (response.data) {
         const userData = {
           ...response.data,
-          userId: response.data.userId
+          userId: response.data.userId || response.data.user,
+          role: response.data.role || 'ROLE_USER'
         };
         console.log('Login processed user data:', userData);
         setUser(userData);
         return response.data;
       }
-      return null;
+      throw new Error('로그인 데이터가 없습니다.');
     } catch (error) {
       console.error('Login error:', error);
       throw error;

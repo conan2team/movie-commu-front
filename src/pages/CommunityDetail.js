@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Button, Form } from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FaTrash, FaThumbsUp } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import { postsAPI } from '../api/posts';
 import Pagination from '../components/Pagination';
 import '../styles/common.css';
 import '../styles/CommunityDetail.css';
+import { hasDeletePermission } from '../utils/authUtils';
 
 function CommunityDetail() {
   const { id } = useParams();
@@ -23,6 +24,7 @@ function CommunityDetail() {
   const [editCommentContent, setEditCommentContent] = useState('');
   const [currentCommentPage, setCurrentCommentPage] = useState(1);
   const [commentsPerPage] = useState(5); // 페이지당 5개의 댓글
+  const [isFollowing, setIsFollowing] = useState(false);
 
   // 현재 페이지의 댓글만 표시하기 위한 계산
   const indexOfLastComment = currentCommentPage * commentsPerPage;
@@ -35,23 +37,56 @@ function CommunityDetail() {
     setCurrentCommentPage(pageNumber);
   };
 
-  // 게시글과 댓글 데이터 로드
+  // 좋아요와 팔로우 상태를 체크하는 함수
+  const checkUserInteractions = async () => {
+    if (!user || !post) return;
+
+    try {
+      // 좋아요 상태 확인
+      const likeStatus = await postsAPI.checkLikeStatus(Number(post.postId), user.id);
+      console.log('Like status checked:', likeStatus);
+      setIsLiked(likeStatus);
+      
+      // 팔로우 상태 확인
+      if (post.username) {
+        const followStatus = await postsAPI.checkFollowStatus(user.id, post.username);
+        console.log('Follow status checked:', followStatus);
+        setIsFollowing(followStatus);
+      }
+    } catch (error) {
+      console.error('Error checking user interactions:', error);
+      // 로컬 스토리지에서 이전 상태 확인
+      const savedLikeStatus = localStorage.getItem(`like_${user.id}_${post.postId}`);
+      const savedFollowStatus = localStorage.getItem(`follow_${user.id}_${post.username}`);
+      
+      if (savedLikeStatus !== null) {
+        setIsLiked(savedLikeStatus === 'true');
+      }
+      if (savedFollowStatus !== null) {
+        setIsFollowing(savedFollowStatus === 'true');
+      }
+    }
+  };
+
+  // 게시글 데이터 가져오기
   const fetchPostData = async () => {
     try {
       const response = await postsAPI.getPostDetail(id);
       console.log('Post detail response:', response);
 
       if (response?.data) {
-        // 게시글 데이터 설정
         const postData = response.data.post;
         const userData = response.data.postUser;
         
         setPost({
           ...postData,
           userId: Number(postData.userId),
+          username: userData?.id,
           nickname: userData?.nickname || '알 수 없음',
           files: postData.files || []
         });
+        
+        setLikeCount(postData.heart || 0);
         
         // 댓글 데이터 설정
         const commentsData = response.data.comment || [];
@@ -64,10 +99,6 @@ function CommunityDetail() {
         }));
 
         setCommentList(commentsWithUserInfo);
-        setLikeCount(postData.heart || 0);
-        
-        console.log('Current user:', user);
-        console.log('Post user:', Number(postData.userId));
       }
     } catch (error) {
       console.error('Error fetching post:', error);
@@ -75,26 +106,35 @@ function CommunityDetail() {
     }
   };
 
+  // 게시글 데이터 가져오기
   useEffect(() => {
     fetchPostData();
   }, [id]);
 
+  // 좋아요와 팔로우 상태 체크
+  useEffect(() => {
+    checkUserInteractions();
+  }, [user, post]); // user나 post가 변경될 때마다 상태 체크
+
+  // 게시글 삭제 권한 체크
+  const canDeletePost = () => {
+    return hasDeletePermission(user, post.userId);
+  };
+
+  // 댓글 삭제 권한 체크
+  const canDeleteComment = (comment) => {
+    return hasDeletePermission(user, comment.userId);
+  };
+
   // 게시글 삭제
   const handleDelete = async () => {
-    if (!user) {
-      alert('로그인이 필요합니다.');
-      return;
-    }
-
-    if (window.confirm('정말 삭제하시겠습니까?')) {
-      try {
-        await postsAPI.deletePost(id);
-        alert('게시글이 삭제되었습니다.');
-        navigate('/community');
-      } catch (error) {
-        console.error('Delete error:', error);
-        alert('게시글 삭제에 실패했습니다.');
-      }
+    if (!canDeletePost()) return;
+    
+    try {
+      await postsAPI.deletePost(id, user);
+      navigate('/community');
+    } catch (error) {
+      console.error('Error deleting post:', error);
     }
   };
 
@@ -152,19 +192,54 @@ function CommunityDetail() {
 
   // 댓글 삭제
   const handleCommentDelete = async (commentId) => {
+    try {
+      await postsAPI.deleteComment(commentId, user);
+      // 삭제 후 댓글 목록 새로고침
+      const updatedComments = commentList.filter(comment => comment.commentId !== commentId);
+      setCommentList(updatedComments);
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+    }
+  };
+
+  // 좋아요 처리
+  const handleLike = async () => {
     if (!user) {
       alert('로그인이 필요합니다.');
       return;
     }
+    
+    try {
+      await postsAPI.likePost(post.postId, user.id);
+      const newIsLiked = !isLiked;
+      setIsLiked(newIsLiked);
+      setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
+      
+      // 로컬 스토리지에 상태 저장
+      localStorage.setItem(`like_${user.id}_${post.postId}`, newIsLiked);
+    } catch (error) {
+      console.error('Error liking post:', error);
+      alert('좋아요 처리 중 오류가 발생했습니다.');
+    }
+  };
 
-    if (window.confirm('댓글을 삭제하시겠습니까?')) {
-      try {
-        await postsAPI.deleteComment(commentId);
-        fetchPostData(); // 댓글 목록 새로고침
-      } catch (error) {
-        console.error('Comment delete error:', error);
-        alert('댓글 삭제에 실패했습니다.');
+  const handleFollow = async () => {
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+    
+    try {
+      // post.username (작성자의 id)를 사용
+      const response = await postsAPI.followUser(post.username);
+      if (response.status === 200) {
+        const newIsFollowing = !isFollowing;
+        setIsFollowing(newIsFollowing);
+        alert(newIsFollowing ? '팔로우 되었습니다.' : '팔로우가 취소되었습니다.');
       }
+    } catch (error) {
+      console.error('Error following user:', error);
+      alert('팔로우 처리 중 오류가 발생했습니다.');
     }
   };
 
@@ -175,17 +250,41 @@ function CommunityDetail() {
       {/* 게시글 카드 */}
       <Card className="post-card">
         <Card.Header>
-          <div className="d-flex justify-content-between align-items-center">
-            <h4>{post.title}</h4>
-            {/* userId를 Number로 변환하여 비교 */}
-            {user && Number(user.userId) === Number(post.userId) && (
-              <div className="d-flex gap-2">
-                <Button 
-                  variant="outline-primary" 
-                  onClick={() => navigate(`/community/edit/${id}`)}
-                >
-                  수정
-                </Button>
+          <div className="post-header">
+            <div className="post-title">
+              <h4>{post.title}</h4>
+            </div>
+            <div className="post-info">
+              <div className="author-info">
+                <Link to={`/user/${post.username}`} className="author-name">
+                  {post.nickname}
+                </Link>
+                {user && user.id !== post.username && (
+                  <Button
+                    variant={isFollowing ? "secondary" : "primary"}
+                    size="sm"
+                    className="follow-btn"
+                    onClick={handleFollow}
+                  >
+                    {isFollowing ? '팔로잉' : '팔로우'}
+                  </Button>
+                )}
+              </div>
+              <div className="post-meta">
+                <span className="post-date">{post.created}</span>
+                <span className="post-views">조회수: {post.cnt}</span>
+              </div>
+            </div>
+            {canDeletePost() && (
+              <div className="post-actions">
+                {Number(user.userId) === Number(post.userId) && (
+                  <Button 
+                    variant="outline-primary" 
+                    onClick={() => navigate(`/community/edit/${id}`)}
+                  >
+                    수정
+                  </Button>
+                )}
                 <Button 
                   variant="outline-danger" 
                   onClick={handleDelete}
@@ -194,11 +293,6 @@ function CommunityDetail() {
                 </Button>
               </div>
             )}
-          </div>
-          <div className="post-header-info">
-            <span>{post.nickname}</span>
-            <span>{post.created}</span>
-            <span>조회수: {post.cnt}</span>
           </div>
         </Card.Header>
         <Card.Body>
@@ -225,6 +319,16 @@ function CommunityDetail() {
               </div>
             )}
             {post.content}
+          </div>
+          
+          <div className="like-section">
+            <Button 
+              variant={isLiked ? "primary" : "outline-primary"}
+              onClick={handleLike}
+              className="like-btn"
+            >
+              <FaThumbsUp /> {likeCount}
+            </Button>
           </div>
         </Card.Body>
         <Card.Footer>
@@ -267,43 +371,24 @@ function CommunityDetail() {
                   <strong>{comment.nickname}</strong>
                   <span className="comment-date">{comment.created}</span>
                 </div>
-                {user && Number(user.userId) === Number(comment.userId) && (
+                {hasDeletePermission(user, comment.userId) && (
                   <div className="comment-buttons">
-                    {editingCommentId === comment.commentId ? (
-                      <>
-                        <Button
-                          variant="outline-success"
-                          size="sm"
-                          onClick={() => handleEditSubmit(comment.commentId)}
-                        >
-                          저장
-                        </Button>
-                        <Button
-                          variant="outline-secondary"
-                          size="sm"
-                          onClick={handleEditCancel}
-                        >
-                          취소
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button
-                          variant="outline-primary"
-                          size="sm"
-                          onClick={() => handleEditStart(comment)}
-                        >
-                          수정
-                        </Button>
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() => handleCommentDelete(comment.commentId)}
-                        >
-                          삭제
-                        </Button>
-                      </>
+                    {Number(user.userId) === Number(comment.userId) && (
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => handleEditStart(comment)}
+                      >
+                        수정
+                      </Button>
                     )}
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => handleCommentDelete(comment.commentId)}
+                    >
+                      삭제
+                    </Button>
                   </div>
                 )}
               </div>

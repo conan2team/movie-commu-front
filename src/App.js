@@ -15,6 +15,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import './styles/common.css';  // 전역 스타일
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import UserProfile from './pages/UserProfile';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route path="/movie/:id" element={<MovieDetail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/user/:username" element={<UserProfile />} />
           </Routes>
         </AuthProvider>
       </ThemeProvider>

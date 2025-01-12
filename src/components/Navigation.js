@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import logoLight from '../assets/logo-light.png';
+import logoDark from '../assets/logo-dark.png';
 
 function Navigation() {
   const { theme, toggleTheme } = useTheme();
@@ -26,15 +28,23 @@ function Navigation() {
   return (
     <Navbar bg={theme === 'dark' ? 'dark' : 'light'} variant={theme} expand="lg" className="mb-3">
       <Container>
-        <Navbar.Brand as={Link} to="/">영화탐정코난</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
+          <img
+            src={theme === 'dark' ? logoDark : logoLight}
+            alt="영화탐정코난 로고"
+            height="45"
+            className="me-3"
+          />
+          <span className="fs-4">영화탐정코난</span>
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">홈</Nav.Link>
-            <Nav.Link as={Link} to="/movies">영화</Nav.Link>
-            <Nav.Link as={Link} to="/now-playing">현재상영작</Nav.Link>
-            <Nav.Link as={Link} to="/top-movies">인기영화</Nav.Link>
-            <Nav.Link as={Link} to="/community">커뮤니티</Nav.Link>
+            <Nav.Link as={Link} to="/movies">영화 목록</Nav.Link>
+            <Nav.Link as={Link} to="/now-playing">현재 상영작</Nav.Link>
+            <Nav.Link as={Link} to="/top-movies">평점 TOP 10</Nav.Link>
+            <Nav.Link as={Link} to="/community">자유게시판</Nav.Link>
           </Nav>
           <div className="d-flex align-items-center gap-3">
             <Button 

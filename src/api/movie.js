@@ -42,17 +42,22 @@ export const movieAPI = {
     // 리뷰 작성
     createReview: async (movieId, reviewData) => {
         console.log('Creating review for movie:', movieId);
-        const reviewBody = {
-            movieId: Number(movieId),  // Long 타입으로 변환
-            userId: Number(reviewData.userId),  // Long 타입으로 변환
-            content: reviewData.content,
-            rating: parseFloat(reviewData.rating),  // float 타입으로 변환
-            up: 0,  // int 타입
-            down: 0  // int 타입
-        };
-        console.log('Review body:', reviewBody);
-        const response = await api.post(`/movie/${movieId}/write`, reviewBody);
-        return response;
+        
+        // URL 파라미터 형식으로 데이터 전송
+        const params = new URLSearchParams({
+            content: reviewData.content.trim(),
+            rating: parseFloat(reviewData.rating)
+        });
+        
+        try {
+            console.log('Sending review data:', params.toString());
+            const response = await api.post(`/movie/${movieId}/write?${params.toString()}`);
+            console.log('Review creation response:', response);
+            return response;
+        } catch (error) {
+            console.error('Review creation error:', error.response?.data);
+            throw new Error(error.response?.data?.message || '리뷰 작성 중 오류가 발생했습니다.');
+        }
     },
     
     // 리뷰 수정
@@ -61,25 +66,43 @@ export const movieAPI = {
         const reviewBody = {
             movieId: Number(movieId),
             userId: Number(reviewData.userId),
-            content: reviewData.content,
-            rating: parseFloat(reviewData.rating),
-            up: reviewData.up || 0,
-            down: reviewData.down || 0
+            content: String(reviewData.content).trim(),
+            rating: Number(reviewData.rating),
+            up: 0,
+            down: 0
         };
-        const response = await api.put(`/movie/${movieId}/update`, reviewBody);
-        return response;
+
+        try {
+            console.log('Sending update data:', reviewBody);
+            const response = await api.put(`/movie/${movieId}/update`, reviewBody);
+            console.log('Review update response:', response);
+            return response;
+        } catch (error) {
+            console.error('Review update error:', error.response?.data);
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            } else {
+                throw new Error('리뷰 수정 중 오류가 발생했습니다.');
+            }
+        }
     },
     
     // 리뷰 삭제
-    deleteReview: async (movieId, userId) => {
+    deleteReview: async (movieId, userId, currentUser) => {
         try {
             console.log('API call - Delete review:', { movieId, userId });
-            const response = await api.post(`/movie/${movieId}/delete`, null, {
-                params: { userId }
-            });
+            // FormData로 변경
+            const formData = new FormData();
+            formData.append('userId', userId);
+            
+            if (currentUser && currentUser.role === 'ROLE_ADMIN') {
+                formData.append('isAdmin', 'true');
+            }
+            
+            const response = await api.post(`/movie/${movieId}/delete`, formData);
             return response;
         } catch (error) {
-            console.error('Delete review API error:', error);
+            console.error('Delete review error:', error);
             throw error;
         }
     },

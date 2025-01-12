@@ -21,6 +21,22 @@ function MovieList() {
   const initialSearch = searchParams.get('search') || '';
   const pageParam = parseInt(searchParams.get('page')) || 1;
 
+  // 컴포넌트 마운트/언마운트 시 검색 상태 초기화
+  useEffect(() => {
+    return () => {
+      setSearchTerm('');
+      setCurrentPage(1);
+      setMovies([]);
+    };
+  }, []);
+
+  // URL 파라미터 변경 감지
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setSearchTerm(params.get('search') || '');
+    setCurrentPage(parseInt(params.get('page')) || 1);
+  }, [location.search]);
+
   useEffect(() => {
     if (initialSearch) {
       setSearchTerm(initialSearch);

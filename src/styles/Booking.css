@@ -129,7 +129,7 @@
 }
 
 .movie-info {
-  border-bottom: 1px solid #eee;
+  /* border-bottom: 1px solid #eee; */
   padding-bottom: 1rem;
   margin-bottom: 1rem;
 }
@@ -145,7 +145,7 @@
 }
 
 .card-header {
-  display: flex;
+  /* display: flex; */
   align-items: center;
   padding: 1rem;
 }

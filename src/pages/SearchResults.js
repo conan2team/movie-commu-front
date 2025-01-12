@@ -5,39 +5,51 @@ import { searchMovies } from '../api';
 
 function SearchResults() {
   const [searchParams] = useSearchParams();
-  const query = searchParams.get('q');
+  const query = searchParams.get('query');
   const [searchResults, setSearchResults] = useState([]);
   const [sortBy, setSortBy] = useState('rating'); // rating, title, date
   const [loading, setLoading] = useState(false);
 
+  // 컴포넌트 언마운트 시 결과 초기화
+  useEffect(() => {
+    return () => {
+      setSearchResults([]);
+      setSortBy('rating');
+    };
+  }, []);
+
   useEffect(() => {
     const fetchSearchResults = async () => {
-      if (query) {
-        setLoading(true);
-        try {
-          const results = await searchMovies(query);
-          let sortedResults = [...results];
-          
-          switch(sortBy) {
-            case 'rating':
-              sortedResults.sort((a, b) => b.star - a.star);
-              break;
-            case 'title':
-              sortedResults.sort((a, b) => a.title.localeCompare(b.title));
-              break;
-            case 'date':
-              sortedResults.sort((a, b) => new Date(b.created) - new Date(a.created));
-              break;
-            default:
-              break;
-          }
-          
-          setSearchResults(sortedResults);
-        } catch (error) {
-          console.error('검색 중 오류 발생:', error);
-        } finally {
-          setLoading(false);
+      if (!query) {
+        setSearchResults([]);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const results = await searchMovies(query);
+        let sortedResults = [...results];
+        
+        switch(sortBy) {
+          case 'rating':
+            sortedResults.sort((a, b) => b.star - a.star);
+            break;
+          case 'title':
+            sortedResults.sort((a, b) => a.title.localeCompare(b.title));
+            break;
+          case 'date':
+            sortedResults.sort((a, b) => new Date(b.created) - new Date(a.created));
+            break;
+          default:
+            break;
         }
+        
+        setSearchResults(sortedResults);
+      } catch (error) {
+        console.error('검색 중 오류 발생:', error);
+        setSearchResults([]);
+      } finally {
+        setLoading(false);
       }
     };
 
