@@ -1,10 +1,6 @@
-/* 리뷰 섹션 전체 스타일 */
+/* 리뷰 섹션 스타일 */
 .reviews-section {
-  margin: 2rem 0;
-  background-color: var(--bg-color);
-  border: 1px solid var(--border-color) !important;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px var(--card-shadow);
+  margin-top: 2rem;
 }
 
 .reviews-section .card-header {
@@ -12,32 +8,16 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-.reviews-section .card-body {
-  padding: 0 !important;
-}
-
-/* 리뷰 작성 폼 */
+/* 리뷰 폼 스타일 */
 .review-form {
   padding: 1.5rem;
   border-bottom: 1px solid var(--border-color);
-  background-color: rgba(0, 0, 0, 0.02);
 }
 
-.review-form textarea {
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 1rem;
-  font-size: 0.95rem;
-  resize: vertical;
-  min-height: 100px;
-  background-color: var(--bg-color);
-}
-
-/* 개별 리뷰 아이템 */
+/* 리뷰 아이템 스타일 */
 .review-item {
   padding: 1.5rem;
   border-bottom: 1px solid var(--border-color);
-  background-color: var(--bg-color);
 }
 
 .review-item:last-child {
@@ -48,83 +28,51 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .review-author {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
+}
+
+.review-author strong {
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.review-author .text-primary {
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
 }
 
 .review-rating {
   color: #ffc107;
+  font-size: 1rem;
   margin-left: 0.5rem;
 }
 
-/* 리뷰 버튼 */
 .review-buttons {
   display: flex;
   gap: 0.5rem;
-  margin-left: auto;
 }
 
-.review-buttons button {
-  padding: 0.25rem 0.75rem;
-  font-size: 0.85rem;
-}
-
-/* 리뷰 내용 */
 .review-content {
-  margin-top: 1rem;
-  padding: 0.5rem;
-  background-color: rgba(0, 0, 0, 0.02);
-  border-radius: 4px;
   color: var(--text-color);
   font-size: 0.95rem;
   line-height: 1.5;
+  white-space: pre-wrap;
 }
 
-/* 리뷰 구분선 효과 */
-.review-item:hover {
-  background-color: rgba(0, 0, 0, 0.01);
-}
-
-/* 페이지네이션 스타일 */
-.reviews-pagination {
-  display: flex;
-  justify-content: center;
-  padding: 1.5rem;
-  background-color: rgba(0, 0, 0, 0.02);
-  border-top: 1px solid var(--border-color);
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.reviews-pagination .pagination {
-  margin: 0;
-}
-
-/* 영화 정보 스타일 */
-.movie-info {
-  background-color: var(--bg-color);
+/* 리뷰 없을 때 메시지 */
+.no-reviews {
+  text-align: center;
   padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px var(--card-shadow);
-}
-
-.movie-poster img {
-  width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.movie-meta {
-  margin: 1rem 0;
   color: var(--text-muted);
 }
 
-.movie-description {
-  line-height: 1.6;
-  color: var(--text-color);
+/* 평점 선택 스타일 */
+.form-select option {
+  font-family: sans-serif;
 } 

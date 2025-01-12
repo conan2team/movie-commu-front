@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Button, Form, Card } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Card, Pagination } from 'react-bootstrap';
 import { movieAPI } from '../api/movie';
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/Loading';
+import '../styles/MovieDetail.css';
 
 function MovieDetail() {
     const { id } = useParams();
@@ -20,6 +21,8 @@ function MovieDetail() {
     const [showEditModal, setShowEditModal] = useState(false);
     const [isGgimed, setIsGgimed] = useState(false);
     const navigate = useNavigate();
+    const [currentPage, setCurrentPage] = useState(1);
+    const reviewsPerPage = 5;
 
     // 영화 상세 정보와 찜 상태를 함께 가져오는 함수
     const fetchMovieDetailAndGgimStatus = async () => {
@@ -380,6 +383,46 @@ function MovieDetail() {
         );
     };
 
+    // 페이지네이션을 위한 리뷰 계산
+    const indexOfLastReview = currentPage * reviewsPerPage;
+    const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+    const currentReviews = allReviews.slice(indexOfFirstReview, indexOfLastReview);
+    const totalPages = Math.ceil(allReviews.length / reviewsPerPage);
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    // 페이지네이션 컴포넌트 렌더링
+    const renderPagination = () => {
+        let items = [];
+        for (let number = 1; number <= totalPages; number++) {
+            items.push(
+                <Pagination.Item 
+                    key={number} 
+                    active={number === currentPage}
+                    onClick={() => handlePageChange(number)}
+                >
+                    {number}
+                </Pagination.Item>
+            );
+        }
+        return (
+            <Pagination className="justify-content-center mt-4">
+                <Pagination.Prev 
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                />
+                {items}
+                <Pagination.Next 
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                />
+            </Pagination>
+        );
+    };
+
     if (loading) return <Loading />;
     if (error) return <div className="text-center mt-5">{error}</div>;
     if (!movie) return <div className="text-center mt-5">영화를 찾을 수 없습니다.</div>;
@@ -451,14 +494,14 @@ function MovieDetail() {
                     <Row className="mt-5">
                         <Col>
                             <Card className="reviews-section">
-                                <Card.Header className="p-3">
+                                <Card.Header>
                                     <h5 className="mb-0">리뷰 {allReviews.length}개</h5>
                                 </Card.Header>
-                                <Card.Body>
-                                    {/* 리뷰 작성 폼 - userReview가 없을 때만 표시 */}
+                                <Card.Body className="p-0">
+                                    {/* 리뷰 작성 폼 */}
                                     {user && !userReview && !isEditing && renderReviewForm()}
 
-                                    {/* 리뷰 수정 폼 - 수정 모드일 때만 표시 */}
+                                    {/* 리뷰 수정 폼 */}
                                     {user && isEditing && (
                                         <div className="review-form">
                                             <Form onSubmit={handleReviewSubmit}>
@@ -512,8 +555,8 @@ function MovieDetail() {
                                         </div>
                                     )}
 
-                                    {/* 리뷰 목록 */}
-                                    {allReviews.map((review, index) => (
+                                    {/* 리뷰 목록 - currentReviews 사용 */}
+                                    {currentReviews.map((review, index) => (
                                         <div key={index} className="review-item">
                                             <div className="review-header">
                                                 <div className="review-author">
@@ -552,8 +595,11 @@ function MovieDetail() {
                                     ))}
 
                                     {allReviews.length === 0 && (
-                                        <p className="text-center text-muted py-4">첫 번째 리뷰를 작성해보세요!</p>
+                                        <p className="no-reviews">첫 번째 리뷰를 작성해보세요!</p>
                                     )}
+
+                                    {/* 페이지네이션 추가 */}
+                                    {allReviews.length > reviewsPerPage && renderPagination()}
                                 </Card.Body>
                             </Card>
                         </Col>
