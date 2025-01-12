@@ -68,4 +68,27 @@
     margin-top: 0.5rem;
     color: var(--text-muted);
     font-size: 0.9rem;
+}
+
+.user-info-details {
+    padding: 1rem;
+}
+
+.info-item {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.info-item label {
+    min-width: 100px;
+    font-weight: bold;
+    margin-right: 1rem;
+}
+
+
+h5 {
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
 } 
