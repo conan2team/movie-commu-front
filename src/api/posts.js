@@ -6,8 +6,13 @@ export const postsAPI = {
         api.get(`/posts/list/page?page=${page}&size=${size}`),
     
     // 게시글 상세 조회
-    getPostDetail: (postId) => 
-        api.get(`/posts/${postId}`),
+    getPostDetail: (postId, isBackNavigation = false) => {
+        const params = new URLSearchParams();
+        if (isBackNavigation) {
+            params.append('skipCount', 'true');
+        }
+        return api.get(`/posts/${postId}${params.toString() ? `?${params.toString()}` : ''}`);
+    },
     
     // 게시글 작성
     createPost: (title, content, files) => {

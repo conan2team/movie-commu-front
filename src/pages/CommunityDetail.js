@@ -25,6 +25,7 @@ function CommunityDetail() {
   const [currentCommentPage, setCurrentCommentPage] = useState(1);
   const [commentsPerPage] = useState(5); // 페이지당 5개의 댓글
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isBackNavigation, setIsBackNavigation] = useState(false);
 
   // 현재 페이지의 댓글만 표시하기 위한 계산
   const indexOfLastComment = currentCommentPage * commentsPerPage;
@@ -69,9 +70,20 @@ function CommunityDetail() {
   };
 
   // 게시글 데이터 가져오기
+  useEffect(() => {
+    // 성능 항목에서 navigation type 확인
+    const navigationEntries = performance.getEntriesByType("navigation");
+    const isBack = navigationEntries.length > 0 && 
+                  navigationEntries[0].type === "back_forward";
+    setIsBackNavigation(isBack);
+
+    fetchPostData();
+  }, [id]);
+
   const fetchPostData = async () => {
     try {
-      const response = await postsAPI.getPostDetail(id);
+      // 뒤로가기가 아닌 경우에만 상세 조회 API 호출
+      const response = await postsAPI.getPostDetail(id, isBackNavigation);
       console.log('Post detail response:', response);
 
       if (response?.data) {
@@ -105,11 +117,6 @@ function CommunityDetail() {
       alert('게시글을 불러오는데 실패했습니다.');
     }
   };
-
-  // 게시글 데이터 가져오기
-  useEffect(() => {
-    fetchPostData();
-  }, [id]);
 
   // 좋아요와 팔로우 상태 체크
   useEffect(() => {
@@ -272,7 +279,7 @@ function CommunityDetail() {
               </div>
               <div className="post-meta">
                 <span className="post-date">{post.created}</span>
-                <span className="post-views">조회수: {post.cnt}</span>
+                <span className="post-views">조회수: {post.cnt+1}</span>
               </div>
             </div>
             {canDeletePost() && (
