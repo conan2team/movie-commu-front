@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Tab, Tabs, Card, Row, Col, Button } from 'react-bootstrap';
+import { Container, Tab, Tabs, Card, Row, Col, Button, Pagination } from 'react-bootstrap';
 import { userAPI } from '../api/user';
 import { movieAPI } from '../api/movie';
 import { Link } from 'react-router-dom';
@@ -13,6 +13,14 @@ function MyPage() {
     const [previousReservations, setPreviousReservations] = useState([]);
     const [activeTab, setActiveTab] = useState('liked');
     const [movieTitles, setMovieTitles] = useState({});
+    const [followers, setFollowers] = useState([]);
+    const [following, setFollowing] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [followingPage, setFollowingPage] = useState(0);
+    const [followerPage, setFollowerPage] = useState(0);
+    const [followingTotal, setFollowingTotal] = useState(0);
+    const [followerTotal, setFollowerTotal] = useState(0);
+    const itemsPerPage = 6; // 페이지당 표시할 항목 수
 
     const fetchMovieTitle = async (movieId) => {
         try {
@@ -25,8 +33,56 @@ function MyPage() {
     };
 
     useEffect(() => {
+        console.log('MyPage component mounted');
         fetchMyPageData();
+        fetchCurrentUser();
     }, []);
+
+    const fetchCurrentUser = async () => {
+        try {
+            console.log('Fetching current user info...');
+            const response = await userAPI.getCurrentUser();
+            console.log('Current user response:', response.data);
+            setCurrentUser(response.data);
+        } catch (error) {
+            console.error('현재 사용자 정보 로딩 실패:', error);
+            if (error.response) {
+                console.error('Error details:', error.response.data);
+            }
+        }
+    };
+
+    const handleFollow = async (username) => {
+        try {
+            console.log('Attempting to toggle follow for:', username);
+            await userAPI.follow(username);
+            console.log('Follow toggle successful');
+            fetchMyPageData(); // 목록 새로고침
+        } catch (error) {
+            console.error('팔로우 처리 실패:', error);
+            if (error.response) {
+                console.error('Error details:', error.response.data);
+            }
+            alert('팔로우 처리에 실패했습니다.');
+        }
+    };
+
+    const handleDeleteFollower = async (username) => {
+        if (window.confirm('팔로워를 삭제하시겠습니까?')) {
+            try {
+                console.log('Attempting to delete follower:', username);
+                await userAPI.deleteFollower(username);
+                console.log('Follower deletion successful');
+                fetchMyPageData(); // 목록 새로고침
+            } catch (error) {
+                console.error('팔로워 삭제 실패:', error);
+                if (error.response) {
+                    console.error('Error details:', error.response.data);
+                }
+                alert('팔로워 삭제에 실패했습니다.');
+            }
+        }
+    };
 
     const fetchMyPageData = async () => {
         try {
@@ -166,6 +222,21 @@ function MyPage() {
             setCurrentReservations(formattedCurrentReservations);
             setPreviousReservations(formattedPreviousReservations);
 
+            // 현재 사용자 정보가 없으면 먼저 가져오기
+            if (!currentUser) {
+                console.log('No current user, fetching user info first...');
+                const userResponse = await userAPI.getCurrentUser();
+                const userData = userResponse.data;
+                setCurrentUser(userData);
+                console.log('Fetched user data:', userData);
+
+                // 팔로워/팔로잉 목록 로딩
+                await fetchFollowData(userData.id);
+            } else {
+                console.log('Using existing user data:', currentUser);
+                await fetchFollowData(currentUser.id);
+            }
+
         } catch (error) {
             console.error('마이페이지 데이터 로딩 실패:', error);
             if (error.response) {
@@ -173,6 +244,77 @@ function MyPage() {
             }
         }
     };
+
+    const fetchFollowData = async (userId) => {
+        try {
+            const followingResponse = await userAPI.getFollowingList(userId, itemsPerPage, followingPage);
+            console.log('Following response:', followingResponse.data);
+            setFollowing(followingResponse.data.users || []);
+            setFollowingTotal(followingResponse.data.userCnt || 0);
+
+            const followerResponse = await userAPI.getFollowerList(userId, itemsPerPage, followerPage);
+            console.log('Follower response:', followerResponse.data);
+            setFollowers(followerResponse.data.users || []);
+            setFollowerTotal(followerResponse.data.userCnt || 0);
+        } catch (error) {
+            console.error('팔로우 데이터 로딩 실패:', error);
+        }
+    };
+
+    // 페이지 변경 핸들러
+    const handleFollowingPageChange = (pageNumber) => {
+        setFollowingPage(pageNumber - 1);
+    };
+
+    const handleFollowerPageChange = (pageNumber) => {
+        setFollowerPage(pageNumber - 1);
+    };
+
+    // 페이지네이션 렌더링 함수
+    const renderPagination = (totalItems, currentPage, onPageChange) => {
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        
+        if (totalPages <= 1) return null;
+
+        return (
+            <Pagination className="justify-content-center mt-3">
+                <Pagination.First 
+                    onClick={() => onPageChange(1)}
+                    disabled={currentPage === 0}
+                />
+                <Pagination.Prev 
+                    onClick={() => onPageChange(currentPage)}
+                    disabled={currentPage === 0}
+                />
+                
+                {[...Array(totalPages)].map((_, idx) => (
+                    <Pagination.Item
+                        key={idx + 1}
+                        active={idx === currentPage}
+                        onClick={() => onPageChange(idx + 1)}
+                    >
+                        {idx + 1}
+                    </Pagination.Item>
+                ))}
+
+                <Pagination.Next 
+                    onClick={() => onPageChange(currentPage + 2)}
+                    disabled={currentPage === totalPages - 1}
+                />
+                <Pagination.Last 
+                    onClick={() => onPageChange(totalPages)}
+                    disabled={currentPage === totalPages - 1}
+                />
+            </Pagination>
+        );
+    };
+
+    // 페이지 변경 시 데이터 다시 로드
+    useEffect(() => {
+        if (currentUser) {
+            fetchFollowData(currentUser.id);
+        }
+    }, [followingPage, followerPage]);
 
     // 예매 취소 처리 함수
     const handleCancelReservation = async (seatId, scheduleId) => {
@@ -190,6 +332,17 @@ function MyPage() {
             }
         }
     };
+
+    // currentUser 상태 변경 감지
+    useEffect(() => {
+        console.log('Current user state changed:', currentUser);
+    }, [currentUser]);
+
+    // following/followers 상태 변경 감지
+    useEffect(() => {
+        console.log('Following state changed:', following);
+        console.log('Followers state changed:', followers);
+    }, [following, followers]);
 
     return (
         <Container className="my-page-container py-4">
@@ -291,6 +444,72 @@ function MyPage() {
                             ))
                         ) : (
                             <p>지난 예매 내역이 없습니다.</p>
+                        )}
+                    </div>
+                </Tab>
+
+                <Tab eventKey="following" title="팔로잉">
+                    <div className="list-container">
+                        <h5 className="mb-3">팔로잉 목록</h5>
+                        {following.length > 0 ? (
+                            <>
+                                <Row xs={1} md={2} className="g-4">
+                                    {following.map(user => (
+                                        <Col key={user.id}>
+                                            <Card className="list-item h-100">
+                                                <Card.Body className="d-flex flex-column">
+                                                    <Card.Title>{user.nickname}</Card.Title>
+                                                    <Card.Text>ID: {user.id}</Card.Text>
+                                                    <Button 
+                                                        variant="outline-primary" 
+                                                        size="sm"
+                                                        className="mt-auto"
+                                                        onClick={() => handleFollow(user.id)}
+                                                    >
+                                                        팔로우 취소
+                                                    </Button>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                    ))}
+                                </Row>
+                                {renderPagination(followingTotal, followingPage, handleFollowingPageChange)}
+                            </>
+                        ) : (
+                            <p>팔로잉하는 사용자가 없습니다.</p>
+                        )}
+                    </div>
+                </Tab>
+
+                <Tab eventKey="followers" title="팔로워">
+                    <div className="list-container">
+                        <h5 className="mb-3">팔로워 목록</h5>
+                        {followers.length > 0 ? (
+                            <>
+                                <Row xs={1} md={2} className="g-4">
+                                    {followers.map(user => (
+                                        <Col key={user.id}>
+                                            <Card className="list-item h-100">
+                                                <Card.Body className="d-flex flex-column">
+                                                    <Card.Title>{user.nickname}</Card.Title>
+                                                    <Card.Text>ID: {user.id}</Card.Text>
+                                                    <Button 
+                                                        variant="outline-danger" 
+                                                        size="sm"
+                                                        className="mt-auto"
+                                                        onClick={() => handleDeleteFollower(user.id)}
+                                                    >
+                                                        팔로워 삭제
+                                                    </Button>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                    ))}
+                                </Row>
+                                {renderPagination(followerTotal, followerPage, handleFollowerPageChange)}
+                            </>
+                        ) : (
+                            <p>팔로워가 없습니다.</p>
                         )}
                     </div>
                 </Tab>

@@ -153,5 +153,53 @@ export const userAPI = {
   // 지난 예매 내역 조회
   getPreviousReservations: () => {
     return api.get('/myReserve/previous');
+  },
+
+  // 팔로잉 목록 조회
+  getFollowingList: async (username, size = 10, page = 0) => {
+    console.log('Fetching following list for:', username);
+    const response = await api.get('/followingList', {
+      params: { username, size, page }
+    });
+    console.log('Following list response:', response.data);
+    return response;
+  },
+
+  // 팔로워 목록 조회
+  getFollowerList: async (username, size = 10, page = 0) => {
+    console.log('Fetching follower list for:', username);
+    const response = await api.get('/followerList', {
+      params: { username, size, page }
+    });
+    console.log('Follower list response:', response.data);
+    return response;
+  },
+
+  // 팔로우/언팔로우
+  follow: async (username) => {
+    console.log('Toggling follow for:', username);
+    const response = await api.post('/follow', null, {
+      params: { username }
+    });
+    console.log('Follow toggle response:', response.data);
+    return response;
+  },
+
+  // 팔로워 삭제
+  deleteFollower: async (username) => {
+    console.log('Deleting follower:', username);
+    const response = await api.post('/follower/delete', null, {
+      params: { username }
+    });
+    console.log('Delete follower response:', response.data);
+    return response;
+  },
+
+  // 현재 로그인한 사용자 정보 조회
+  getCurrentUser: async () => {
+    console.log('Fetching current user data...');
+    const response = await api.get('/do');
+    console.log('Current user API response:', response.data);
+    return response;
   }
 }; 

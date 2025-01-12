@@ -36,6 +36,7 @@
     transition: all 0.2s ease;
     border-left: 4px solid transparent;
     height: 100%;
+    margin-bottom: 0;
 }
 
 .list-item:hover {
@@ -57,13 +58,23 @@
     color: #666;
 }
 
+.list-item .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.list-item .btn {
+    margin-top: auto;
+    width: fit-content;
+}
+
 /* 다크 모드 대응 */
 [data-bs-theme="dark"] .my-page-container h2 {
     color: #fff;
 }
 
 [data-bs-theme="dark"] .list-item:hover {
-    background-color: #2b3035;
+    background-color: #343a40;
 }
 
 [data-bs-theme="dark"] .list-item .card-text {
@@ -83,4 +94,40 @@
 [data-bs-theme="dark"] .list-item .btn-danger:hover {
     background-color: #bb2d3b;
     border-color: #b02a37;
+}
+
+/* 팔로우/팔로워 관련 스타일 추가 */
+.list-item .btn-outline-primary,
+.list-item .btn-outline-danger {
+    margin-top: 0.5rem;
+}
+
+[data-bs-theme="dark"] .list-item {
+    background-color: #2b3035;
+    border-color: #373b3e;
+}
+
+/* 팔로우/팔로워 카드 스타일 수정 */
+.list-container .row {
+    margin-right: -10px;
+    margin-left: -10px;
+}
+
+.list-container .col {
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+/* 반응형 그리드 간격 조정 */
+@media (max-width: 768px) {
+    .list-container .row {
+        margin-right: -5px;
+        margin-left: -5px;
+    }
+
+    .list-container .col {
+        padding-right: 5px;
+        padding-left: 5px;
+        margin-bottom: 10px;
+    }
 } 
