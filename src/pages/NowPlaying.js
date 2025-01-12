@@ -32,26 +32,30 @@ function NowPlaying() {
     }
   };
 
-  // 현재 시간 이후의 스케줄만 필터링하는 함수 추가
+  // 현재 시간 이후의 스케줄만 필터링하는 함수 수정
   const filterAvailableSchedules = (schedules, date) => {
     const now = new Date();
-    const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+    const koreaTime = new Date(now.getTime());  // 서버가 이미 한국 시간을 반환하므로 추가 변환 불필요
     const today = formatDate(koreaTime);
     const currentTime = koreaTime.getHours() * 60 + koreaTime.getMinutes();
 
     return schedules.filter(schedule => {
       const scheduleDate = schedule.date;
       
-      // 오늘 이전 날짜는 제외
+      // 과거 날짜는 제외
       if (scheduleDate < today) return false;
       
-      // 오늘이 아닌 미래 날짜는 모두 포함
+      // 미래 날짜는 모두 포함
       if (scheduleDate > today) return true;
       
-      // 오늘인 경우 현재 시간 이후의 스케줄만 포함
-      const [hours, minutes] = schedule.startTime.split(':').map(Number);
-      const scheduleTime = hours * 60 + minutes;
-      return scheduleTime > currentTime;
+      // 오늘인 경우, 현재 시간으로부터 30분 이후의 스케줄만 포함
+      if (scheduleDate === today) {
+        const [hours, minutes] = schedule.startTime.split(':').map(Number);
+        const scheduleTime = hours * 60 + minutes;
+        return scheduleTime > (currentTime + 30);  // 현재 시간으로부터 30분 이후
+      }
+
+      return true;
     });
   };
 
@@ -97,36 +101,37 @@ function NowPlaying() {
   };
 
   const initializeDates = () => {
-    const today = new Date();
-    // 시간을 한국 시간으로 설정
-    const koreaToday = new Date(today.getTime() + (9 * 60 * 60 * 1000));
-    koreaToday.setHours(0, 0, 0, 0);
+    // 현재 날짜와 시간을 가져옴
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     
+    // 다음 7일간의 날짜를 생성
     const dates = [];
     for (let i = 0; i < 7; i++) {
-      const date = new Date(koreaToday);
-      date.setDate(koreaToday.getDate() + i);
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
       dates.push(date);
     }
     setAvailableDates(dates);
-    setSelectedDate(formatDate(koreaToday));
+    setSelectedDate(formatDate(today));
   };
 
   const formatDate = (date) => {
-    // 한국 시간으로 변환
-    const koreaDate = new Date(date.getTime() + (9 * 60 * 60 * 1000));
-    return koreaDate.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   const getDayOfWeek = (date) => {
     const days = ['일', '월', '화', '수', '목', '금', '토'];
-    const koreaDate = new Date(date.getTime() + (9 * 60 * 60 * 1000));
-    return days[koreaDate.getDay()];
+    return days[date.getDay()];
   };
 
   const formatDisplayDate = (date) => {
-    const koreaDate = new Date(date.getTime() + (9 * 60 * 60 * 1000));
-    return `${koreaDate.getMonth() + 1}.${koreaDate.getDate()}`;
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${month}.${day}`;
   };
 
   const handleMovieSelect = async (movie) => {
@@ -152,7 +157,11 @@ function NowPlaying() {
         <div className="date-selector mb-4">
           {availableDates.map(date => {
             const dateStr = formatDate(date);
-            const isToday = dateStr === formatDate(new Date());
+            const today = new Date();
+            const isToday = date.getDate() === today.getDate() &&
+                           date.getMonth() === today.getMonth() &&
+                           date.getFullYear() === today.getFullYear();
+            
             return (
               <Button
                 key={dateStr}
