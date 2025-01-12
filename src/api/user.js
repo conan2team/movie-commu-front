@@ -201,5 +201,38 @@ export const userAPI = {
     const response = await api.get('/do');
     console.log('Current user API response:', response.data);
     return response;
+  },
+
+  // 닉네임으로 사용자 정보 조회
+  getUserByNickname: async (nickname) => {
+    try {
+      console.log('Fetching user by nickname:', nickname);
+      const response = await api.get('/userPage', {
+        params: { nickname }
+      });
+      console.log('User info response:', response.data);
+      return response;
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      throw error;
+    }
+  },
+
+  // 팔로우 상태 확인 (현재 로그인한 사용자와 대상 사용자의 관계)
+  checkFollowStatus: async (currentUserId, targetUserId) => {
+    try {
+      console.log('Checking follow status:', { currentUserId, targetUserId });
+      const response = await api.get('/followStatus', {
+        params: {
+          currentUserId,
+          targetUserId
+        }
+      });
+      console.log('Follow status response:', response.data);
+      return response;
+    } catch (error) {
+      console.error('Error checking follow status:', error);
+      throw error;
+    }
   }
 }; 
