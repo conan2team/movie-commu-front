@@ -18,7 +18,6 @@ function Login() {
         try {
             const userData = await login(formData);
             if (userData) {
-                // 로그인 성공 및 사용자 데이터 확인 후 이동
                 console.log('Login successful, user data:', userData);
                 navigate('/', { replace: true });
             } else {
@@ -26,7 +25,23 @@ function Login() {
             }
         } catch (err) {
             console.error('Login error:', err);
-            setError('로그인 처리 중 오류가 발생했습니다.');
+            if (err.response) {
+                switch (err.response.status) {
+                    case 401:
+                        setError('아이디 또는 비밀번호가 일치하지 않습니다.');
+                        break;
+                    case 404:
+                        setError('존재하지 않는 계정입니다.');
+                        break;
+                    case 400:
+                        setError('입력 정보를 확인해주세요.');
+                        break;
+                    default:
+                        setError('로그인 처리 중 오류가 발생했습니다.');
+                }
+            } else {
+                setError('서버와의 연결이 원활하지 않습니다.');
+            }
         }
     };
 

@@ -5,6 +5,7 @@ import { movieAPI } from '../api/movie';
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/Loading';
 import '../styles/MovieDetail.css';
+import { hasDeletePermission } from '../utils/authUtils';
 
 function MovieDetail() {
     const { id } = useParams();
@@ -208,26 +209,27 @@ function MovieDetail() {
         }
     };
 
+    // 리뷰 삭제 권한 체크
+    const canDeleteReview = (review) => {
+        return hasDeletePermission(user, review.userId);
+    };
+
+    // 리뷰 삭제 핸들러
     const handleReviewDelete = async (review) => {
-        if (!window.confirm('리뷰를 삭제하시겠습니까?')) {
-            return;
-        }
-        
         try {
-            const movieId = review.movieId;  // 리뷰 객체의 movieId 사용
-            const userId = user.userId;
+            await movieAPI.deleteReview(id, review.userId, user);
+            // 삭제 후 리뷰 목록 새로고침
+            const updatedReviews = allReviews.filter(r => 
+                !(r.userId === review.userId && r.movieId === Number(id))
+            );
+            setAllReviews(updatedReviews);
             
-            console.log('Deleting review:', { movieId, userId });
-            
-            await movieAPI.deleteReview(movieId, userId);
-            alert('리뷰가 삭제되었습니다.');
-            setUserReview(null);
-            setReview({ content: '', rating: 5 });
-            setIsEditing(false);
-            await fetchMovieAndReviews();
+            // 삭제한 리뷰가 사용자의 리뷰였다면 userReview도 null로 설정
+            if (Number(user.userId) === Number(review.userId)) {
+                setUserReview(null);
+            }
         } catch (error) {
             console.error('Error deleting review:', error);
-            alert('리뷰 삭제 중 오류가 발생했습니다.');
         }
     };
 
@@ -569,15 +571,17 @@ function MovieDetail() {
                                                         {'☆'.repeat(5 - review.rating)}
                                                     </div>
                                                 </div>
-                                                {user && Number(user.userId) === Number(review.userId) && (
+                                                {hasDeletePermission(user, review.userId) && (
                                                     <div className="review-buttons">
-                                                        <Button 
-                                                            variant="outline-primary" 
-                                                            size="sm" 
-                                                            onClick={() => handleEditClick(review)}
-                                                        >
-                                                            수정
-                                                        </Button>
+                                                        {Number(user.userId) === Number(review.userId) && (
+                                                            <Button 
+                                                                variant="outline-primary" 
+                                                                size="sm" 
+                                                                onClick={() => handleEditClick(review)}
+                                                            >
+                                                                수정
+                                                            </Button>
+                                                        )}
                                                         <Button 
                                                             variant="outline-danger" 
                                                             size="sm"

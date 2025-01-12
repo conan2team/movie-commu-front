@@ -71,11 +71,15 @@ export const movieAPI = {
     },
     
     // 리뷰 삭제
-    deleteReview: async (movieId, userId) => {
+    deleteReview: async (movieId, userId, currentUser) => {
         try {
             console.log('API call - Delete review:', { movieId, userId });
+            const params = { userId };
+            if (currentUser.role === 'ROLE_ADMIN') {
+                params.isAdmin = true;
+            }
             const response = await api.post(`/movie/${movieId}/delete`, null, {
-                params: { userId }
+                params: params
             });
             return response;
         } catch (error) {

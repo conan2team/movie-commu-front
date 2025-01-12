@@ -29,8 +29,14 @@ export const postsAPI = {
         api.put(`/posts/update/${postId}?title=${encodeURIComponent(title)}&content=${encodeURIComponent(content)}`),
     
     // 게시글 삭제
-    deletePost: (postId) => 
-        api.post(`/posts/delete/${postId}`),
+    deletePost: (postId, currentUser) => {
+        const formData = new FormData();
+        formData.append('postId', postId);
+        if (currentUser.role === 'ROLE_ADMIN') {
+            formData.append('isAdmin', true);
+        }
+        return api.post(`/posts/delete/${postId}`, formData);
+    },
     
     // 게시글 검색 (제목/내용)
     searchPosts: (keyword, page = 0, size = 10) => 
@@ -121,8 +127,13 @@ export const postsAPI = {
     updateComment: (commentId, content) => 
         api.put(`/api/comments/${commentId}?content=${encodeURIComponent(content)}`),
     
-    deleteComment: (commentId) => 
-        api.delete(`/api/comments/${commentId}`),
+    deleteComment: (commentId, currentUser) => {
+        const params = {};
+        if (currentUser.role === 'ROLE_ADMIN') {
+            params.isAdmin = true;
+        }
+        return api.delete(`/api/comments/${commentId}`, { params });
+    },
     
     // 전체 게시글 목록 조회 (페이지네이션 없이)
     getAllPosts: () => 

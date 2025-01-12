@@ -7,6 +7,7 @@ import { postsAPI } from '../api/posts';
 import Pagination from '../components/Pagination';
 import '../styles/common.css';
 import '../styles/CommunityDetail.css';
+import { hasDeletePermission } from '../utils/authUtils';
 
 function CommunityDetail() {
   const { id } = useParams();
@@ -115,22 +116,25 @@ function CommunityDetail() {
     checkUserInteractions();
   }, [user, post]); // user나 post가 변경될 때마다 상태 체크
 
+  // 게시글 삭제 권한 체크
+  const canDeletePost = () => {
+    return hasDeletePermission(user, post.userId);
+  };
+
+  // 댓글 삭제 권한 체크
+  const canDeleteComment = (comment) => {
+    return hasDeletePermission(user, comment.userId);
+  };
+
   // 게시글 삭제
   const handleDelete = async () => {
-    if (!user) {
-      alert('로그인이 필요합니다.');
-      return;
-    }
-
-    if (window.confirm('정말 삭제하시겠습니까?')) {
-      try {
-        await postsAPI.deletePost(id);
-        alert('게시글이 삭제되었습니다.');
-        navigate('/community');
-      } catch (error) {
-        console.error('Delete error:', error);
-        alert('게시글 삭제에 실패했습니다.');
-      }
+    if (!canDeletePost()) return;
+    
+    try {
+      await postsAPI.deletePost(id, user);
+      navigate('/community');
+    } catch (error) {
+      console.error('Error deleting post:', error);
     }
   };
 
@@ -188,19 +192,13 @@ function CommunityDetail() {
 
   // 댓글 삭제
   const handleCommentDelete = async (commentId) => {
-    if (!user) {
-      alert('로그인이 필요합니다.');
-      return;
-    }
-
-    if (window.confirm('댓글을 삭제하시겠습니까?')) {
-      try {
-        await postsAPI.deleteComment(commentId);
-        fetchPostData(); // 댓글 목록 새로고침
-      } catch (error) {
-        console.error('Comment delete error:', error);
-        alert('댓글 삭제에 실패했습니다.');
-      }
+    try {
+      await postsAPI.deleteComment(commentId, user);
+      // 삭제 후 댓글 목록 새로고침
+      const updatedComments = commentList.filter(comment => comment.commentId !== commentId);
+      setCommentList(updatedComments);
+    } catch (error) {
+      console.error('Error deleting comment:', error);
     }
   };
 
@@ -277,14 +275,16 @@ function CommunityDetail() {
                 <span className="post-views">조회수: {post.cnt}</span>
               </div>
             </div>
-            {user && Number(user.userId) === Number(post.userId) && (
+            {canDeletePost() && (
               <div className="post-actions">
-                <Button 
-                  variant="outline-primary" 
-                  onClick={() => navigate(`/community/edit/${id}`)}
-                >
-                  수정
-                </Button>
+                {Number(user.userId) === Number(post.userId) && (
+                  <Button 
+                    variant="outline-primary" 
+                    onClick={() => navigate(`/community/edit/${id}`)}
+                  >
+                    수정
+                  </Button>
+                )}
                 <Button 
                   variant="outline-danger" 
                   onClick={handleDelete}
@@ -371,43 +371,24 @@ function CommunityDetail() {
                   <strong>{comment.nickname}</strong>
                   <span className="comment-date">{comment.created}</span>
                 </div>
-                {user && Number(user.userId) === Number(comment.userId) && (
+                {hasDeletePermission(user, comment.userId) && (
                   <div className="comment-buttons">
-                    {editingCommentId === comment.commentId ? (
-                      <>
-                        <Button
-                          variant="outline-success"
-                          size="sm"
-                          onClick={() => handleEditSubmit(comment.commentId)}
-                        >
-                          저장
-                        </Button>
-                        <Button
-                          variant="outline-secondary"
-                          size="sm"
-                          onClick={handleEditCancel}
-                        >
-                          취소
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button
-                          variant="outline-primary"
-                          size="sm"
-                          onClick={() => handleEditStart(comment)}
-                        >
-                          수정
-                        </Button>
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() => handleCommentDelete(comment.commentId)}
-                        >
-                          삭제
-                        </Button>
-                      </>
+                    {Number(user.userId) === Number(comment.userId) && (
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => handleEditStart(comment)}
+                      >
+                        수정
+                      </Button>
                     )}
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => handleCommentDelete(comment.commentId)}
+                    >
+                      삭제
+                    </Button>
                   </div>
                 )}
               </div>
