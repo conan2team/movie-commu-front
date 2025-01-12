@@ -1,0 +1,60 @@
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.admin-container h2 {
+  color: var(--bs-primary);
+  border-bottom: 2px solid var(--bs-primary);
+  padding-bottom: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.table-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 0;
+  table-layout: fixed;
+}
+
+.table thead {
+  background-color: var(--bs-primary);
+  color: white;
+}
+
+.table th, .table td {
+  padding: 0.75rem;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table th:nth-child(1), .table td:nth-child(1) { width: 15%; }
+.table th:nth-child(2), .table td:nth-child(2) { width: 20%; }
+.table th:nth-child(3), .table td:nth-child(3) { width: 20%; }
+.table th:nth-child(4), .table td:nth-child(4) { width: 20%; }
+.table th:nth-child(5), .table td:nth-child(5) { width: 15%; }
+.table th:nth-child(6), .table td:nth-child(6) { width: 10%; }
+
+/* 다크 모드 대응 */
+[data-bs-theme="dark"] .table {
+  --bs-table-bg: var(--bs-dark);
+  --bs-table-color: var(--bs-light);
+  --bs-table-border-color: var(--bs-gray-700);
+}
+
+[data-bs-theme="dark"] .table thead th {
+  background-color: var(--bs-gray-800);
+}
+
+.pagination-container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+} 

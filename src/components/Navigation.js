@@ -45,6 +45,9 @@ function Navigation() {
             <Nav.Link as={Link} to="/now-playing">현재 상영작</Nav.Link>
             <Nav.Link as={Link} to="/top-movies">평점 TOP 10</Nav.Link>
             <Nav.Link as={Link} to="/community">자유게시판</Nav.Link>
+            {user?.role === 'ROLE_ADMIN' && (
+              <Nav.Link as={Link} to="/admin/users">관리자 페이지</Nav.Link>
+            )}
           </Nav>
           <div className="d-flex align-items-center gap-3">
             <Button 

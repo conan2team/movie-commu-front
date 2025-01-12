@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Card, Row, Col, Button } from 'react-bootstrap';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { postsAPI } from '../api/posts';
+import { userAPI } from '../api/user';
 import Pagination from '../components/Pagination';
 import '../styles/UserProfile.css';
 
@@ -21,7 +21,7 @@ function UserProfile() {
         const fetchUserData = async () => {
             try {
                 // 유저 정보 가져오기
-                const userResponse = await postsAPI.getUserInfo(username);
+                const userResponse = await userAPI.getUserInfo(username);
                 setUserInfo({
                     nickname: username,
                     following: userResponse.data.following,
@@ -29,10 +29,7 @@ function UserProfile() {
                 });
 
                 // 유저가 작성한 게시글 목록
-                const postsResponse = await postsAPI.getUserPosts(username);
-                console.log('Posts response:', postsResponse);
-                
-                // post.content에서 게시글 목록 추출
+                const postsResponse = await userAPI.getUserPosts(username);
                 if (postsResponse.data && postsResponse.data.post && postsResponse.data.post.content) {
                     setPosts(postsResponse.data.post.content);
                 } else {
@@ -41,16 +38,16 @@ function UserProfile() {
 
                 // 팔로워/팔로잉 목록
                 if (user) {
-                    const followersResponse = await postsAPI.getFollowers(username);
-                    const followingResponse = await postsAPI.getFollowing(username);
+                    const followersResponse = await userAPI.getFollowers(username);
+                    const followingResponse = await userAPI.getFollowing(username);
                     setFollowers(followersResponse.data.users || []);
                     setFollowing(followingResponse.data.users || []);
 
-                    const followStatus = await postsAPI.checkFollowStatus(user.id, username);
+                    const followStatus = await userAPI.checkFollowStatus(user.id, username);
                     setIsFollowing(followStatus);
                 }
             } catch (error) {
-                console.error('Error fetching user data:', error);
+                console.error('사용자 데이터 로딩 중 오류:', error);
                 setUserInfo({ nickname: username });
                 setPosts([]);
                 setFollowers([]);
@@ -71,13 +68,13 @@ function UserProfile() {
         }
 
         try {
-            await postsAPI.followUser(username);
+            await userAPI.followUser(username);
             setIsFollowing(!isFollowing);
             // 팔로워 수 업데이트
-            const followersResponse = await postsAPI.getFollowers(username);
-            setFollowers(followersResponse.data);
+            const followersResponse = await userAPI.getFollowers(username);
+            setFollowers(followersResponse.data.users || []);
         } catch (error) {
-            console.error('Error following user:', error);
+            console.error('팔로우 처리 중 오류:', error);
         }
     };
 
