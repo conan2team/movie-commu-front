@@ -11,14 +11,10 @@
   margin-bottom: 2rem;
 }
 
-.table-container {
-  width: 100%;
-  overflow: hidden;
-}
-
 .table {
+  background-color: var(--bs-body-bg);
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
   width: 100%;
-  margin-bottom: 0;
   table-layout: fixed;
 }
 
@@ -28,11 +24,10 @@
 }
 
 .table th, .table td {
-  padding: 0.75rem;
   vertical-align: middle;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  padding: 0.75rem;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .table th:nth-child(1), .table td:nth-child(1) { width: 15%; }
@@ -53,8 +48,15 @@
   background-color: var(--bs-gray-800);
 }
 
+/* 페이지네이션 컨테이너 */
 .pagination-container {
   margin-top: 1rem;
   display: flex;
   justify-content: center;
+}
+
+/* 반응형 처리를 위한 컨테이너 */
+.table-container {
+  width: 100%;
+  overflow-x: hidden;
 } 
