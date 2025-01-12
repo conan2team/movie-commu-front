@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Tab, Tabs, Card } from 'react-bootstrap';
+import { Container, Tab, Tabs, Card, Row, Col } from 'react-bootstrap';
 import { userAPI } from '../api/user';
 import { Link } from 'react-router-dom';
 import '../styles/MyPage.css';
@@ -61,45 +61,47 @@ function MyPage() {
                 className="mb-4"
             >
                 <Tab eventKey="liked" title="좋아요한 게시글">
-                    <div className="list-container">
+                    <Row>
                         {likedPosts.map(post => (
-                            <Link 
-                                key={post.postId}
-                                to={`/community/${post.postId}`}
-                                className="text-decoration-none"
-                            >
-                                <Card className="list-item">
-                                    <Card.Body>
-                                        <Card.Title>{post.title}</Card.Title>
-                                        <Card.Text className="text-muted">
-                                            작성일: {post.created} | 조회수: {post.cnt} | 좋아요: {post.heart}
-                                        </Card.Text>
-                                    </Card.Body>
-                                </Card>
-                            </Link>
+                            <Col md={6} key={post.postId} className="mb-3">
+                                <Link 
+                                    to={`/community/${post.postId}`}
+                                    className="text-decoration-none"
+                                >
+                                    <Card className="list-item h-100">
+                                        <Card.Body>
+                                            <Card.Title>{post.title}</Card.Title>
+                                            <Card.Text className="text-muted">
+                                                작성일: {post.created} | 조회수: {post.cnt} | 좋아요: {post.heart}
+                                            </Card.Text>
+                                        </Card.Body>
+                                    </Card>
+                                </Link>
+                            </Col>
                         ))}
-                    </div>
+                    </Row>
                 </Tab>
 
                 <Tab eventKey="ggim" title="찜한 영화">
-                    <div className="list-container">
+                    <Row>
                         {ggimMovies.map(movie => (
-                            <Link 
-                                key={movie.movieId}
-                                to={`/movie/${movie.movieId}`}
-                                className="text-decoration-none"
-                            >
-                                <Card className="list-item">
-                                    <Card.Body>
-                                        <Card.Title>{movie.title}</Card.Title>
-                                        <Card.Text>
-                                            감독: {movie.director}
-                                        </Card.Text>
-                                    </Card.Body>
-                                </Card>
-                            </Link>
+                            <Col md={6} key={movie.movieId} className="mb-3">
+                                <Link 
+                                    to={`/movie/${movie.movieId}`}
+                                    className="text-decoration-none"
+                                >
+                                    <Card className="list-item h-100">
+                                        <Card.Body>
+                                            <Card.Title>{movie.title}</Card.Title>
+                                            <Card.Text>
+                                                감독: {movie.director}
+                                            </Card.Text>
+                                        </Card.Body>
+                                    </Card>
+                                </Link>
+                            </Col>
                         ))}
-                    </div>
+                    </Row>
                 </Tab>
 
                 <Tab eventKey="reserve" title="예매 내역">
