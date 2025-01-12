@@ -17,6 +17,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import UserProfile from './pages/UserProfile';
 import AdminUserManage from './pages/AdminUserManage';
+import MyPage from './pages/MyPage';
 
 // 보호된 라우트 컴포넌트
 const ProtectedAdminRoute = ({ children }) => {
@@ -57,6 +58,7 @@ function App() {
                 </ProtectedAdminRoute>
               } 
             />
+            <Route path="/mypage" element={<MyPage />} />
           </Routes>
         </AuthProvider>
       </ThemeProvider>

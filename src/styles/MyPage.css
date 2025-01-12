@@ -1,0 +1,74 @@
+.my-page-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.my-page-container h2 {
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+/* 탭 스타일링 */
+.nav-tabs {
+    border-bottom: 2px solid #007bff;
+    margin-bottom: 2rem;
+}
+
+.nav-tabs .nav-link {
+    color: #666;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+}
+
+.nav-tabs .nav-link.active {
+    color: #007bff;
+    background: none;
+    border-bottom: 3px solid #007bff;
+}
+
+/* 리스트 컨테이너 */
+.list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* 카드 스타일링 */
+.list-item {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
+}
+
+.list-item:hover {
+    border-left-color: #007bff;
+    transform: translateX(5px);
+    background-color: #f8f9fa;
+}
+
+.list-item .card-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.list-item .card-text {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* 다크 모드 대응 */
+[data-bs-theme="dark"] .my-page-container h2 {
+    color: #fff;
+}
+
+[data-bs-theme="dark"] .list-item:hover {
+    background-color: #2b3035;
+}
+
+[data-bs-theme="dark"] .list-item .card-text {
+    color: #adb5bd;
+} 

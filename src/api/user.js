@@ -79,5 +79,69 @@ export const userAPI = {
       console.error('팔로우 상태 확인 중 오류:', error);
       return localStorage.getItem(`follow_${currentUsername}_${targetUsername}`) === 'true';
     }
-  }
+  },
+
+  getUserPage: (username) => {
+    return api.get('/userPage', { params: { username } });
+  },
+  
+  likePost: (username, size, page) => {
+    return api.get('/like/post', { 
+      params: { username, size, page } 
+    });
+  },
+
+  ggimMovie: () => {
+    return api.get('/ggim/movie');
+  },
+
+  // 예매 내역 조회 (페이지네이션 추가)
+  getMyReserve: (page = 0, size = 5) => {
+    return api.get('/myReserve', {
+      params: { page, size }
+    });
+  },
+
+  // 예매 취소
+  cancelReservation: (seatId, scheduleId) => {
+    return api.post('/reserve/delete', null, {
+      params: { seatId, scheduleId }
+    });
+  },
+
+  // 좋아요한 게시글 목록 조회 - 현재 로그인된 사용자의 username 사용
+  getLikedPosts: async () => {
+    try {
+      const userResponse = await api.get('/do');
+      const username = userResponse.data.id;
+      return api.get(`/like/post`, {
+        params: {
+          username,
+          size: 10,
+          page: 0
+        }
+      });
+    } catch (error) {
+      console.error('Error in getLikedPosts:', error);
+      throw error;
+    }
+  },
+
+  // 현재 예약 내역 조회
+  getCurrentReservations: () => 
+    api.get('/myReserve'),
+
+  // 지난 예약 내역 조회
+  getPreviousReservations: () => 
+    api.get('/myReserve/previous'),
+
+  // 예약 취소
+  cancelReservation: (seatId, scheduleId) => 
+    api.post('/reserve/delete', null, {
+      params: { seatId, scheduleId }
+    }),
+
+  // 찜한 영화 목록 조회
+  getGgimMovies: () => 
+    api.get('/ggim/movie'),
 }; 
