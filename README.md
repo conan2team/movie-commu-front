@@ -21,13 +21,15 @@
   - 비동기 통신 처리
 
 ## 📦 프로젝트 구조
+```
 src/
-├── api/ # API 통신 모듈
-├── components/ # 재사용 컴포넌트
-├── context/ # 전역 상태 관리
-├── hooks/ # 커스텀 훅
-├── pages/ # 페이지 컴포넌트
-└── styles/ # CSS 스타일
+├── api/          # API 통신 모듈
+├── components/   # 재사용 컴포넌트
+├── context/      # 전역 상태 관리
+├── hooks/        # 커스텀 훅
+├── pages/        # 페이지 컴포넌트
+└── styles/       # CSS 스타일
+```
 
 ## 🚀 주요 기능
 
