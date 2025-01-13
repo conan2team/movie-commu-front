@@ -123,15 +123,13 @@ function MyPage() {
             console.log('Previous reservations response:', previousResponse.data);
             const previousReservations = previousResponse.data || [];
 
-            // 현재 시간 가져오기 (한국 시간으로 조정)
+            // 현재 시간 가져오기 (이미 한국 시간임)
             const now = new Date();
-            const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));  // UTC+9
-            const today = koreaTime.toISOString().split('T')[0];  // YYYY-MM-DD 형식
-            const currentTime = koreaTime.getHours() * 60 + koreaTime.getMinutes();  // 현재 시간을 분으로 변환
+            const today = now.toISOString().split('T')[0];  // YYYY-MM-DD 형식
+            const currentTime = now.getHours() * 60 + now.getMinutes();  // 현재 시간을 분으로 변환
 
             console.log('Debug - Current DateTime:', {
                 now: now.toString(),
-                koreaTime: koreaTime.toString(),
                 today,
                 currentTime,
             });
@@ -139,33 +137,33 @@ function MyPage() {
             // 예매 내역 필터링
             const currentReservations = allReservations.filter(reserve => {
                 const reserveDate = reserve.date;
+                const [hours, minutes] = reserve.startTime.split(':').map(Number);
+                const reserveTime = hours * 60 + minutes;
+                
                 console.log('Debug - Checking reservation:', {
+                    movieTitle: movieTitles[reserve.movieId],
                     reserveDate,
                     today,
+                    startTime: reserve.startTime,
+                    reserveTime,
+                    currentTime,
                     isAfterToday: reserveDate > today,
                     isBeforeToday: reserveDate < today,
-                    startTime: reserve.startTime,
+                    isSameDay: reserveDate === today,
+                    isAfterCurrentTime: reserveTime > currentTime
                 });
 
                 if (reserveDate > today) return true;  // 미래 날짜는 현재 예매
                 if (reserveDate < today) return false;  // 과거 날짜는 지난 예매
                 
                 // 오늘 날짜인 경우 시간으로 비교
-                const [hours, minutes] = reserve.startTime.split(':').map(Number);
-                const reserveTime = hours * 60 + minutes;
-                
-                console.log('Debug - Time comparison:', {
-                    reserveTime,
-                    currentTime,
-                    isAfterCurrentTime: reserveTime > currentTime
-                });
-
                 return reserveTime > currentTime;  // 현재 시간 이후면 현재 예매
             });
 
             console.log('Debug - Filtered Reservations:', {
+                all: allReservations,
                 current: currentReservations,
-                all: allReservations
+                previous: allReservations.filter(r => !currentReservations.includes(r))
             });
 
             // 지난 예매에 과거 예매 내역 추가
