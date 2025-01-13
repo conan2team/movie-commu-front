@@ -24,11 +24,12 @@ function UserProfile() {
             // 유저가 작성한 게시글 목록 (닉네임 정보를 위해 먼저 호출)
             const postsResponse = await postsAPI.getUserPosts(username);
             console.log('Posts response:', postsResponse);
-            if (postsResponse.data && postsResponse.data.postUser) {
-                // postUser에서 닉네임 정보를 가져와 먼저 설정
+            
+            // user 배열에서 닉네임 정보 가져오기
+            if (postsResponse.data && postsResponse.data.user && postsResponse.data.user.length > 0) {
                 setUserInfo({
                     id: username,
-                    nickname: postsResponse.data.postUser.nickname
+                    nickname: postsResponse.data.user[0].nickname
                 });
             }
 
@@ -47,20 +48,6 @@ function UserProfile() {
                 following: userResponse.data.following,
                 followers: userResponse.data.followers
             }));
-
-            // 현재 로그인한 사용자가 프로필 주인인 경우에만 상세 정보 가져오기
-            if (user && user.id === username) {
-                try {
-                    const detailResponse = await axios.get('/do');
-                    setUserInfo(prev => ({
-                        ...prev,
-                        phone: detailResponse.data.phone,
-                        birth: detailResponse.data.birth
-                    }));
-                } catch (error) {
-                    console.error('Error fetching user details:', error);
-                }
-            }
 
             // 팔로워/팔로잉 목록
             if (user) {
