@@ -389,6 +389,23 @@ function MyPage() {
         }));
     };
 
+    const handleDeleteAccount = async () => {
+        if (window.confirm('정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+            try {
+                const response = await authAPI.deleteAccount(currentUser.id);
+                if (response.data === "deleted") {
+                    alert('회원 탈퇴가 완료되었습니다.');
+                    // 로그아웃 처리
+                    await authAPI.logout();
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('회원 탈퇴 실패:', error);
+                alert('회원 탈퇴에 실패했습니다.');
+            }
+        }
+    };
+
     return (
         <Container className="my-page-container py-4">
             <h2 className="mb-4">마이페이지</h2>
@@ -570,12 +587,20 @@ function MyPage() {
                                         <p><strong>전화번호:</strong> {currentUser?.phone}</p>
                                         <p><strong>생년월일:</strong> {currentUser?.birth}</p>
                                     </div>
-                                    <Button 
-                                        variant="primary" 
-                                        onClick={() => setShowEditForm(true)}
-                                    >
-                                        정보 수정
-                                    </Button>
+                                    <div className="d-flex gap-2">
+                                        <Button 
+                                            variant="primary" 
+                                            onClick={() => setShowEditForm(true)}
+                                        >
+                                            정보 수정
+                                        </Button>
+                                        <Button 
+                                            variant="danger"
+                                            onClick={handleDeleteAccount}
+                                        >
+                                            회원 탈퇴
+                                        </Button>
+                                    </div>
                                 </>
                             ) : (
                                 <Form onSubmit={handleUpdateSubmit}>

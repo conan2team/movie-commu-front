@@ -153,4 +153,22 @@
 
 .profile-card .form-group {
     margin-bottom: 1.5rem;
+}
+
+.profile-card .btn-danger {
+    margin-left: auto;
+}
+
+[data-bs-theme="dark"] .profile-card .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+[data-bs-theme="dark"] .profile-card .btn-danger:hover {
+    background-color: #bb2d3b;
+    border-color: #b02a37;
+}
+
+.profile-card .d-flex.gap-2 {
+    margin-top: 1rem;
 } 

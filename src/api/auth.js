@@ -77,5 +77,17 @@ export const authAPI = {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
+    },
+    
+    // 회원 탈퇴
+    deleteAccount: (username) => {
+        const formData = new URLSearchParams();
+        formData.append('username', username);
+        
+        return api.post('/user/delete', formData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
     }
 };
