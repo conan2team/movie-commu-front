@@ -130,4 +130,27 @@
         padding-left: 5px;
         margin-bottom: 10px;
     }
+}
+
+.profile-card {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.profile-info {
+    margin-bottom: 1.5rem;
+}
+
+.profile-info p {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+[data-bs-theme="dark"] .profile-info p {
+    border-bottom-color: #2b3035;
+}
+
+.profile-card .form-group {
+    margin-bottom: 1.5rem;
 } 

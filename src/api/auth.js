@@ -62,5 +62,20 @@ export const authAPI = {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
+    },
+    
+    // 회원정보 수정
+    updateUser: (userData) => {
+        const formData = new URLSearchParams();
+        formData.append('id', userData.id);
+        formData.append('nickname', userData.nickname);
+        formData.append('phone', userData.phone);
+        formData.append('birth', userData.birth);
+
+        return api.post('/user/update', formData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
     }
 };

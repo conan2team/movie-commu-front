@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Tab, Tabs, Card, Row, Col, Button, Pagination } from 'react-bootstrap';
+import { Container, Tab, Tabs, Card, Row, Col, Button, Pagination, Form } from 'react-bootstrap';
 import { userAPI } from '../api/user';
 import { movieAPI } from '../api/movie';
 import { Link } from 'react-router-dom';
 import '../styles/MyPage.css';
 import { reserveAPI } from '../api/reserve';
+import { authAPI } from '../api/auth';
 
 function MyPage() {
     const [likedPosts, setLikedPosts] = useState([]);
@@ -21,6 +22,12 @@ function MyPage() {
     const [followingTotal, setFollowingTotal] = useState(0);
     const [followerTotal, setFollowerTotal] = useState(0);
     const itemsPerPage = 6; // 페이지당 표시할 항목 수
+    const [showEditForm, setShowEditForm] = useState(false);
+    const [editFormData, setEditFormData] = useState({
+        nickname: '',
+        phone: '',
+        birth: ''
+    });
 
     const fetchMovieTitle = async (movieId) => {
         try {
@@ -342,6 +349,46 @@ function MyPage() {
         console.log('Followers state changed:', followers);
     }, [following, followers]);
 
+    // 수정 폼 초기화
+    useEffect(() => {
+        if (currentUser) {
+            setEditFormData({
+                id: currentUser.id,
+                nickname: currentUser.nickname || '',
+                phone: currentUser.phone || '',
+                birth: currentUser.birth || ''
+            });
+        }
+    }, [currentUser]);
+
+    // 회원정보 수정 처리
+    const handleUpdateSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            console.log('Updating user with data:', editFormData);  // 디버깅용 로그
+            const response = await authAPI.updateUser(editFormData);
+            if (response.data === "updated") {
+                alert('회원정보가 수정되었습니다.');
+                fetchCurrentUser(); // 사용자 정보 새로고침
+                setShowEditForm(false);
+            }
+        } catch (error) {
+            console.error('회원정보 수정 실패:', error);
+            if (error.response) {
+                console.error('Error details:', error.response.data);
+            }
+            alert('회원정보 수정에 실패했습니다.');
+        }
+    };
+
+    const handleEditChange = (e) => {
+        const { name, value } = e.target;
+        setEditFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
     return (
         <Container className="my-page-container py-4">
             <h2 className="mb-4">마이페이지</h2>
@@ -510,6 +557,78 @@ function MyPage() {
                             <p>팔로워가 없습니다.</p>
                         )}
                     </div>
+                </Tab>
+
+                <Tab eventKey="profile" title="회원정보">
+                    <Card className="profile-card">
+                        <Card.Body>
+                            {!showEditForm ? (
+                                <>
+                                    <div className="profile-info">
+                                        <p><strong>아이디:</strong> {currentUser?.id}</p>
+                                        <p><strong>닉네임:</strong> {currentUser?.nickname}</p>
+                                        <p><strong>전화번호:</strong> {currentUser?.phone}</p>
+                                        <p><strong>생년월일:</strong> {currentUser?.birth}</p>
+                                    </div>
+                                    <Button 
+                                        variant="primary" 
+                                        onClick={() => setShowEditForm(true)}
+                                    >
+                                        정보 수정
+                                    </Button>
+                                </>
+                            ) : (
+                                <Form onSubmit={handleUpdateSubmit}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>닉네임</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="nickname"
+                                            value={editFormData.nickname}
+                                            onChange={handleEditChange}
+                                            required
+                                        />
+                                    </Form.Group>
+
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>전화번호</Form.Label>
+                                        <Form.Control
+                                            type="tel"
+                                            name="phone"
+                                            value={editFormData.phone}
+                                            onChange={handleEditChange}
+                                            placeholder="010-0000-0000"
+                                            pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}"
+                                            required
+                                        />
+                                    </Form.Group>
+
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>생년월일</Form.Label>
+                                        <Form.Control
+                                            type="date"
+                                            name="birth"
+                                            value={editFormData.birth}
+                                            onChange={handleEditChange}
+                                            required
+                                        />
+                                    </Form.Group>
+
+                                    <div className="d-flex gap-2">
+                                        <Button variant="primary" type="submit">
+                                            저장
+                                        </Button>
+                                        <Button 
+                                            variant="secondary" 
+                                            onClick={() => setShowEditForm(false)}
+                                        >
+                                            취소
+                                        </Button>
+                                    </div>
+                                </Form>
+                            )}
+                        </Card.Body>
+                    </Card>
                 </Tab>
             </Tabs>
         </Container>
