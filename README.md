@@ -1,70 +1,93 @@
-# Getting Started with Create React App
+# Movie Community Project
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 🛠 사용 기술
 
-## Available Scripts
+### Frontend
+- **React** (v18.2.0)
+  - SPA(Single Page Application) 구현
+  - Component 기반 개발
+  - React Router DOM을 활용한 라우팅
+  - React Bootstrap을 활용한 UI 구현
 
-In the project directory, you can run:
+### 주요 라이브러리
+- **Bootstrap** (v5.3.0)
+  - 반응형 웹 디자인
+  - Grid 시스템 활용
+  - UI 컴포넌트 활용
 
-### `npm start`
+- **Axios**
+  - HTTP 통신 라이브러리
+  - RESTful API 연동
+  - 비동기 통신 처리
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 📦 프로젝트 구조
+src/
+├── api/ # API 통신 모듈
+├── components/ # 재사용 컴포넌트
+├── context/ # 전역 상태 관리
+├── hooks/ # 커스텀 훅
+├── pages/ # 페이지 컴포넌트
+└── styles/ # CSS 스타일
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 주요 기능
 
-### `npm test`
+### 1. 영화 서비스
+- 홈 페이지 (Home.js)
+  - 현재 상영작 배너
+  - 평점 TOP 5 영화
+  - 최신 영화 목록
+  - 통합 검색 기능
+    - 영화 제목
+    - 배우
+    - 감독
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- 인기 영화 (TopMovies.js)
+  - 평점 기준 TOP 10 영화
+  - 영화 포스터 및 상세 정보
+  - 호버 효과로 상세 정보 확인
+  - 클릭 시 상세 페이지로 이동
 
-### `npm run build`
+### 2. 영화 예매 시스템
+- 현재 상영작 (NowPlaying.js)
+  - 현재 상영중인 영화 목록 표시
+  - 날짜별 예매 시스템 (7일)
+  - 영화 상세 정보 표시
+  - 시간대별 예매 버튼
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- 좌석 예매 (Booking.js)
+  - 좌석 선택 시스템 (A~D열, 1~10번)
+  - 실시간 예매 정보 표시
+  - 결제 처리 시스템
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 3. 커뮤니티 시스템
+- 게시판 목록 (CommunityBoard.js)
+  - 게시글 목록 표시 (제목, 작성자, 작성일, 조회수, 추천수)
+  - 페이지네이션 구현 (15개씩 표시)
+  - 검색 기능 (제목/내용/제목+내용/작성자)
+  - 로그인 사용자만 글쓰기 가능
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- 게시글 상세 (CommunityDetail.js)
+  - 게시글 정보 표시
+  - 이미지 첨부 파일 표시
+  - 좋아요 및 팔로우 기능
+  - 댓글 시스템 (작성/수정/삭제)
+  - 게시글 관리 (수정/삭제)
 
-### `npm run eject`
+### 4. 회원 관리 시스템
+- 마이페이지 (MyPage.js)
+  - 회원 정보 관리 (조회/수정/탈퇴)
+  - 팔로우 관리 (팔로잉/팔로워)
+  - 활동 내역
+    - 좋아요한 게시글 목록
+    - 찜한 영화 목록
+    - 현재/지난 예매 내역
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- 유저 프로필 (UserProfile.js)
+  - 사용자 기본 정보 표시
+  - 팔로우/언팔로우 기능
+  - 활동 내역 조회
+    - 작성 게시글 목록
+    - 팔로워/팔로잉 목록
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 💻 프로젝트 실행 방법
+```
