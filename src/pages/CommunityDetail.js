@@ -373,45 +373,66 @@ function CommunityDetail() {
 
           {currentComments.map((comment) => (
             <div key={comment.commentId} className="comment-item">
-              <div className="comment-header">
-                <div className="comment-author">
-                  <strong>{comment.nickname}</strong>
-                  <span className="comment-date">{comment.created}</span>
+                <div className="comment-header">
+                    <div className="comment-author">
+                        <strong>{comment.nickname}</strong>
+                        <span className="comment-date">{comment.created}</span>
+                    </div>
+                    <div className="comment-buttons">
+                        {editingCommentId === comment.commentId ? (
+                            <>
+                                <Button
+                                    variant="success"
+                                    size="sm"
+                                    onClick={() => handleEditSubmit(comment.commentId)}
+                                >
+                                    저장
+                                </Button>
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    onClick={handleEditCancel}
+                                >
+                                    취소
+                                </Button>
+                            </>
+                        ) : (
+                            hasDeletePermission(user, comment.userId) && (
+                                <>
+                                    {Number(user.userId) === Number(comment.userId) && (
+                                        <Button
+                                            variant="outline-primary"
+                                            size="sm"
+                                            onClick={() => handleEditStart(comment)}
+                                        >
+                                            수정
+                                        </Button>
+                                    )}
+                                    <Button
+                                        variant="outline-danger"
+                                        size="sm"
+                                        onClick={() => handleCommentDelete(comment.commentId)}
+                                    >
+                                        삭제
+                                    </Button>
+                                </>
+                            )
+                        )}
+                    </div>
                 </div>
-                {hasDeletePermission(user, comment.userId) && (
-                  <div className="comment-buttons">
-                    {Number(user.userId) === Number(comment.userId) && (
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        onClick={() => handleEditStart(comment)}
-                      >
-                        수정
-                      </Button>
-                    )}
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      onClick={() => handleCommentDelete(comment.commentId)}
-                    >
-                      삭제
-                    </Button>
-                  </div>
+                {editingCommentId === comment.commentId ? (
+                    <div className="comment-edit-form">
+                        <Form.Control
+                            as="textarea"
+                            value={editCommentContent}
+                            onChange={(e) => setEditCommentContent(e.target.value)}
+                        />
+                    </div>
+                ) : (
+                    <div className="comment-content">
+                        {comment.content}
+                    </div>
                 )}
-              </div>
-              {editingCommentId === comment.commentId ? (
-                <div className="comment-edit-form">
-                  <Form.Control
-                    as="textarea"
-                    value={editCommentContent}
-                    onChange={(e) => setEditCommentContent(e.target.value)}
-                  />
-                </div>
-              ) : (
-                <div className="comment-content">
-                  {comment.content}
-                </div>
-              )}
             </div>
           ))}
 
