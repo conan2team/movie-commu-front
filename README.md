@@ -1,5 +1,25 @@
 # Movie Community Project
 
+## 🚀 시작하기
+
+### 설치 및 실행
+1. 프로젝트 클론
+```bash
+git clone [repository URL]
+cd movieapp
+```
+
+2. 의존성 패키지 설치
+```bash
+npm install
+```
+
+3. 개발 서버 실행
+```bash
+npm start
+```
+- 브라우저에서 http://localhost:3000 으로 접속하여 확인할 수 있습니다.
+
 ## 🛠 사용 기술
 
 ### Frontend
