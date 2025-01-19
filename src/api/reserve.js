@@ -2,17 +2,23 @@ import api from './axios';
 
 export const reserveAPI = {
   // 영화의 모든 스케줄 조회
-  getSchedules: (movieId) => {
+  getSchedules: async (movieId) => {
+    // DEBUG: 스케줄 조회 요청
+    // console.log('Fetching schedules for movie:', movieId);
     return api.get(`/schedule?movieId=${movieId}`);
   },
 
   // 예약된 좌석 조회
-  getReservedSeats: (scheduleId) => {
+  getReservedSeats: async (scheduleId) => {
+    // DEBUG: 예약된 좌석 조회
+    // console.log('Fetching reserved seats for schedule:', scheduleId);
     return api.get(`/reservedSeat?scheduleId=${scheduleId}`);
   },
 
   // 좌석 예약하기
-  reserve: (reserveData) => {
+  reserve: async (reserveData) => {
+    // DEBUG: 예약 요청 데이터
+    // console.log('Reserve request data:', reserveData);
     const data = {
       method: reserveData.method,
       amount: reserveData.amount,
@@ -24,14 +30,18 @@ export const reserveAPI = {
   },
 
   // 예약 취소하기
-  cancelReserve: (seatId, scheduleId) => {
+  cancelReserve: async (seatId, scheduleId) => {
+    // DEBUG: 예약 취소 요청
+    // console.log('Canceling reservation:', { seatId, scheduleId });
     return api.post(`/reserve/delete`, null, {
       params: { seatId, scheduleId }
     });
   },
 
   // 예매 취소
-  deleteReservation: (seatId, scheduleId) => {
+  deleteReservation: async (seatId, scheduleId) => {
+    // DEBUG: 예매 취소 요청
+    // console.log('Deleting reservation:', { seatId, scheduleId });
     const params = new URLSearchParams();
     params.append('seatId', seatId);
     params.append('scheduleId', scheduleId);

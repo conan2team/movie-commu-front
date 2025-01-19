@@ -23,6 +23,9 @@ function NowPlaying() {
       const onAirMovies = response.data.filter(movie => movie.onAir === 1);
       setNowPlayingMovies(onAirMovies);
       
+      // DEBUG: 상영중인 영화 목록
+      // console.log('Now playing movies:', onAirMovies);
+      
       // 모든 상영중인 영화의 스케줄을 가져옴
       for (const movie of onAirMovies) {
         await fetchMovieSchedules(movie.movieId);
@@ -75,12 +78,13 @@ function NowPlaying() {
   const fetchMovieSchedules = async (movieId) => {
     try {
       const response = await movieAPI.getSchedules(movieId);
-      const schedules = response.data;
+      // DEBUG: 영화 스케줄 정보
+      // console.log('Movie schedules:', response.data);
       
       setScheduleData(prevSchedules => {
         const newSchedules = { ...prevSchedules };
         
-        schedules.forEach(schedule => {
+        response.data.forEach(schedule => {
           if (!newSchedules[schedule.date]) {
             newSchedules[schedule.date] = [];
           }

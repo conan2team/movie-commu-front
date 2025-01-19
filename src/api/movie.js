@@ -6,7 +6,8 @@ export const movieAPI = {
     
     // 영화 상세 정보 조회
     getMovieDetail: async (movieId) => {
-        console.log('Fetching movie detail for ID:', movieId);
+        // DEBUG: 영화 상세 정보 요청
+        // console.log('Fetching movie detail for ID:', movieId);
         const response = await api.get(`/movie/${movieId}`);
         return response;
     },
@@ -24,12 +25,13 @@ export const movieAPI = {
     checkGgimStatus: async (movieId) => {
         try {
             const response = await api.get('/ggim/movie');
-            // 백엔드 응답 구조 확인
-            console.log('Ggim response:', response);
+            // DEBUG: 찜 상태 응답 확인
+            // console.log('Ggim response:', response);
             
             // response.data.movie에서 영화 목록을 가져옴
             const ggimMovies = response.data.movie || [];
-            console.log('Ggim movies:', ggimMovies);
+            // DEBUG: 찜한 영화 목록 확인
+            // console.log('Ggim movies:', ggimMovies);
             
             // movie_id로 비교 (GgimMovieDto의 필드명에 맞춤)
             return ggimMovies.some(movie => Number(movie.movie_id) === Number(movieId));
@@ -41,7 +43,8 @@ export const movieAPI = {
     
     // 리뷰 작성
     createReview: async (movieId, reviewData) => {
-        console.log('Creating review for movie:', movieId);
+        // DEBUG: 리뷰 작성 요청
+        // console.log('Creating review for movie:', movieId);
         
         // URL 파라미터 형식으로 데이터 전송
         const params = new URLSearchParams({
@@ -50,9 +53,11 @@ export const movieAPI = {
         });
         
         try {
-            console.log('Sending review data:', params.toString());
+            // DEBUG: 리뷰 데이터 전송
+            // console.log('Sending review data:', params.toString());
             const response = await api.post(`/movie/${movieId}/write?${params.toString()}`);
-            console.log('Review creation response:', response);
+            // DEBUG: 리뷰 생성 응답
+            // console.log('Review creation response:', response);
             return response;
         } catch (error) {
             console.error('Review creation error:', error.response?.data);
@@ -62,7 +67,8 @@ export const movieAPI = {
     
     // 리뷰 수정
     updateReview: async (movieId, reviewData) => {
-        console.log('Updating review for movie:', movieId);
+        // DEBUG: 리뷰 수정 요청
+        // console.log('Updating review for movie:', movieId);
         const reviewBody = {
             movieId: Number(movieId),
             userId: Number(reviewData.userId),
@@ -73,9 +79,11 @@ export const movieAPI = {
         };
 
         try {
-            console.log('Sending update data:', reviewBody);
+            // DEBUG: 수정 데이터 전송
+            // console.log('Sending update data:', reviewBody);
             const response = await api.put(`/movie/${movieId}/update`, reviewBody);
-            console.log('Review update response:', response);
+            // DEBUG: 리뷰 수정 응답
+            // console.log('Review update response:', response);
             return response;
         } catch (error) {
             console.error('Review update error:', error.response?.data);
@@ -90,7 +98,8 @@ export const movieAPI = {
     // 리뷰 삭제
     deleteReview: async (movieId, userId, currentUser) => {
         try {
-            console.log('API call - Delete review:', { movieId, userId });
+            // DEBUG: 리뷰 삭제 요청
+            // console.log('API call - Delete review:', { movieId, userId });
             // FormData로 변경
             const formData = new FormData();
             formData.append('userId', userId);
@@ -108,7 +117,8 @@ export const movieAPI = {
     },
     
     getReviews: async (movieId) => {
-        console.log('Fetching reviews for movie ID:', movieId);
+        // DEBUG: 리뷰 목록 조회
+        // console.log('Fetching reviews for movie ID:', movieId);
         const response = await api.get(`/movie/${movieId}`);
         return response;
     },

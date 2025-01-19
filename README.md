@@ -3,14 +3,14 @@
 ## 🛠 사용 기술
 
 ### Frontend
-- **React** (v18.2.0)
+- **React** 
   - SPA(Single Page Application) 구현
   - Component 기반 개발
   - React Router DOM을 활용한 라우팅
   - React Bootstrap을 활용한 UI 구현
 
 ### 주요 라이브러리
-- **Bootstrap** (v5.3.0)
+- **Bootstrap** 
   - 반응형 웹 디자인
   - Grid 시스템 활용
   - UI 컴포넌트 활용

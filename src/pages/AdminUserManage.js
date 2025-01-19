@@ -35,7 +35,8 @@ function AdminUserManage() {
   const fetchUsers = async () => {
     try {
       const response = await adminAPI.getUserList(pageSize, currentPage);
-      console.log('User list response:', response); // 응답 확인용
+      // DEBUG: 사용자 목록 응답
+      // console.log('User list response:', response);
       setUserList({
         users: response.data.users || [],
         userCnt: response.data.userCnt || 0

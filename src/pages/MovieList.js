@@ -52,15 +52,15 @@ function MovieList() {
         } else {
           response = await movieAPI.getMovies();
         }
-        console.log('API Response:', response);
-        console.log('Movies data:', response.data);
+        // console.log('API Response:', response);
+        // console.log('Movies data:', response.data);
         
         // 백엔드 응답 구조에 맞게 데이터 설정
         const movieData = response.data;
         setMovies(Array.isArray(movieData) ? movieData : []);
         setError(null);
       } catch (err) {
-        console.error('Error fetching movies:', err);
+        // console.error('Error fetching movies:', err);
         setError('영화 목록을 불러오는데 실패했습니다.');
       } finally {
         setLoading(false);
@@ -101,9 +101,9 @@ function MovieList() {
   const currentMovies = getCurrentMovies();
   const totalPages = Math.ceil(movies.length / itemsPerPage);
 
-  console.log('Total movies:', movies.length); // 디버깅용
-  console.log('Current page movies:', currentMovies.length); // 디버깅용
-  console.log('Total pages:', totalPages); // 디버깅용
+  // console.log('Total movies:', movies.length); // 디버깅용
+  // console.log('Current page movies:', currentMovies.length); // 디버깅용
+  // console.log('Total pages:', totalPages); // 디버깅용
 
   return (
     <Container className="py-5">

@@ -36,12 +36,14 @@ function Booking() {
     try {
       // 예약된 좌석 정보 가져오기
       const reservedResponse = await reserveAPI.getReservedSeats(scheduleId);
-      console.log('Reserved seats response:', reservedResponse.data);
+      // DEBUG: 예약된 좌석 정보
+      // console.log('Reserved seats response:', reservedResponse.data);
       setReservedSeats(reservedResponse.data || []);
       
       // 스케줄 정보 가져오기
       const scheduleResponse = await reserveAPI.getSchedules(movieId);
-      console.log('Schedule response:', scheduleResponse.data);
+      // DEBUG: 스케줄 정보
+      // console.log('Schedule response:', scheduleResponse.data);
       const currentSchedule = scheduleResponse.data.find(
         s => s.scheduleId === parseInt(scheduleId)
       );

@@ -40,16 +40,19 @@ function MyPage() {
     };
 
     useEffect(() => {
-        console.log('MyPage component mounted');
+        // DEBUG: 컴포넌트 마운트
+        // console.log('MyPage component mounted');
         fetchMyPageData();
         fetchCurrentUser();
     }, []);
 
     const fetchCurrentUser = async () => {
         try {
-            console.log('Fetching current user info...');
+            // DEBUG: 현재 사용자 정보 조회
+            // console.log('Fetching current user info...');
             const response = await userAPI.getCurrentUser();
-            console.log('Current user response:', response.data);
+            // DEBUG: 현재 사용자 응답
+            // console.log('Current user response:', response.data);
             setCurrentUser(response.data);
         } catch (error) {
             console.error('현재 사용자 정보 로딩 실패:', error);
@@ -61,10 +64,12 @@ function MyPage() {
 
     const handleFollow = async (username) => {
         try {
-            console.log('Attempting to toggle follow for:', username);
+            // DEBUG: 팔로우 토글
+            // console.log('Attempting to toggle follow for:', username);
             await userAPI.follow(username);
-            console.log('Follow toggle successful');
-            fetchMyPageData(); // 목록 새로고침
+            // DEBUG: 팔로우 토글 성공
+            // console.log('Follow toggle successful');
+            fetchMyPageData();
         } catch (error) {
             console.error('팔로우 처리 실패:', error);
             if (error.response) {
@@ -95,7 +100,8 @@ function MyPage() {
         try {
             // 좋아요한 게시글 가져오기
             const likedResponse = await userAPI.getLikedPosts();
-            console.log('Liked posts response:', likedResponse.data);
+            // DEBUG: 좋아요한 게시글 응답
+            // console.log('Liked posts response:', likedResponse.data);
             const posts = likedResponse.data.post || [];
             // post_id를 postId로 매핑
             const formattedPosts = posts.map(post => ({
@@ -110,9 +116,9 @@ function MyPage() {
 
             // 찜한 영화 가져오기
             const ggimResponse = await userAPI.getGgimMovies();
-            console.log('Ggim movies response:', ggimResponse.data);
+            // DEBUG: 찜한 영화 응답
+            // console.log('Ggim movies response:', ggimResponse.data);
             const movies = ggimResponse.data.movie || [];
-            // movie_id를 movieId로 매핑
             const formattedMovies = movies.map(movie => ({
                 movieId: movie.movie_id,
                 title: movie.title,
@@ -122,12 +128,14 @@ function MyPage() {
 
             // 현재 예매 내역 가져오기
             const reserveResponse = await userAPI.getReservations();
-            console.log('Current reservations response:', reserveResponse.data);
+            // DEBUG: 현재 예매 내역 응답
+            // console.log('Current reservations response:', reserveResponse.data);
             const allReservations = reserveResponse.data || [];
             
             // 지난 예매 내역 가져오기
             const previousResponse = await userAPI.getPreviousReservations();
-            console.log('Previous reservations response:', previousResponse.data);
+            // DEBUG: 지난 예매 내역 응답
+            // console.log('Previous reservations response:', previousResponse.data);
             const previousReservations = previousResponse.data || [];
 
             // 현재 시간 가져오기 (이미 한국 시간임)
@@ -135,11 +143,12 @@ function MyPage() {
             const today = now.toISOString().split('T')[0];  // YYYY-MM-DD 형식
             const currentTime = now.getHours() * 60 + now.getMinutes();  // 현재 시간을 분으로 변환
 
-            console.log('Debug - Current DateTime:', {
-                now: now.toString(),
-                today,
-                currentTime,
-            });
+            // DEBUG: 현재 날짜/시간 정보
+            // console.log('Debug - Current DateTime:', {
+            //     now: now.toString(),
+            //     today,
+            //     currentTime,
+            // });
 
             // 예매 내역 필터링
             const currentReservations = allReservations.filter(reserve => {
@@ -147,31 +156,31 @@ function MyPage() {
                 const [hours, minutes] = reserve.startTime.split(':').map(Number);
                 const reserveTime = hours * 60 + minutes;
                 
-                console.log('Debug - Checking reservation:', {
-                    movieTitle: movieTitles[reserve.movieId],
-                    reserveDate,
-                    today,
-                    startTime: reserve.startTime,
-                    reserveTime,
-                    currentTime,
-                    isAfterToday: reserveDate > today,
-                    isBeforeToday: reserveDate < today,
-                    isSameDay: reserveDate === today,
-                    isAfterCurrentTime: reserveTime > currentTime
-                });
+                // DEBUG: 예매 정보 체크
+                // console.log('Debug - Checking reservation:', {
+                //     movieTitle: movieTitles[reserve.movieId],
+                //     reserveDate,
+                //     today,
+                //     startTime: reserve.startTime,
+                //     reserveTime,
+                //     currentTime,
+                //     isAfterToday: reserveDate > today,
+                //     isBeforeToday: reserveDate < today,
+                //     isSameDay: reserveDate === today,
+                //     isAfterCurrentTime: reserveTime > currentTime
+                // });
 
                 if (reserveDate > today) return true;  // 미래 날짜는 현재 예매
                 if (reserveDate < today) return false;  // 과거 날짜는 지난 예매
-                
-                // 오늘 날짜인 경우 시간으로 비교
                 return reserveTime > currentTime;  // 현재 시간 이후면 현재 예매
             });
 
-            console.log('Debug - Filtered Reservations:', {
-                all: allReservations,
-                current: currentReservations,
-                previous: allReservations.filter(r => !currentReservations.includes(r))
-            });
+            // DEBUG: 필터링된 예매 내역
+            // console.log('Debug - Filtered Reservations:', {
+            //     all: allReservations,
+            //     current: currentReservations,
+            //     previous: allReservations.filter(r => !currentReservations.includes(r))
+            // });
 
             // 지난 예매에 과거 예매 내역 추가
             const allPreviousReservations = [
@@ -340,13 +349,15 @@ function MyPage() {
 
     // currentUser 상태 변경 감지
     useEffect(() => {
-        console.log('Current user state changed:', currentUser);
+        // DEBUG: 현재 사용자 상태 변경
+        // console.log('Current user state changed:', currentUser);
     }, [currentUser]);
 
     // following/followers 상태 변경 감지
     useEffect(() => {
-        console.log('Following state changed:', following);
-        console.log('Followers state changed:', followers);
+        // DEBUG: 팔로잉/팔로워 상태 변경
+        // console.log('Following state changed:', following);
+        // console.log('Followers state changed:', followers);
     }, [following, followers]);
 
     // 수정 폼 초기화

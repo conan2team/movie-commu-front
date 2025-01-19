@@ -43,20 +43,19 @@ function CommunityDetail() {
     if (!user || !post) return;
 
     try {
-      // 좋아요 상태 확인
       const likeStatus = await postsAPI.checkLikeStatus(Number(post.postId), user.id);
-      console.log('Like status checked:', likeStatus);
+      // DEBUG: 좋아요 상태 확인
+      // console.log('Like status checked:', likeStatus);
       setIsLiked(likeStatus);
       
-      // 팔로우 상태 확인
       if (post.username) {
         const followStatus = await postsAPI.checkFollowStatus(user.id, post.username);
-        console.log('Follow status checked:', followStatus);
+        // DEBUG: 팔로우 상태 확인
+        // console.log('Follow status checked:', followStatus);
         setIsFollowing(followStatus);
       }
     } catch (error) {
       console.error('Error checking user interactions:', error);
-      // 로컬 스토리지에서 이전 상태 확인
       const savedLikeStatus = localStorage.getItem(`like_${user.id}_${post.postId}`);
       const savedFollowStatus = localStorage.getItem(`follow_${user.id}_${post.username}`);
       
@@ -82,9 +81,9 @@ function CommunityDetail() {
 
   const fetchPostData = async () => {
     try {
-      // 뒤로가기가 아닌 경우에만 상세 조회 API 호출
       const response = await postsAPI.getPostDetail(id, isBackNavigation);
-      console.log('Post detail response:', response);
+      // DEBUG: 게시글 상세 응답
+      // console.log('Post detail response:', response);
 
       if (response?.data) {
         const postData = response.data.post;

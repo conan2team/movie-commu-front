@@ -35,8 +35,9 @@ function MovieDetail() {
             // 로그인한 경우에만 찜 상태 확인
             if (user) {
                 const ggimStatus = await movieAPI.checkGgimStatus(id);
-                console.log('Movie ID:', id);
-                console.log('Initial ggim status:', ggimStatus);
+                // DEBUG: 찜 상태 확인
+                // console.log('Movie ID:', id);
+                // console.log('Initial ggim status:', ggimStatus);
                 setIsGgimed(ggimStatus);
             }
             
@@ -48,7 +49,7 @@ function MovieDetail() {
             const reviewsWithUser = reviews.map((review, index) => ({
                 ...review,
                 nickname: users[index]?.nickname,
-                userId: Number(review.userId) // userId를 숫자로 변환
+                userId: Number(review.userId)
             }));
             
             setAllReviews(reviewsWithUser);
@@ -58,14 +59,15 @@ function MovieDetail() {
                 const myReview = reviewsWithUser.find(
                     r => Number(r.userId) === Number(user.userId)
                 );
-                console.log('Found user review:', myReview);
+                // DEBUG: 사용자 리뷰 확인
+                // console.log('Found user review:', myReview);
                 if (myReview) {
                     setUserReview(myReview);
                     setReview({ 
                         content: myReview.content, 
                         rating: myReview.rating 
                     });
-                    setIsEditing(false); // 수정 모드 초기화
+                    setIsEditing(false);
                 } else {
                     setUserReview(null);
                     setReview({ content: '', rating: 5 });
@@ -88,15 +90,17 @@ function MovieDetail() {
     // 리뷰 목록 가져오기
     const fetchReviews = async () => {
         try {
-            console.log('Fetching reviews for movie:', id);
-            console.log('Current user state before fetch:', user);
+            // DEBUG: 리뷰 조회 정보
+            // console.log('Fetching reviews for movie:', id);
+            // console.log('Current user state before fetch:', user);
 
             const response = await movieAPI.getReviews(id);
-            console.log('Fetched reviews:', response.data);
+            // DEBUG: 리뷰 데이터 확인
+            // console.log('Fetched reviews:', response.data);
             setReviews(response.data || []);
 
-            // user 상태가 변경되지 않도록 함
-            console.log('User state after fetch remains:', user);
+            // DEBUG: 사용자 상태 확인
+            // console.log('User state after fetch remains:', user);
         } catch (error) {
             console.error('Error fetching reviews:', error);
             setReviews([]);
@@ -105,28 +109,32 @@ function MovieDetail() {
 
     // 컴포넌트 마운트 시 실행
     useEffect(() => {
-        console.log('MovieDetail mounted with user:', user);
-        if (user) {  // user가 있을 때만 리뷰 가져오기
+        // DEBUG: 컴포넌트 마운트 확인
+        // console.log('MovieDetail mounted with user:', user);
+        if (user) {
             fetchReviews();
         }
-    }, [id, user]);  // user 의존성 추가
+    }, [id, user]);
 
     // user 상태 변경 감지
     useEffect(() => {
-        console.log('User state in MovieDetail changed:', user);
+        // DEBUG: 사용자 상태 변경 확인
+        // console.log('User state in MovieDetail changed:', user);
     }, [user]);
 
     // 리뷰 목록 새로고침 함수
     const fetchMovieAndReviews = async () => {
         try {
             const response = await movieAPI.getMovieDetail(id);
-            console.log('Movie detail response:', response.data);
+            // DEBUG: 영화 상세 정보 응답 확인
+            // console.log('Movie detail response:', response.data);
             
             setMovie(response.data.movie);
             
             // 리뷰 데이터 구조 확인
             const reviewData = response.data.review;
-            console.log('Review data:', reviewData);
+            // DEBUG: 리뷰 데이터 확인
+            // console.log('Review data:', reviewData);
             
             if (reviewData && reviewData.body) {
                 const reviews = reviewData.body.review || [];
@@ -138,20 +146,21 @@ function MovieDetail() {
                     return {
                         ...review,
                         nickname: user?.nickname,
-                        // userId 비교를 위해 숫자로 변환
                         userId: Number(review.userId)
                     };
                 });
                 
-                console.log('Current user:', user);
-                console.log('Reviews with user info:', reviewsWithUser);
+                // DEBUG: 사용자 정보와 리뷰 매칭 확인
+                // console.log('Current user:', user);
+                // console.log('Reviews with user info:', reviewsWithUser);
                 
                 setAllReviews(reviewsWithUser);
                 
                 // 현재 사용자의 리뷰 찾기
                 if (user) {
                     const myReview = reviewsWithUser.find(r => r.userId === Number(user.userId));
-                    console.log('My review:', myReview);
+                    // DEBUG: 내 리뷰 확인
+                    // console.log('My review:', myReview);
                     if (myReview) {
                         setUserReview(myReview);
                         setReview({

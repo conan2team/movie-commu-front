@@ -38,12 +38,7 @@ export function useHomeData() {
           };
         });
 
-        console.log('Extracted Data:', {
-          topMovies,
-          recentMovies,
-          recentPosts
-        });
-
+        
         setHomeData({
           topMovies: topMovies.slice(0, 5),
           recentMovies: recentMovies.slice(0, 5),

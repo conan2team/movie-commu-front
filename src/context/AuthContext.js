@@ -9,7 +9,6 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
-      console.log('Starting checkAuth with current user:', user);
       const response = await authAPI.checkAuth();
       
       if (response.data) {
@@ -18,17 +17,12 @@ export const AuthProvider = ({ children }) => {
             ...response.data,
             userId: prevUser?.userId || response.data.userId || response.data.user
           };
-          console.log('Updating user state:', updatedUser);
           return updatedUser;
         });
-      } else {
-        console.log('No user data in response');
       }
     } catch (error) {
       console.error('Auth check error:', error);
-      if (user) {
-        console.log('Keeping existing user state on error');
-      } else {
+      if (!user) {
         setUser(null);
       }
     } finally {
@@ -39,7 +33,6 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await authAPI.login(credentials.id, credentials.password);
-      console.log('Login response:', response.data);
       
       if (response.data) {
         const userData = {
@@ -47,7 +40,6 @@ export const AuthProvider = ({ children }) => {
           userId: response.data.userId || response.data.user,
           role: response.data.role || 'ROLE_USER'
         };
-        console.log('Login processed user data:', userData);
         setUser(userData);
         return response.data;
       }
@@ -73,16 +65,8 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    console.log('User state changed:', user);
-    if (user?.userId) {
-      console.log('Current userId:', user.userId);
-    }
-  }, [user]);
-
-  useEffect(() => {
     if (user?.userId) {
       localStorage.setItem('userId', user.userId);
-      console.log('Saved userId to localStorage:', user.userId);
     }
   }, [user]);
 
@@ -93,7 +77,6 @@ export const AuthProvider = ({ children }) => {
         ...prevUser,
         userId: savedUserId
       }));
-      console.log('Restored userId from localStorage:', savedUserId);
     }
   }, [user]);
 

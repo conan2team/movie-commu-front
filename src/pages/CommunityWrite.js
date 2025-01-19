@@ -58,7 +58,8 @@ function CommunityWrite() {
     try {
       if (id) {
         // 수정 모드
-        console.log('Updating post:', { id, title: title.trim(), content: content.trim() }); // 디버깅용
+        // DEBUG: 게시글 수정 데이터
+        // console.log('Updating post:', { id, title: title.trim(), content: content.trim() });
         await postsAPI.updatePost(id, title.trim(), content.trim());
         alert('게시글이 수정되었습니다.');
       } else {

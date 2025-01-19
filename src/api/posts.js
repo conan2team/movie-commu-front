@@ -71,15 +71,15 @@ export const postsAPI = {
                 }
             });
             
-            console.log('Like status response:', response.data);
+            // DEBUG: 좋아요 상태 응답
+            // console.log('Like status response:', response.data);
             
-            // post 배열에서 post_id로 매칭
             const likedPosts = response.data.post || [];
             return likedPosts.some(post => {
-                // 둘 다 숫자로 변환하여 비교
                 const likedPostId = Number(post.post_id);
                 const currentPostId = Number(postId);
-                console.log('Comparing postIds:', likedPostId, currentPostId);
+                // DEBUG: 게시글 ID 비교
+                // console.log('Comparing postIds:', likedPostId, currentPostId);
                 return likedPostId === currentPostId;
             });
         } catch (error) {
@@ -108,22 +108,21 @@ export const postsAPI = {
                 }
             });
             
-            console.log('Follow status response:', response.data);
+            // DEBUG: 팔로우 상태 응답
+            // console.log('Follow status response:', response.data);
             
-            // users 배열에서 id로 매칭
             const followingUsers = response.data.users || [];
             const isFollowing = followingUsers.some(user => {
-                console.log('Comparing usernames:', user.id, targetUsername);
+                // DEBUG: 사용자명 비교
+                // console.log('Comparing usernames:', user.id, targetUsername);
                 return user.id === targetUsername;
             });
             
-            // 로컬 스토리지에 상태 저장
             localStorage.setItem(`follow_${currentUsername}_${targetUsername}`, isFollowing);
             
             return isFollowing;
         } catch (error) {
             console.error('Check follow status error:', error);
-            // 로컬 스토리지에서 이전 상태 확인
             return localStorage.getItem(`follow_${currentUsername}_${targetUsername}`) === 'true';
         }
     },

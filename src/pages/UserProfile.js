@@ -19,11 +19,13 @@ function UserProfile() {
 
     const fetchUserData = async () => {
         try {
-            console.log('Fetching data for username:', username);
+            // DEBUG: 사용자 데이터 조회
+            // console.log('Fetching data for username:', username);
             
             // 유저가 작성한 게시글 목록 (닉네임 정보를 위해 먼저 호출)
             const postsResponse = await postsAPI.getUserPosts(username);
-            console.log('Posts response:', postsResponse);
+            // DEBUG: 게시글 응답
+            // console.log('Posts response:', postsResponse);
             
             // user 배열에서 닉네임 정보 가져오기
             if (postsResponse.data && postsResponse.data.user && postsResponse.data.user.length > 0) {
@@ -42,7 +44,8 @@ function UserProfile() {
             
             // 팔로워/팔로잉 정보 가져오기
             const userResponse = await postsAPI.getUserInfo(username);
-            console.log('User info response:', userResponse.data);
+            // DEBUG: 사용자 정보 응답
+            // console.log('User info response:', userResponse.data);
             setUserInfo(prev => ({
                 ...prev,
                 following: userResponse.data.following,

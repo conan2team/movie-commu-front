@@ -7,7 +7,6 @@ import CommunityBoard from './pages/CommunityBoard';
 import MovieDetail from './pages/MovieDetail';
 import CommunityDetail from './pages/CommunityDetail';
 import CommunityWrite from './pages/CommunityWrite';  
-import CommunityEdit from './pages/CommunityEdit';
 import NowPlaying from './pages/NowPlaying';
 import Booking from './pages/Booking';
 import { AuthProvider, useAuth } from './context/AuthContext';

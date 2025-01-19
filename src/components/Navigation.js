@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaSun, FaMoon } from 'react-icons/fa';
@@ -11,10 +11,6 @@ function Navigation() {
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log('Current user:', user);
-  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -46,12 +42,12 @@ function Navigation() {
             <Nav.Link as={Link} to="/top-movies">평점 TOP 10</Nav.Link>
             <Nav.Link as={Link} to="/community">자유게시판</Nav.Link>
             {user && (
-                <>
-                    <Nav.Link as={Link} to="/mypage">마이페이지</Nav.Link>
-                    {user.role === 'ROLE_ADMIN' && (
-                        <Nav.Link as={Link} to="/admin/users">관리자 페이지</Nav.Link>
-                    )}
-                </>
+              <>
+                <Nav.Link as={Link} to="/mypage">마이페이지</Nav.Link>
+                {user.role === 'ROLE_ADMIN' && (
+                  <Nav.Link as={Link} to="/admin/users">관리자 페이지</Nav.Link>
+                )}
+              </>
             )}
           </Nav>
           <div className="d-flex align-items-center gap-3">

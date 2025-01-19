@@ -59,7 +59,8 @@ function CommunityBoard() {
         response = await postsAPI.getPostsList(page, itemsPerPage);
       }
 
-      console.log('Posts response:', response);
+      // DEBUG: 게시글 목록 응답
+      // console.log('Posts response:', response);
       
       if (response?.data) {
         const postsData = response.data.post.content;
